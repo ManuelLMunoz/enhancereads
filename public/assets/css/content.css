@@ -1,0 +1,187 @@
+/* Se importan los estilos base */
+@import url("base.css");
+
+/* Variables para los colores */
+:root {
+    --blue: #0056b3;
+    --edit: rgb(41, 150, 41);
+    --delete: rgb(197, 53, 53);
+}
+
+/* --------- */
+/* Secciones */
+/* --------- */
+
+/* Sección 1 - Inicio */
+
+/* Se ajusta el tamaño al 40% de la pantalla */
+.brand {
+    height: 40vh;
+    height: 40dvh;
+}
+
+#type {
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    font-size: 1.3rem;
+}
+
+/* Barra de búsqueda */
+#search {
+    width: 50vw;
+    max-width: 450px;
+    min-width: 200px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid black;
+    font-size: 1rem;
+}
+
+/* Sección 2 - Contenido */
+section#content {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.content-container {
+    /* Ocupa el 60% del ancho total */
+    width: 60%;
+    padding: 20px 0;
+    margin-left: 50px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+
+    /* El contenido se muestra en una sola columna */
+    section#content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .filters-container,
+    .content-container {
+        width: 100%;
+        margin-left: 0px;
+    }
+}
+
+/* -------------------- */
+/* Filtros de búsqueda  */
+/* -------------------- */
+
+.filters-container {
+    justify-content: center;
+    text-align: left;
+    padding-top: 20px;
+}
+
+.filters-container #filter-icon {
+    cursor: pointer;
+}
+
+.filters-container p {
+    font-size: 1.4rem;
+    font-weight: bold;
+    padding: 15px 0;
+}
+
+.filter-option {
+    padding-bottom: 10px;
+}
+
+.filter-option label {
+    font-weight: bold;
+}
+
+#clear-filters,
+.btn-filter {
+    padding: 6px;
+    cursor: pointer;
+    margin: 5px 0;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #e6e6e6;
+}
+
+/* Los filtros en responsive se muestran centrados */
+@media (max-width: 1024px) {
+
+    .filter-option,
+    .filters-container p {
+        text-align: center;
+    }
+}
+
+/* ---------------------------- */
+/* Paginación de los resultados */
+/* ---------------------------- */
+#pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.page-link {
+    padding: 6px;
+    margin: 0 3px;
+    background-color: #000000;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+
+    i {
+        color: white;
+    }
+}
+
+.page-link:hover,
+.page-link.active {
+    background-color: var(--blue);
+}
+
+#element-range {
+    font-size: 1.1rem;
+    padding: 30px 0;
+}
+
+/* ------------------------------------------- */
+/* Botones de edición (Crear, editar y borrar) */
+/* ------------------------------------------- */
+
+.manage-buttons {
+    margin: 20px 0 5px 0;
+
+    i {
+        color: white;
+    }
+}
+
+.create-button,
+.edit-button,
+.delete-button {
+    padding: 6px;
+    margin: 0 5px 0 0;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.create-button {
+    background-color: var(--blue);
+}
+
+.edit-button {
+    background-color: var(--edit);
+}
+
+.delete-button {
+    background-color: var(--delete);
+}

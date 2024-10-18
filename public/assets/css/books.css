@@ -1,0 +1,36 @@
+/* Se importan los estilos base */
+@import url("base.css");
+
+/* Contenedor de libros con grid adaptable */
+.book-container {
+    padding: 15px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    /* Espacio solo entre filas */
+    row-gap: 25px;
+}
+
+/* Estilos para la información del libro */
+.book-info {
+    padding-bottom: 20px;
+}
+
+.book-container #title {
+    font-weight: bold;
+    padding: 15px 0;
+}
+
+.book-container p {
+    font-size: 1.1rem;
+}
+
+/* Estilos para la imagen del libro */
+.book-container img {
+    max-height: 250px;
+    max-width: 200px;
+    object-fit: cover;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+}

@@ -1,0 +1,29 @@
+{
+    "name": "enhancereads/proyect",
+    "description": "Proyecto DAW",
+    "type": "project",
+    "config": {
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
+        }
+    },
+    "require": {
+        "google/apiclient": "2.16",
+        "pragmarx/google2fa": "^0.5.0",
+        "endroid/qr-code": "^5.0"
+    },
+    "license": "GNU/GPL",
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/",
+            "Lib\\": "lib/",
+            "Clases\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Manuel Luis Muñoz Sanchez"
+        }
+    ]
+}

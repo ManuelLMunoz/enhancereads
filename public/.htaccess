@@ -1,0 +1,11 @@
+# Se desactiva la opción MultiViews para evitar conflictos en la resolución de URLs
+Options -MultiViews
+
+# Se habilita el motor de reescritura de URL
+RewriteEngine On
+
+# Si el archivo solicitado no existe en el sistema de archivos, el servidor pasará la solicitud a la siguiente regla.
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Se redirigen todas las solicitudes a index.php
+RewriteRule ^ index.php [QSA,L]

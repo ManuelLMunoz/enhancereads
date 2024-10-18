@@ -1,0 +1,25 @@
+document.addEventListener("DOMContentLoaded", () => {
+
+    // ------------------------------------------------------------
+    // Mostrar el formulario seleccionado y actualizar el historial
+    // ------------------------------------------------------------
+    const forms = ["add-book", "add-author", "add-genre"];
+
+    const updateForm = formName => {
+        forms.forEach(form => document.getElementById(form)?.classList.toggle("hidden", form !== formName));
+        document.querySelectorAll(".form-option").forEach(opt => opt.classList.toggle("active", opt.dataset.form === formName));
+        window.history.replaceState({ form: formName }, "", `/${formName}`);
+    };
+
+    document.querySelectorAll(".form-option").forEach(option =>
+        option.addEventListener("click", () => updateForm(option.dataset.form))
+    );
+
+    // Manejar el retroceso del navegador
+    window.addEventListener("popstate", event =>
+        updateForm(event.state?.form || "books")
+    );
+
+    // Inicializar el formulario basado en la URL
+    updateForm(window.location.pathname.substring(1) || "books");
+});

@@ -1,0 +1,196 @@
+/* ------------------ */
+/* Menú de navegación */
+/* ------------------ */
+.menu {
+  display: flex;
+  text-transform: uppercase;
+  background-color: rgba(193, 237, 255, 0.5);
+  user-select: none;
+}
+
+.menu ul {
+  display: flex;
+  list-style-type: none;
+}
+
+/* Se balancea el contenido */
+.menu ul.left,
+.menu ul.right {
+  flex: 1;
+}
+
+/* Contenido alineado a la derecha */
+.menu ul.right {
+  justify-content: flex-end;
+}
+
+/* Elementos del menú */
+.menu li a,
+.menu .dropbtn {
+  display: inline-block;
+  font-weight: bold;
+  padding: 15px;
+  text-decoration: none;
+}
+
+.menu li a:hover,
+.menu .dropbtn:hover,
+.menu .dropbtn.active {
+  background-color: rgba(193, 237, 255, 0.4);
+}
+
+/* ----------------------------------------------------- */
+/* Menú desplegable con los datos del usurio "Mi cuenta" */
+/* ----------------------------------------------------- */
+.menu .user-menu-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+}
+
+.menu .user-menu-content a {
+  display: block;
+  text-align: left;
+  width: 158px;
+
+  &:hover {
+    background-color: rgb(131, 220, 255, 0.5);
+  }
+}
+
+/* Se anula el hover sobre el nombre de usuario */
+.menu .user-menu-content a:first-child {
+  font-weight: 500;
+
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+.menu .account-info {
+  display: flex;
+}
+
+.menu .profile-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  margin-left: 10px;
+  /* Valores negativos para eliminar el margen de la imagen */
+  margin-top: -5px;
+  margin-bottom: -5px;
+}
+
+/* ----------------- */
+/* Responsive navbar */
+/* ----------------- */
+
+/* Icono del menú (Tres rayas horizontales) */
+#menu-icon {
+  /* Por defecto oculto */
+  display: none;
+  font-size: 24px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+@media only screen and (max-width: 1024px) {
+
+  .menu {
+    align-items: center;
+  }
+
+  /* Se ocultan los contenedores izquierdo y central */
+  .menu ul.left,
+  .menu ul.center {
+    display: none;
+  }
+
+  /* Se muestra el icono del menú */
+  #menu-icon {
+    display: block;
+  }
+
+  /* Estilos del menú desplegado */
+  .menu.show-menu ul.center {
+    flex-direction: column;
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    background-color: rgba(193, 237, 255, 1);
+    z-index: 10;
+    font-size: 1.5rem;
+    overflow: hidden;
+  }
+
+  /* Se quita el hover de los elementos */
+  .menu li a:hover {
+    background-color: transparent;
+  }
+}
+
+/* Elementos del menú desplegado alineados a la izquierda */
+.menu.show-menu ul.center {
+  display: flex;
+  align-items: flex-start;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/* -------------- */
+/* Modal de ayuda */
+/* -------------- */
+.help-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+}
+
+.help-modal-content {
+  margin: 10% auto;
+  padding: 20px;
+  background-color: white;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 5px;
+}
+
+.help-modal-content h2 {
+  padding: 10px 20px;
+}
+
+.close {
+  float: right;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 28px;
+  color: red;
+}
+
+/* Acordeón */
+
+/* Preguntas */
+.accordion-header {
+  cursor: pointer;
+  padding: 10px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  margin: 5px 0;
+
+  &:hover {
+    background-color: #dbdbdb;
+  }
+}
+
+/* Respuestas */
+.accordion-body {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-top: none;
+  text-transform: initial;
+}
