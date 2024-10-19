@@ -59,7 +59,7 @@ systemctl restart apache2
 
 # Configurar el proyecto y la base de datos
 progress_bar "Configurando proyecto y base de datos..."
-cp -R "$(pwd)/enhancereads" /var/www/
+mv -R "$(pwd)/enhancereads" /var/www/
 cd /var/www/enhancereads && composer update --no-interaction
 echo "127.0.0.1 www.enhancereads.com" >> /etc/hosts
 mysql -u root -pV1O=z6N^6=wv <<EOF

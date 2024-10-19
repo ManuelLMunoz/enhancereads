@@ -22,23 +22,20 @@ También se incluye un apartado de posts donde podéis **valorar y aportar conoc
 
 ## Instalación
 
-1. **Clonar el repositorio:**
+1. **Clonar el repositorio de GitHub:**
 
     ```bash
     git clone https://github.com/ManuelLMunoz/enhancereads.git
     ```
 
 2. **Ejecutar el script de bash "web.sh" para configurar el servidor web:**
+- Dicho script está adaptado a distribuciones GNU/Linux basadas en Debian / Ubuntu (En distros como CentOS o Fedora, algunos de los comandos y configuraciones pueden no ser compatibles y necesitarán ser adaptados)
 
     ```bash
-    composer install
+    . /enhancereads/linux/web.sh
     ```
 
-3. **Configurar el servidor web:**
-
-    - Configura tu servidor web para apuntar al directorio `public/` del proyecto.
-
-4. **Ejecutar la aplicación:**
+3. **Ejecutar la aplicación:**
 
     - Abre tu navegador y accede a `http://enhancereads.com/`.
 
