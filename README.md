@@ -37,7 +37,7 @@ También se incluye un apartado de posts donde podéis **valorar y aportar conoc
 
 3. **Ejecutar la aplicación:**
 
-    - Abre tu navegador y accede a `https://enhancereads.com/`.
+    - Abre tu navegador y accede a `https://www.enhancereads.com/`.
 
 ## Estructura del Proyecto
 
