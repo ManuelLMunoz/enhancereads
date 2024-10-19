@@ -12,7 +12,7 @@ class Connection
     private $host = "localhost";
     private $db_name = "enhancereads";
     private $username = "root";
-    private $password = "Vives2013";
+    private $password = "V1O=z6N^6=wv";
 
     // Variable para almacenar la conexión
     protected $connection;

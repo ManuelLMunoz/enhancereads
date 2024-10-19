@@ -1,11 +1,6 @@
 # Se habilita el motor de reescritura de URL
 RewriteEngine On
 
-#-----------------------------------------------------------
-# Se elimina la extensión de las URL
-# Para que funcione, en los ancores por ejemplo en lugar de <a href="index.php"> se pondrá <a href="index">
-#-----------------------------------------------------------
-
 # Eliminar la extensión .php
 RewriteCond %{REQUEST_FILENAME}.php -f
 RewriteRule ^(.*)$ $1.php [L]

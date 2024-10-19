@@ -25,10 +25,10 @@ También se incluye un apartado de posts donde podéis **valorar y aportar conoc
 1. **Clonar el repositorio:**
 
     ```bash
-    git clone https://github.com/tuusuario/enhancereads.git
+    git clone https://github.com/ManuelLMunoz/enhancereads.git
     ```
 
-2. **Instalar dependencias con Composer:**
+2. **Ejecutar el script de bash "web.sh" para configurar el servidor web:**
 
     ```bash
     composer install
@@ -40,7 +40,7 @@ También se incluye un apartado de posts donde podéis **valorar y aportar conoc
 
 4. **Ejecutar la aplicación:**
 
-    - Abre tu navegador y accede a `http://localhost/`.
+    - Abre tu navegador y accede a `http://enhancereads.com/`.
 
 ## Estructura del Proyecto
 
@@ -56,19 +56,10 @@ Este proyecto está organizado de la siguiente manera:
 - **composer.lock**: Archivo generado automáticamente por Composer que garantiza que las mismas versiones de dependencias se instalen en diferentes entornos.
 - **README.md**: Archivo de documentación del proyecto.
 
-## Contribuir
-
-1. Haz un fork del proyecto.
-2. Crea una nueva rama (`git checkout -b feature/nueva-funcionalidad`).
-3. Realiza los cambios necesarios y haz commit (`git commit -am 'Añadir nueva funcionalidad'`).
-4. Sube los cambios a tu repositorio (`git push origin feature/nueva-funcionalidad`).
-5. Abre un Pull Request en GitHub.
-
 ## Licencia
 
 Este proyecto está licenciado bajo la [MIT License](LICENSE.txt).
 
 ---
-
 
 **Desarrollado por Manuel Luis Muñoz Sánchez**
