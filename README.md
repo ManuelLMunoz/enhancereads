@@ -32,12 +32,12 @@ También se incluye un apartado de posts donde podéis **valorar y aportar conoc
 - Dicho script está adaptado a distribuciones GNU/Linux basadas en Debian / Ubuntu (En distros como CentOS o Fedora, algunos de los comandos y configuraciones pueden no ser compatibles y necesitarán ser adaptados)
 
     ```bash
-    . enhancereads/linux/web.sh
+    sudo bash enhancereads/linux/web.sh
     ```
 
 3. **Ejecutar la aplicación:**
 
-    - Abre tu navegador y accede a `http://enhancereads.com/`.
+    - Abre tu navegador y accede a `https://enhancereads.com/`.
 
 ## Estructura del Proyecto
 
