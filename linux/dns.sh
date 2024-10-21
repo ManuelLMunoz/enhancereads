@@ -43,7 +43,6 @@ cat <<EOF > /etc/bind/zones/db.enhancereads.com
 dns     IN      A       192.168.1.20
 mail    IN      A       192.168.1.15
 www     IN      A       192.168.1.15
-www     IN      CNAME   enhancereads.com.
 
 EOF
 
