@@ -37,7 +37,7 @@ if (!function_exists("renderComments")) {
                         </a>
                     </div>
                     <!-- El admin puede borrar todos los comentarios -->
-                <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
+                <?php elseif (isset($_SESSION["role"]) && $_SESSION["role"] === "admin") : ?>
                     <div class="manage-comments">
                         <a class="delete-comment-button" data-id="<?php echo htmlspecialchars($comment["id"]); ?>">
                             <i class="fa-solid fa-trash" title="Borrar"></i>

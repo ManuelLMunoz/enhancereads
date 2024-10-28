@@ -234,4 +234,41 @@ class PostController extends Controller
     {
         $this->toggleLike("comment");
     }
+
+    // -------------------------
+    // Gestión de notificaciones
+    // -------------------------
+    public function getNotifications()
+    {
+        session_start();
+        $userId = $_SESSION["id"] ?? null;
+
+        if ($userId) {
+            $notifications = (new Posts())->getNotifications($userId);
+            $response = ["success" => true, "notifications" => $notifications];
+        } else {
+            $response = ["success" => false, "notifications" => [], "error" => "Usuario no autenticado"];
+        }
+
+        echo json_encode($response);
+    }
+
+    public function markAllAsRead()
+    {
+        session_start();
+        $userId = $_SESSION["id"] ?? null;
+
+        if ($userId) {
+            $result = (new Posts())->markAllAsRead($userId);
+            $response = ["success" => $result];
+
+            if (!$result) {
+                $response["error"] = "No se pudieron marcar las notificaciones como leídas";
+            }
+        } else {
+            $response = ["success" => false, "error" => "Usuario no autenticado"];
+        }
+
+        echo json_encode($response);
+    }
 }

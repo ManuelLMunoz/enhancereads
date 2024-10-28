@@ -113,8 +113,8 @@ if ($_SESSION["role"] !== "admin") {
                 <label for="language"> Idioma
                     <i class="fas fa-language icon"></i>
                     <select id="language" name="language" required aria-label="Idioma">
-                        <option value="Español" <?php echo (htmlspecialchars($book["language"]) == 'Español') ? 'selected' : ''; ?>>Español</option>
-                        <option value="Inglés" <?php echo (htmlspecialchars($book["language"]) == 'Inglés') ? 'selected' : ''; ?>>Inglés</option>
+                        <option value="Español" <?php echo (htmlspecialchars($book["language"]) == "Español") ? "selected" : ""; ?>>Español</option>
+                        <option value="Inglés" <?php echo (htmlspecialchars($book["language"]) == "Inglés") ? "selected" : ""; ?>>Inglés</option>
                     </select>
                 </label>
 

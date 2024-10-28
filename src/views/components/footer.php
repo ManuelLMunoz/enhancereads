@@ -53,7 +53,7 @@
 
         <!-- Derechos de autor -->
         <div class="footer-bottom">
-            <p>Enhancereads<br>Copyright © All rights reserved <?php echo date('Y'); ?> </p>
+            <p>Enhancereads<br>Copyright © All rights reserved <?php echo date("Y"); ?> </p>
         </div>
 
     </footer>

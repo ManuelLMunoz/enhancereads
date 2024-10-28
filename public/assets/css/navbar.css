@@ -95,7 +95,6 @@
 }
 
 @media only screen and (max-width: 1024px) {
-
   .menu {
     align-items: center;
   }
@@ -173,6 +172,7 @@
 }
 
 /* Acordeón */
+/* ---------*/
 
 /* Preguntas */
 .accordion-header {
@@ -193,4 +193,89 @@
   border: 1px solid #ccc;
   border-top: none;
   text-transform: initial;
+}
+
+/* ---------------------- */
+/* Menú de Notificaciones */
+/* ---------------------- */
+.notifications {
+  cursor: pointer;
+  position: relative;
+}
+
+.notification-count {
+  position: absolute;
+  display: none;
+  top: 5px;
+  right: 5px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 5px;
+  font-size: 12px;
+}
+
+.notification-modal {
+  position: absolute;
+  display: none;
+  top: 52px;
+  right: 160px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 320px;
+  background-color: white;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  overflow-y: auto;
+  text-transform: initial;
+}
+
+@media (max-width: 768px) {
+  .notification-modal {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+  }
+}
+
+.modal-header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-header {
+  padding-bottom: 4px;
+}
+
+.notification-date {
+  font-size: 14px;
+}
+
+.notification-item {
+  display: flex;
+  text-align: left;
+  padding: 10px;
+  border-bottom: 1px solid #f1f1f1;
+  line-height: 1.2;
+
+  &:hover {
+    background-color: #f1f1f1;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-right: 10px;
+  align-self: center;
 }

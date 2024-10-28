@@ -24,12 +24,18 @@ function loadView($view)
 // Rutas de index
 //---------------
 foreach (["/", "index", "index.php"] as $route) {
-    Route::get($route, fn() => loadView('index'));
+    Route::get($route, fn() => loadView("index"));
 }
 
 foreach (["terms-of-use", "privacy-policy"] as $route) {
     Route::get($route, fn() => loadView($route));
 }
+
+//----------------------------
+// Rutas de las notificaciones
+//----------------------------
+Route::get("get-notifications", [PostController::class, "getNotifications"]);
+Route::post("mark-all-notifications-read", [PostController::class, "markAllAsRead"]);
 
 //-----------------
 // Rutas de account

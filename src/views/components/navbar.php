@@ -21,7 +21,7 @@ use Src\Controllers\GoogleController;
     <nav class="menu">
 
         <!-- Icono para desplegar el menú en dispositivos pequeños -->
-        <i id="menu-icon" class="fas fa-bars"></i>
+        <i id="menu-icon" class="fas fa-bars" title="Menú"></i>
 
         <!-- Vacío para alinear las otras opciones -->
         <ul class="left"></ul>
@@ -36,11 +36,11 @@ use Src\Controllers\GoogleController;
         <ul class="right">
 
             <!-- Modal de FAQ -->
-            <li><a href="#" id="open-modal">Ayuda <i class="fa-regular fa-circle-question"></i></a></li>
+            <li title="Ayuda"><a href="#" id="open-modal"> <i class="fa-regular fa-circle-question"></i></a></li>
 
             <div id="faq-modal" class="help-modal">
                 <div class="help-modal-content">
-                    <span class="close">&times;</span>
+                    <span class="close" title="Cerrar">&times;</span>
                     <h2>Preguntas Frecuentes</h2>
                     <div class="accordion">
                         <details class="accordion-item">
@@ -56,6 +56,28 @@ use Src\Controllers\GoogleController;
                             <div class="accordion-body">Por el momento, la web no cuenta con esa funcionalidad, pero estamos trabajando en ello 😉.</div>
                         </details>
                     </div>
+                </div>
+            </div>
+
+            <!-- Apartado de notificaciones (Solo disponible si el usuario ha iniciado sesión) -->
+            <?php
+            session_start();
+            if (isset($_SESSION["user"])): ?>
+                <li id="notifications" class="notifications">
+                    <a>
+                        <i title="Notificaciones" class="fa-regular fa-bell"></i>
+                        <span id="notification-count" class="notification-count"></span>
+                    </a>
+                </li>
+            <?php endif; ?>
+
+            <div id="notification-modal" class="notification-modal">
+                <div class="modal-header">
+                    <p>Notificaciones</p>
+                    <span id="mark-all-read" title="Marcar todo como leído"><i class="fa-solid fa-check"></i></span>
+                </div>
+                <div id="notification-list" class="notification-list">
+                    <!-- Las notificaciones se cargan dinámicamente -->
                 </div>
             </div>
 
@@ -100,6 +122,7 @@ use Src\Controllers\GoogleController;
             </li>
         </ul>
     </nav>
+
 </body>
 
 </html>

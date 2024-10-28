@@ -66,7 +66,7 @@ mysql -u root -pV1O=z6N^6=wv <<EOF
 CREATE DATABASE IF NOT EXISTS enhancereads;
 USE enhancereads;
 SOURCE /var/www/enhancereads/sql/enhancereads.sql;
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'V1O=z6N^6=wv';
+ALTER USER "root"@"localhost" IDENTIFIED WITH mysql_native_password BY "V1O=z6N^6=wv";
 FLUSH PRIVILEGES;
 EOF
 

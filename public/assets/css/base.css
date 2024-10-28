@@ -161,6 +161,12 @@ section#main {
     display: none;
 }
 
+.disabled {
+    pointer-events: none;
+    color: gray;
+    opacity: 0.6;
+  }
+  
 /* -----------------------------------------------------------------------  */
 /* Modal para confirmar el borrado de usuarios, libros, posts y comentarios */
 /* -----------------------------------------------------------------------  */

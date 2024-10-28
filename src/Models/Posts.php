@@ -112,7 +112,7 @@ class Posts extends Connection
             }
         }
 
-        return "Hace unos instantes";
+        return "Hace un momento";
     }
 
     // ---------
@@ -242,7 +242,36 @@ class Posts extends Connection
         try {
             $stmt = $this->connection->prepare($query);
             // Si el comentario es a nivel de post se inserta "null", y si es para responder otro comentario, el id del comentario padre
-            return $stmt->execute(["postId" => $postId, "userId" => $userId, "comment" => $comment, "parentCommentId" => $parentCommentId ?: null]);
+            $success = $stmt->execute([
+                "postId" => $postId,
+                "userId" => $userId,
+                "comment" => $comment,
+                "parentCommentId" => $parentCommentId ?: null
+            ]);
+
+            if ($success) {
+                // Notificar al creador del post o del comentario que ha recibido un nuevo comentario o respuesta
+                $recipientId = $parentCommentId ? $this->getOwnerId("post_comments", "user_id", $parentCommentId) : $this->getOwnerId("posts", "user", $postId);
+                if ($recipientId !== $userId) { // Evitar notificaciones a uno mismo
+                    // Definir el tipo de notificación
+                    $notificationType = $parentCommentId ? "reply" : "comment";
+
+                    $notificationParams = [
+                        "notifierId" => $userId,
+                        "recipientId" => $recipientId,
+                        "postId" => $parentCommentId ? $this->getPostIdByComment($parentCommentId) : $postId,
+                        "commentId" => $parentCommentId ?: null,
+                        "type" => $notificationType
+                    ];
+
+                    // Insertar notificación
+                    $queryNotification = "INSERT INTO notifications (notifier_id, recipient_id, post_id, comment_id, created_at, is_read, type) 
+                                           VALUES (:notifierId, :recipientId, :postId, :commentId, NOW(), 0, :type)";
+                    $this->connection->prepare($queryNotification)->execute($notificationParams);
+                }
+                return true;
+            }
+            return false;
         } catch (PDOException $e) {
             error_log("Error al insertar el comentario: " . $e->getMessage());
             return false;
@@ -271,12 +300,12 @@ class Posts extends Connection
             $commentIds = $stmtCommentIds->fetchAll(PDO::FETCH_COLUMN);
 
             // Eliminar likes asociados a todos los comentarios
-            $queryDeleteLikes = "DELETE FROM post_likes WHERE comment_id IN (" . implode(',', array_fill(0, count($commentIds), '?')) . ")";
+            $queryDeleteLikes = "DELETE FROM post_likes WHERE comment_id IN (" . implode(",", array_fill(0, count($commentIds), "?")) . ")";
             $stmtDeleteLikes = $this->connection->prepare($queryDeleteLikes);
             $stmtDeleteLikes->execute($commentIds);
 
             // Eliminar los comentarios
-            $queryDeleteComments = "DELETE FROM post_comments WHERE id IN (" . implode(',', array_fill(0, count($commentIds), '?')) . ")";
+            $queryDeleteComments = "DELETE FROM post_comments WHERE id IN (" . implode(",", array_fill(0, count($commentIds), "?")) . ")";
             $stmtDeleteComments = $this->connection->prepare($queryDeleteComments);
             $result = $stmtDeleteComments->execute($commentIds);
 
@@ -332,17 +361,44 @@ class Posts extends Connection
 
         // Se diferencia si el like es para un post o para un comentario
         $isPost = $type === "post";
-        $params = ["userId" => $userId, "postId" => $isPost ? $itemId : $this->getPostIdByComment($itemId), "commentId" => $isPost ? null : $itemId];
-        $query = "INSERT INTO post_likes (user_id, post_id, comment_id, created_at) VALUES (:userId, :postId, :commentId, NOW())";
+        $params = [
+            "userId" => $userId,
+            "postId" => $isPost ? $itemId : $this->getPostIdByComment($itemId),
+            "commentId" => $isPost ? null : $itemId
+        ];
+
+        $queryLike = "INSERT INTO post_likes (user_id, post_id, comment_id, created_at) VALUES (:userId, :postId, :commentId, NOW())";
 
         try {
-            return $this->connection->prepare($query)->execute($params);
+            $this->connection->beginTransaction();
+            $this->connection->prepare($queryLike)->execute($params);
+
+            // Obtener el ID del destinatario (propietario del post o comentario)
+            $recipientId = $isPost ? $this->getOwnerId("posts", "user", $itemId) : $this->getOwnerId("post_comments", "user_id", $itemId);
+
+            // Evitar notificaciones a uno mismo
+            if ($recipientId !== $userId) {
+                $notificationParams = [
+                    "notifierId" => $userId,
+                    "recipientId" => $recipientId,
+                    "postId" => $isPost ? $itemId : $this->getPostIdByComment($itemId),
+                    "commentId" => $isPost ? null : $itemId,
+                    "type" => "like"
+                ];
+
+                $queryNotification = "INSERT INTO notifications (notifier_id, recipient_id, post_id, comment_id, created_at, is_read, type) 
+                                       VALUES (:notifierId, :recipientId, :postId, :commentId, NOW(), 0, :type)";
+                $this->connection->prepare($queryNotification)->execute($notificationParams);
+            }
+
+            $this->connection->commit();
+            return true;
         } catch (PDOException $e) {
+            $this->connection->rollBack();
             error_log("Error al agregar el like: " . $e->getMessage());
             return false;
         }
     }
-
     private function removeLike($userId, $itemId, $type)
     {
         $isPost = $type === "post";
@@ -379,7 +435,7 @@ class Posts extends Connection
             $stmt->execute(["postId" => $postId]);
             return $stmt->fetchColumn();
         } catch (PDOException $e) {
-            error_log("Error al obtener la cantidad de likes del post: " . $e->getMessage());
+            error_log("Error al obtener la cantidad de likes del post " . $postId . ": " . $e->getMessage());
             return 0;
         }
     }
@@ -416,5 +472,61 @@ class Posts extends Connection
     public function unlikeComment($userId, $commentId)
     {
         return $this->removeLike($userId, $commentId, "comment");
+    }
+
+    // -----------------------------
+    // Gestión de las notificaciones
+    // -----------------------------
+    private function getOwnerId($table, $column, $id)
+    {
+        try {
+            $stmt = $this->connection->prepare("SELECT $column FROM $table WHERE id = :id");
+            $stmt->execute(["id" => $id]);
+            return $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            error_log("Error al obtener el propietario del post o comentario: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    public function getNotifications($userId)
+    {
+        $query = "SELECT n.*, u.user AS notifier, u.avatar AS notifier_avatar, 
+              CASE 
+                  WHEN n.type = 'reply' THEN (SELECT comment FROM post_comments WHERE id = n.comment_id) 
+                  WHEN n.post_id IS NOT NULL THEN (SELECT title FROM posts WHERE id = n.post_id) 
+                  ELSE (SELECT comment FROM post_comments WHERE id = n.comment_id) 
+              END AS content 
+              FROM notifications n 
+              JOIN users u ON n.notifier_id = u.id 
+              WHERE n.recipient_id = :userId AND n.is_read = 0 
+              ORDER BY n.created_at DESC";
+
+        try {
+            $stmt = $this->connection->prepare($query);
+            $stmt->execute(["userId" => $userId]);
+            $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Formateo de la fecha para cada notificación
+            foreach ($notifications as &$notification) {
+                $notification['formatted_date'] = $this->formatDateAgo($notification['created_at']);
+            }
+
+            return $notifications;
+        } catch (PDOException $e) {
+            error_log("Error al obtener las notificaciones del usuario " . $userId . ": " . $e->getMessage());
+            return [];
+        }
+    }
+    public function markAllAsRead($userId)
+    {
+        try {
+            $stmt = $this->connection->prepare("UPDATE notifications SET is_read = 1 WHERE recipient_id = :userId AND is_read = 0");
+            $stmt->execute(["userId" => $userId]);
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            error_log("Error al marcar notificaciones del usuario " . $userId . " como leídas: " . $e->getMessage());
+            return false;
+        }
     }
 }

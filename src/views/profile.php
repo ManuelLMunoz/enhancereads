@@ -52,13 +52,13 @@ if (!in_array($_SESSION["role"], $allowed_roles)) {
       <!-- Usuario -->
       <label for="user"> Usuario
         <i class="fas fa-user icon"></i>
-        <input type="text" id="user" name="user" value="<?php echo $_SESSION['user']; ?>" maxlength="50" required aria-label="Usuario" />
+        <input type="text" id="user" name="user" value="<?php echo $_SESSION["user"]; ?>" maxlength="50" required aria-label="Usuario" />
       </label>
 
       <!-- Email -->
       <label for="email"> Email
         <i class="fas fa-envelope icon"></i>
-        <input type="email" id="email" name="email" value="<?php echo $_SESSION['email']; ?>" maxlength="100" required aria-label="Correo" autocomplete="current-email" />
+        <input type="email" id="email" name="email" value="<?php echo $_SESSION["email"]; ?>" maxlength="100" required aria-label="Correo" autocomplete="current-email" />
       </label>
 
       <!-- Avatar -->
@@ -103,8 +103,8 @@ if (!in_array($_SESSION["role"], $allowed_roles)) {
       <button type="button" onclick="window.location.href='/'">Regresar</button>
 
       <!-- Borrado de la cuenta (Solo para usuarios) -->
-      <?php if ($_SESSION['role'] !== 'admin') : ?>
-        <p>Para borrar la cuenta, pulse <a href="#" id="delete-account" data-user-id="<?= $_SESSION['id'] ?>">aquí</a></p>
+      <?php if ($_SESSION["role"] !== "admin") : ?>
+        <p>Para borrar la cuenta, pulse <a href="#" id="delete-account" data-user-id="<?= $_SESSION["id"] ?>">aquí</a></p>
       <?php endif; ?>
 
     </form>

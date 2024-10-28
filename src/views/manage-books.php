@@ -28,7 +28,7 @@ $activeForm = $_POST["form_name"] ?? null;
   <script src="assets/js/manageBooks.js" type="module"></script>
   <script>
     // Pasar el valor de $activeForm a JS
-    const activeForm = '" . htmlspecialchars($activeForm) . "';
+    const activeForm = "' . htmlspecialchars($activeForm) . '";
   </script>
 
   <!-- Yearpicker para seleccionar el año en formato calendario (Requiere JQuery) -->
@@ -80,14 +80,14 @@ $activeForm = $_POST["form_name"] ?? null;
         <!-- Título -->
         <label for="title"> Título
           <i class="fas fa-book icon"></i>
-          <input id="title" type="text" name="title" required aria-label="Título" value="<?php echo isset($formData["title"]) ? htmlspecialchars($formData["title"]) : ''; ?>" />
+          <input id="title" type="text" name="title" required aria-label="Título" value="<?php echo isset($formData["title"]) ? htmlspecialchars($formData["title"]) : ""; ?>" />
         </label>
 
         <!-- Autor -->
         <label for="author"> Autor
           <i class="fas fa-user icon"></i>
-          <select id="author" name="author" required aria-label="Autor" data-selected="<?php echo isset($formData["author"]) ? $formData["author"] : 'null'; ?>">
-            <option value="" disabled <?php echo !isset($formData["author"]) ? 'selected' : ''; ?>>Seleccione una opción</option>
+          <select id="author" name="author" required aria-label="Autor" data-selected="<?php echo isset($formData["author"]) ? $formData["author"] : "null"; ?>">
+            <option value="" disabled <?php echo !isset($formData["author"]) ? "selected" : ""; ?>>Seleccione una opción</option>
             <!-- Obtenidos de forma dinámica de la BBDD -->
           </select>
         </label>
@@ -95,8 +95,8 @@ $activeForm = $_POST["form_name"] ?? null;
         <!-- Género -->
         <label for="genre"> Género
           <i class="fas fa-list-alt icon"></i>
-          <select id="genre" name="genre" required aria-label="Género" data-selected="<?php echo isset($formData["genre"]) ? $formData["genre"] : 'null'; ?>">
-            <option value="" disabled <?php echo !isset($formData["genre"]) ? 'selected' : ''; ?>>Seleccione una opción</option>
+          <select id="genre" name="genre" required aria-label="Género" data-selected="<?php echo isset($formData["genre"]) ? $formData["genre"] : "null"; ?>">
+            <option value="" disabled <?php echo !isset($formData["genre"]) ? "selected" : ""; ?>>Seleccione una opción</option>
             <!-- Obtenidos de forma dinámica de la BBDD -->
           </select>
         </label>
@@ -104,27 +104,27 @@ $activeForm = $_POST["form_name"] ?? null;
         <!-- Páginas -->
         <label for="pages"> Páginas
           <i class="fa-solid fa-book-open icon"></i>
-          <input id="pages" type="text" name="pages" required aria-label="Páginas" value="<?php echo isset($formData["pages"]) ? htmlspecialchars($formData["pages"]) : ''; ?>" />
+          <input id="pages" type="text" name="pages" required aria-label="Páginas" value="<?php echo isset($formData["pages"]) ? htmlspecialchars($formData["pages"]) : ""; ?>" />
         </label>
 
         <!-- Año -->
         <label for="year"> Año
           <i class="fas fa-calendar-alt icon"></i>
-          <input id="year" type="number" name="year" maxlength="4" required aria-label="Año" value="<?php echo isset($formData["year"]) ? htmlspecialchars($formData["year"]) : ''; ?>" />
+          <input id="year" type="number" name="year" maxlength="4" required aria-label="Año" value="<?php echo isset($formData["year"]) ? htmlspecialchars($formData["year"]) : ""; ?>" />
         </label>
 
         <!-- Enlace -->
         <label for="link"> Enlace
           <i class="fas fa-link icon"></i>
-          <input id="link" type="url" name="link" required aria-label="Enlace" value="<?php echo isset($formData["link"]) ? htmlspecialchars($formData["link"]) : ''; ?>" />
+          <input id="link" type="url" name="link" required aria-label="Enlace" value="<?php echo isset($formData["link"]) ? htmlspecialchars($formData["link"]) : ""; ?>" />
         </label>
 
         <!-- Idioma -->
         <label for="language"> Idioma
           <i class="fas fa-language icon"></i>
           <select id="language" name="language" required aria-label="Idioma">
-            <option value="Español" <?php echo (isset($formData["language"]) && $formData["language"] === "Español") ? 'selected' : ''; ?>>Español</option>
-            <option value="Inglés" <?php echo (isset($formData["language"]) && $formData["language"] === "Inglés") ? 'selected' : ''; ?>>Inglés</option>
+            <option value="Español" <?php echo (isset($formData["language"]) && $formData["language"] === "Español") ? "selected" : ""; ?>>Español</option>
+            <option value="Inglés" <?php echo (isset($formData["language"]) && $formData["language"] === "Inglés") ? "selected" : ""; ?>>Inglés</option>
           </select>
         </label>
 

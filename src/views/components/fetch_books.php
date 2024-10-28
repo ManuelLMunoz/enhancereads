@@ -11,7 +11,7 @@ if (session_status() === PHP_SESSION_NONE) {
         if (event.target.classList.contains("page-link") && !event.target.classList.contains("disabled")) {
             window.scrollTo({
                 top: 0,
-                behavior: 'instant' // Asegura que el scroll se realice de inmediato
+                behavior: "instant" // Asegura que el scroll se realice de inmediato
             });
         }
     });

@@ -77,7 +77,7 @@ class Users extends Connection
             }
             // Se borra el usuario
             $stmt = $this->connection->prepare("DELETE FROM users WHERE id = :id");
-            return $stmt->execute(['id' => $id]);
+            return $stmt->execute(["id" => $id]);
         } catch (PDOException $e) {
             error_log("Error al borrar el usuario: " . $e->getMessage());
             return false;
