@@ -25,5 +25,8 @@
         {
             "name": "Manuel Luis Muñoz Sanchez"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "*"
+    }
 }

@@ -68,7 +68,8 @@ $activeForm = $_POST["form_name"] ?? null;
       <h1 id="form-title"> Agregar <br>
         <span class="form-option" data-form="add-book">Libro</span> |
         <span class="form-option" data-form="add-author">Autor</span> |
-        <span class="form-option" data-form="add-genre">Género</span>
+        <span class="form-option" data-form="add-genre">Género</span> |
+        <span class="form-option" data-form="add-publisher">Editorial</span>
       </h1>
 
       <!-- ---------------------------------------------------------------------------------- -->
@@ -101,22 +102,25 @@ $activeForm = $_POST["form_name"] ?? null;
           </select>
         </label>
 
+        <!-- Editorial -->
+        <label for="publisher"> Editorial
+          <i class="fas fa-book-open icon"></i>
+          <select id="publisher" name="publisher" required aria-label="Editorial" data-selected="<?php echo isset($formData["publisher"]) ? $formData["publisher"] : "null"; ?>">
+            <option value="" disabled <?php echo !isset($formData["publisher"]) ? "selected" : ""; ?>>Seleccione una opción</option>
+            <!-- Obtenidos de forma dinámica de la BBDD -->
+          </select>
+        </label>
+
         <!-- Páginas -->
         <label for="pages"> Páginas
           <i class="fa-solid fa-book-open icon"></i>
-          <input id="pages" type="text" name="pages" required aria-label="Páginas" value="<?php echo isset($formData["pages"]) ? htmlspecialchars($formData["pages"]) : ""; ?>" />
+          <input id="pages" type="number" name="pages" required aria-label="Páginas" value="<?php echo isset($formData["pages"]) ? htmlspecialchars($formData["pages"]) : ""; ?>" />
         </label>
 
         <!-- Año -->
         <label for="year"> Año
           <i class="fas fa-calendar-alt icon"></i>
           <input id="year" type="number" name="year" maxlength="4" required aria-label="Año" value="<?php echo isset($formData["year"]) ? htmlspecialchars($formData["year"]) : ""; ?>" />
-        </label>
-
-        <!-- Enlace -->
-        <label for="link"> Enlace
-          <i class="fas fa-link icon"></i>
-          <input id="link" type="url" name="link" required aria-label="Enlace" value="<?php echo isset($formData["link"]) ? htmlspecialchars($formData["link"]) : ""; ?>" />
         </label>
 
         <!-- Idioma -->
@@ -128,11 +132,34 @@ $activeForm = $_POST["form_name"] ?? null;
           </select>
         </label>
 
+        <!-- ISBN -->
+        <label for="isbn"> ISBN
+          <i class="fas fa-barcode icon"></i>
+          <input id="isbn" type="text" name="isbn" required aria-label="isbn" value="<?php echo isset($formData["isbn"]) ? htmlspecialchars($formData["isbn"]) : ""; ?>" maxlength="13" />
+        </label>
+
         <!-- Portada -->
         <label for="cover"> Portada
           <i class="fas fa-image icon"></i>
           <input id="cover" type="file" name="cover" required aria-label="Portada" accept="image/*" />
         </label>
+
+        <!-- Descripción -->
+        <label for="description">Descripción
+          <textarea id="description" name="description" required aria-label="Descripción"><?php echo isset($formData['description']) ? htmlspecialchars($formData['description']) : ''; ?></textarea>
+        </label>
+
+        <!-- Enlaces -->
+        <label for="links">Enlaces</label>
+        <div id="links-container">
+          <div class="link-input">
+            <div class="remove-link-icon-container">
+              <i class="fas fa-trash-alt remove-link-icon"></i>
+            </div>
+            <input type="url" name="links[]" required placeholder="Ingresa un enlace">
+          </div>
+        </div>
+        <a href="#" id="add-link">Agregar enlace</a>
 
         <!-- Mensajes de error / success -->
         <?php if ($activeForm === "add-book" && isset($error)) : ?>
@@ -143,7 +170,7 @@ $activeForm = $_POST["form_name"] ?? null;
           <div class="message success"><?php echo htmlspecialchars($success); ?></div>
         <?php endif; ?>
 
-        <button type="submit">Agregar</button>
+        <button type="submit" style="margin-top: 15px;">Agregar</button>
         <button type="button" onclick="window.location.href='/books'">Regresar</button>
 
       </form>
@@ -155,9 +182,9 @@ $activeForm = $_POST["form_name"] ?? null;
         <input type="hidden" name="form_name" value="add-author">
 
         <!-- Autor -->
-        <label for="new-author"> Nombre
+        <label for="new-author"> Nombre del autor
           <i class="fas fa-user icon"></i>
-          <input type="text" id="new-author" name="new_author" required aria-label="Nombre del Autor" />
+          <input type="text" id="new-author" name="new_author" required aria-label="Nombre del autor" />
         </label>
 
         <!-- Mensajes de error / success -->
@@ -181,9 +208,9 @@ $activeForm = $_POST["form_name"] ?? null;
         <input type="hidden" name="form_name" value="add-genre">
 
         <!-- Género -->
-        <label for="new-genre"> Nombre
+        <label for="new-genre"> Nombre del género
           <i class="fas fa-list-alt icon"></i>
-          <input type="text" id="new-genre" name="new_genre" required aria-label="Nombre del Autor" />
+          <input type="text" id="new-genre" name="new_genre" required aria-label="Nombre del género" />
         </label>
 
         <!-- Mensajes de error / success -->
@@ -192,6 +219,32 @@ $activeForm = $_POST["form_name"] ?? null;
         <?php endif; ?>
 
         <?php if ($activeForm === "add-genre" && isset($success)) : ?>
+          <div class="message success"><?php echo htmlspecialchars($success); ?></div>
+        <?php endif; ?>
+
+        <button type="submit">Agregar</button>
+        <button type="button" onclick="window.location.href='/books'">Regresar</button>
+
+      </form>
+
+      <!-- ----------------------------------- -->
+      <!-- Formulario para agregar editoriales -->
+      <!-- ----------------------------------- -->
+      <form id="add-publisher" data-form="add-publisher" class="<?php echo $activeForm === "add-publisher" ? "" : "hidden"; ?>" action="/add-publisher" method="POST">
+        <input type="hidden" name="form_name" value="add-publisher">
+
+        <!-- Editorial -->
+        <label for="new-publisher"> Nombre de la editorial
+          <i class="fas fa-book-open icon"></i>
+          <input type="text" id="new-publisher" name="new_publisher" required aria-label="Nombre de la editorial" />
+        </label>
+
+        <!-- Mensajes de error / success -->
+        <?php if ($activeForm === "add-publisher" && isset($error)) : ?>
+          <div class="message error"><?php echo htmlspecialchars($error); ?></div>
+        <?php endif; ?>
+
+        <?php if ($activeForm === "add-publisher" && isset($success)) : ?>
           <div class="message success"><?php echo htmlspecialchars($success); ?></div>
         <?php endif; ?>
 

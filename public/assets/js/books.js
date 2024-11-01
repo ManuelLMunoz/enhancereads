@@ -3,12 +3,12 @@ $(document).ready(function () {
     // -----------------------------------------------------------------------------------------------
     // Cargar los autores y géneros desde el servidor en los formularios de agregar y modificar libros
     // -----------------------------------------------------------------------------------------------
-    const loadAuthorsAndGenres = (selectedAuthor, selectedGenre) => {
-        $.post("fetch-authors-and-genres", ({ success, authors, genres }) => {
+    const loadAuthorsGenresAndPublishers = (selectedAuthor, selectedGenre, selectedPublisher) => {
+        $.post("fetch-authors-and-genres", ({ success, authors, genres, publishers }) => {
             if (success) {
                 // Actualizar los selectores con las opciones recibidas
-                ["#author", "#genre"].forEach((selector, index) =>
-                    populateSelect(selector, [authors, genres][index], [selectedAuthor, selectedGenre][index])
+                ["#author", "#genre", "#publisher"].forEach((selector, index) =>
+                    populateSelect(selector, [authors, genres, publishers][index], [selectedAuthor, selectedGenre, selectedPublisher][index])
                 );
             }
         }, "json").fail((_, status) => console.error(`Error AJAX: ${status}`));
@@ -27,7 +27,8 @@ $(document).ready(function () {
     // Obtener los valores seleccionados
     const selectedAuthor = $("#author").data("selected");
     const selectedGenre = $("#genre").data("selected");
-    loadAuthorsAndGenres(selectedAuthor, selectedGenre);
+    const selectedPublisher = $("#publisher").data("selected");
+    loadAuthorsGenresAndPublishers(selectedAuthor, selectedGenre, selectedPublisher);
 
     // --------------------------------------------
     // Borrar libros de forma dinámica sin recargar
@@ -106,4 +107,49 @@ $("#edit-books").submit(async (event) => {
 const showMessage = (success, message) => {
     const msg = $(`.message.${success ? "success" : "error"}`);
     msg.text(message).fadeIn().delay(3000).fadeOut();
+};
+
+// --------------------------------
+// Ampliar la descripción del libro
+// --------------------------------
+const toggleDescription = (button) => {
+    const description = document.getElementById("description");
+    description.classList.toggle("expanded");
+    button.textContent = description.classList.contains("expanded") ? "Ver menos" : "Ver más";
+};
+
+// ---------------------------------------
+// Ampliar la imagen al hacer clic en ella
+// ---------------------------------------
+document.addEventListener("click", ({ target }) => {
+    const modal = document.getElementById("image-modal");
+
+    if (target.classList.contains("book-cover")) {
+        modal.querySelector("img").src = target.src;
+        modal.style.display = "flex";
+    } else if (target.matches(".close-button, #image-modal")) {
+        modal.style.display = "none";
+    }
+});
+
+// ---------------------------------------------------------------------------
+// Agregar inputs para los enlaces en los formularios de crear y editar libros
+// ---------------------------------------------------------------------------
+const container = document.getElementById("links-container");
+document.getElementById("add-link").onclick = (event) => {
+    event.preventDefault();
+    // Agregar un nuevo input dentro del contenedor de enlaces
+    container.insertAdjacentHTML("beforeend",
+        `<div class="link-input">
+        <div class="remove-link-icon-container">
+            <i class="fas fa-trash-alt remove-link-icon"></i>
+        </div>
+        <input type="url" name="links[]" required placeholder="Ingresa un enlace">
+    </div>`);
+};
+// Borrar del contenedor el input seleccionado
+container.onclick = (event) => {
+    if (event.target.classList.contains("remove-link-icon")) {
+        event.target.closest(".link-input").remove();
+    }
 };

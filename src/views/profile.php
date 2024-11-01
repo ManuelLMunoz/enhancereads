@@ -100,7 +100,7 @@ if (!in_array($_SESSION["role"], $allowed_roles)) {
       <?php endif; ?>
 
       <button type="submit" style="margin-top: 15px;">Aceptar</button>
-      <button type="button" onclick="window.location.href='/'">Regresar</button>
+      <button type="button" onclick="window.history.back()">Regresar</button>
 
       <!-- Borrado de la cuenta (Solo para usuarios) -->
       <?php if ($_SESSION["role"] !== "admin") : ?>

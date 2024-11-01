@@ -25,8 +25,8 @@ if (session_status() === PHP_SESSION_NONE) {
             <!-- Información del libro -->
             <div class="book-info">
 
-                <!-- Enlace de compra a Amazon -->
-                <a href="<?php echo ($book["link"]); ?>" target="_blank">
+                <!-- Enlace para los detalles del libro -->
+                <a href="books/<?php echo $book["id"]; ?>/<?php echo $this->sanitizeTitle($book["title"]); ?>">
                     <img src="assets/img/books/<?php echo $book["cover"]; ?>" alt="Portada del libro">
                 </a>
 
@@ -46,9 +46,8 @@ if (session_status() === PHP_SESSION_NONE) {
                 <p id="title"><?php echo $book["title"]; ?></p>
                 <p><strong>Autor:</strong> <?php echo $book["author_name"]; ?></p>
                 <p><strong>Género:</strong> <?php echo $book["genre_name"]; ?></p>
+                <p><?php echo !empty($book["publisher_name"]) ? "<strong>Editorial:</strong> " . $book["publisher_name"] : ""; ?></p>
                 <p><strong>Idioma:</strong> <?php echo $book["language"]; ?></p>
-                <p><strong>Año:</strong> <?php echo $book["year"]; ?></p>
-                <p><strong>Páginas:</strong> <?php echo $book["pages"]; ?></p>
             </div>
 
         <?php endforeach; ?>

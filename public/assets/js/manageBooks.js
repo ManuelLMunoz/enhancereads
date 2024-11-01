@@ -3,8 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // ------------------------------------------------------------
     // Mostrar el formulario seleccionado y actualizar el historial
     // ------------------------------------------------------------
-    const forms = ["add-book", "add-author", "add-genre"];
+    const forms = ["add-book", "add-author", "add-genre", "add-publisher"];
 
+    // Cargar el formulario seleccionado y resaltar la opción sin recargar la página
     const updateForm = formName => {
         forms.forEach(form => document.getElementById(form)?.classList.toggle("hidden", form !== formName));
         document.querySelectorAll(".form-option").forEach(opt => opt.classList.toggle("active", opt.dataset.form === formName));

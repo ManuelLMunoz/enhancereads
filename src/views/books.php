@@ -64,6 +64,11 @@
                 </div>
 
                 <div class="filter-option">
+                    <label for="publisher">Editorial</label>
+                    <div id="publisher-filter"></div>
+                </div>
+
+                <div class="filter-option">
                     <label for="language">Idioma</label>
                     <div id="language-filter"></div>
                 </div>

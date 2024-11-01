@@ -3,7 +3,7 @@
 // Autocarga de las clases
 require_once "../vendor/autoload.php";
 
-// Clases necesarias
+// Clases
 use Lib\Route;
 use Src\Controllers\{
     GoogleController,
@@ -12,9 +12,9 @@ use Src\Controllers\{
     PostController
 };
 
-//---------------
+//---------------------------
 // Función para cargar vistas
-//---------------
+//---------------------------
 function loadView($view)
 {
     require_once "../src/views/{$view}.php";
@@ -79,20 +79,24 @@ foreach (["books", "books.php"] as $route) {
 }
 Route::get("books/page={page}", [BooksController::class, "books"]);
 
+// Detalles de un libro
+Route::get("books/{id}/{title}", [BooksController::class, "viewBookDetails"]);
+
 // Administración de libros
 Route::get("manage-books", [BooksController::class, "manageBook"]);
-foreach (["add-book", "add-author", "add-genre"] as $route) {
+foreach (["add-book", "add-author", "add-genre", "add-publisher"] as $route) {
     Route::get($route, fn() => header("Location: /manage-books") && exit());
 }
 
 // Gestión de libros
 Route::post("fetch-books", [BooksController::class, "fetchBooks"]);
-Route::post("fetch-authors-and-genres", [BooksController::class, "fetchAuthorsAndGenres"]);
+Route::post("fetch-authors-and-genres", [BooksController::class, "fetchAuthorsGenresAndPublishers"]);
 Route::get("edit-books/{id}", [BooksController::class, "editBooks"]);
 Route::post("update-book", [BooksController::class, "updateBook"]);
 Route::post("add-book", [BooksController::class, "addBook"]);
 Route::post("add-author", [BooksController::class, "addAuthor"]);
 Route::post("add-genre", [BooksController::class, "addGenre"]);
+Route::post("add-publisher", [BooksController::class, "addPublisher"]);
 Route::post("delete-book/{id}", [BooksController::class, "deleteBook"]);
 
 //---------------

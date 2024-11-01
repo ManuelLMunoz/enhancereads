@@ -8,7 +8,7 @@ $(document).ready(() => {
     let order = defaultOrder;
 
     const $search = $("#search"), $liked = $("#liked");
-    const filtersExpanded = { "#author-filter": false, "#genre-filter": false, "#language-filter": false };
+    const filtersExpanded = { "#author-filter": false, "#genre-filter": false, "#language-filter": false, "publisher-filter": false };
 
     // ------------------------------------------------------------------------
     // Cargar los datos y actualizar la vista según los filtros y la paginación
@@ -19,6 +19,7 @@ $(document).ready(() => {
             query: $search.val(),
             author: context === "books" ? $("#author-filter input:checked").map((_, el) => el.value).get() : [],
             genre: $("#genre-filter input:checked").map((_, el) => el.value).get(),
+            publisher: $("#publisher-filter input:checked").map((_, el) => el.value).get(),
             language: $("#language-filter input:checked").map((_, el) => el.value).get(),
             year: context === "books" ? $("#year").val() : null,
             pages: $("#pages").val(),
@@ -39,6 +40,7 @@ $(document).ready(() => {
             updateFilterOptions("#author-filter", response.filters.authors, "name", filters.author);
             updateFilterOptions("#year", response.filters.years, "year", filters.year);
             updateFilterOptions("#genre-filter", response.filters.genres, "name", filters.genre);
+            updateFilterOptions("#publisher-filter", response.filters.publishers, "name", filters.publisher);
             updateFilterOptions("#language-filter", response.filters.languages, "language", filters.language);
             updateFilterOptions("#pages", response.filters.pages, "pages", filters.pages);
             context === "posts" && updateFilterOptions("#words", response.filters.words, "words", filters.words);
@@ -78,7 +80,7 @@ $(document).ready(() => {
     }
 
     // Eventos para las diferentes acciones de usuario
-    $("#limitSelect, #year, #pages, #words, #author-filter, #genre-filter, #language-filter, #search, #liked").on("change input", () => load_data(1));
+    $("#limitSelect, #year, #pages, #words, #author-filter, #genre-filter, #publisher-filter, #language-filter, #search, #liked").on("change input", () => load_data(1));
     $(document).on("click", ".page-link", function () { load_data($(this).data("page")); });
 
     // Limpiar filtros

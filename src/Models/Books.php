@@ -23,6 +23,7 @@ class Books extends Connection
             $filters = [
                 "author" => ["field" => "a.id", "values" => $params["author"] ?? []],
                 "genre" => ["field" => "g.id", "values" => $params["genre"] ?? []],
+                "publisher" => ["field" => "p.id", "values" => $params["publisher"] ?? []], // Publisher filter added
                 "language" => ["field" => "b.language", "values" => $params["language"] ?? []],
                 "pages" => ["field" => "b.pages", "values" => $params["pages"] ?? null]
             ];
@@ -48,11 +49,12 @@ class Books extends Connection
             $filterQuery = !empty($filterClauses) ? "AND " . implode(" AND ", $filterClauses) : "";
 
             // Consulta base común para libros y conteo total
-            $baseQuery = "FROM books b LEFT JOIN authors a ON b.author = a.id LEFT JOIN genres g ON b.genre = g.id WHERE (b.title LIKE ? OR a.name LIKE ?) $filterQuery";
+            $baseQuery = "FROM books b LEFT JOIN authors a ON b.author = a.id LEFT JOIN genres g ON b.genre = g.id 
+            LEFT JOIN publishers p ON b.publisher = p.id  WHERE (b.title LIKE ? OR a.name LIKE ?) $filterQuery";
 
             // Consulta para obtener los libros
-            $booksQuery = "SELECT b.id, b.title, b.pages, b.year, b.cover, b.link, b.language, a.name as author_name, g.name as genre_name 
-                           $baseQuery ORDER BY b.title $order LIMIT ? OFFSET ?";
+            $booksQuery = "SELECT b.id, b.title, b.pages, b.year, b.cover, b.link, b.language, a.name as author_name, 
+            g.name as genre_name, p.name as publisher_name $baseQuery ORDER BY b.title $order LIMIT ? OFFSET ?";
 
             $stmt = $this->connection->prepare($booksQuery);
             $params = array_merge([$search, $search], $filterValues, [$limit, $offset]);
@@ -111,6 +113,20 @@ class Books extends Connection
         return $this->connection->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getPublishers()
+    {
+        $query = "SELECT DISTINCT p.id, p.name FROM publishers p JOIN books b ON p.id = b.publisher ORDER BY p.name";
+        return $this->connection->query($query)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Todas las editoriales
+    public function getAllPublishers()
+    {
+        $query = "SELECT DISTINCT id, name FROM publishers ORDER BY name";
+        return $this->connection->query($query)->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
     // Todos los idiomas
     public function getLanguages()
     {
@@ -148,13 +164,19 @@ class Books extends Connection
         return $this->addRecord("genres", $name);
     }
 
-    public function addBook($title, $authorId, $genreId, $pages, $year, $cover, $link, $language)
+    public function addPublisher($name)
     {
-        $query = "INSERT INTO books (title, author, genre, pages, year, cover, link, language) 
-                  VALUES (:title, :authorId, :genreId, :pages, :year, :cover, :link, :language)";
+        return $this->addRecord("publishers", $name);
+    }
+
+
+    public function addBook($title, $authorId, $genreId, $publisher, $pages, $year, $cover, $link, $language, $description, $isbn)
+    {
+        $query = "INSERT INTO books (title, author, genre, publisher, pages, year, cover, link, language, description, isbn) 
+                  VALUES (:title, :authorId, :genreId, :publisher, :pages, :year, :cover, :link, :language , :description, :isbn)";
         try {
             $stmt = $this->connection->prepare($query);
-            $stmt->execute(compact("title", "authorId", "genreId", "pages", "year", "cover", "link", "language"));
+            $stmt->execute(compact("title", "authorId", "genreId", "publisher", "pages", "year", "cover", "link", "language", "description", "isbn"));
             return ["id" => $this->connection->lastInsertId()];
         } catch (PDOException $e) {
             error_log("Error al agregar libro: " . $e->getMessage());
@@ -167,19 +189,20 @@ class Books extends Connection
     // -----------------
     public function getBookById($id)
     {
-        $query = "SELECT b.id, b.title, b.pages, b.year, b.cover, b.link, b.language, a.id as author, a.name as author_name, b.genre
-                  FROM books b LEFT JOIN authors a ON b.author = a.id WHERE b.id = ? GROUP BY b.id";
+        $query = "SELECT b.*, a.name AS author_name, g.name AS genre_name, p.name AS publisher_name FROM books b LEFT JOIN authors a ON b.author = a.id 
+        LEFT JOIN genres g ON b.genre = g.id LEFT JOIN publishers p ON b.publisher = p.id WHERE b.id = ?";
         $stmt = $this->connection->prepare($query);
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function updateBook($id, $title, $author, $genre, $pages, $year, $cover, $link, $language)
+    public function updateBook($id, $title, $author, $genre, $publisher, $pages, $year, $cover, $link, $language, $description, $isbn)
     {
         try {
-            $query = "UPDATE books SET title = :title, author = :author, genre = :genre,  pages = :pages, year = :year, cover = :cover, link = :link, language = :language WHERE id = :id";
+            $query = "UPDATE books SET title = :title, author = :author, genre = :genre, publisher = :publisher, pages = :pages, year = :year, 
+            cover = :cover, link = :link, language = :language, description = :description, isbn = :isbn WHERE id = :id";
             $stmt = $this->connection->prepare($query);
-            $stmt->execute(compact("title", "author", "genre", "pages", "year", "cover", "link", "language", "id"));
+            $stmt->execute(compact("title", "author", "genre", "publisher", "pages", "year", "cover", "link", "language", "description", "isbn", "id"));
             return $stmt->rowCount() > 0; // Devuelve true si se actualizaron filas
         } catch (PDOException $e) {
             error_log("Error al actualizar el libro: " . $e->getMessage());

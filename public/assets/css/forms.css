@@ -3,140 +3,171 @@
 
 /* Sección principal */
 section#main {
-    height: 100vh;
-    height: 100dvh;
-    padding-top: 30px;
-    overflow-y: auto;
-    background: linear-gradient(rgba(182, 242, 134, 0.3), rgba(153, 180, 235, 0.5)), url("../img/aurora.webp") no-repeat center center / cover;
+  height: 100vh;
+  height: 100dvh;
+  padding-top: 30px;
+  overflow-y: auto;
+  background: linear-gradient(
+      rgba(182, 242, 134, 0.3),
+      rgba(153, 180, 235, 0.5)
+    ),
+    url("../img/aurora.webp") no-repeat center center / cover;
 }
 
 /* ----------- */
 /* Formularios */
 /* ----------- */
 .form {
-    max-width: 320px;
-    margin: 0 auto 60px;
-    padding: 1rem;
-    background-color: rgba(193, 237, 255, 0.5);
-    border-radius: 5px;
-    /* Borde sombreado */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  max-width: 370px;
+  margin: 0 auto 60px;
+  padding: 1rem;
+  background-color: rgba(193, 237, 255, 0.5);
+  border-radius: 5px;
+  /* Borde sombreado */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .form h1 {
-    padding-bottom: 30px;
-    text-transform: uppercase;
+  padding-bottom: 30px;
+  text-transform: uppercase;
 }
 
 .form p,
 .form a {
-    padding: 5px 0;
-    font-size: 1.1rem;
-    font-weight: bold;
+  padding: 5px 0;
+  font-size: 1.1rem;
+  font-weight: bold;
 }
 
 /* Campos del formulario */
 .form input,
-.form select {
-    width: 100%;
-    background: transparent;
-    font-size: 1.1rem;
-    border-bottom: 2px solid black;
-    flex: 1;
-    /* Espacio a la izquierda para evitar escribir encima del icono */
-    padding: 10px 10px 10px 40px;
-    box-sizing: border-box;
+.form select,
+input[type="url"] {
+  width: 100%;
+  background: transparent;
+  font-size: 1.1rem;
+  border-bottom: 2px solid black;
+  flex: 1;
+  /* Espacio a la izquierda para evitar escribir encima del icono */
+  padding: 10px 10px 10px 40px;
+  box-sizing: border-box;
+}
+
+input::placeholder {
+  color: black;
 }
 
 .form input[type="file"] {
-    font-size: 0.9rem;
+  font-size: 0.9rem;
+}
+
+.form textarea {
+  margin-top: 5px;
+  padding: 10px;
+  height: 200px;
+  width: 100%;
+  resize: none;
+  border: 1px solid black;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.link-input {
+  position: relative;
+  margin-bottom: 5px;
 }
 
 /* Etiquetas de los campos */
 .form label {
-    display: block;
-    align-items: center;
-    margin-bottom: 15px;
-    position: relative;
-    text-transform: uppercase;
-    font-weight: bold;
+  display: block;
+  align-items: center;
+  margin-bottom: 15px;
+  position: relative;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 /* Iconos de los campos */
-.form label .icon {
-    position: absolute;
-    left: 10px;
-    /* Ajusta el icono verticalmente */
-    top: 50%;
-    font-size: 18px;
+.form label .icon,
+.remove-link-icon-container {
+  position: absolute;
+  left: 10px;
+  /* Ajusta el icono verticalmente */
+  top: 50%;
+  font-size: 18px;
+}
+
+.remove-link-icon-container {
+  transform: translateY(-50%);
+  cursor: pointer;
 }
 
 /* Botones del formulario */
 /* ---------------------- */
 .form button,
 .form .google-button {
-    margin: 5px 0;
-    padding: 10px;
-    cursor: pointer;
-    width: 100%;
-    color: white;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-    box-sizing: border-box;
+  margin: 5px 0;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+  color: white;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  box-sizing: border-box;
 
-    &:hover {
-        background-color: rgba(0, 0, 0, 0.9);
-    }
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+  }
 }
 
 /* Botón de Google */
 .google-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
 }
 
 .google-icon {
-    width: 18px;
-    height: 18px;
-    margin-right: 8px;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
 }
 
 /* Formulario 2FA para el usuario admin */
 /* ------------------------------------ */
 .OTP {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .OTP img {
-    width: 100%;
-    max-width: 220px;
-    height: auto;
-    margin: 20px 0;
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  margin: 20px 0;
 }
 
 .OTP input {
-    padding: 0;
-    text-align: center;
-    margin-top: 20px;
-    width: 50%;
+  padding: 0;
+  text-align: center;
+  margin-top: 20px;
+  width: 50%;
 }
 
 /* Estilos para los formularios de "manage-books" */
 /* --------------------------------------------- */
 .hidden {
-    display: none;
+  display: none;
 }
 
 .form-option {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .form-option.active {
-    border-bottom: 2px solid black;
+  border-bottom: 2px solid black;
 }

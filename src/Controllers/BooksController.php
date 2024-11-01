@@ -31,6 +31,7 @@ class BooksController extends Controller
             "page" => max(1, intval($_POST["page"] ?? 1)),
             "author" => $_POST["author"] ?? [],
             "genre" => $_POST["genre"] ?? [],
+            "publisher" => $_POST["publisher"] ?? [],
             "language" => $_POST["language"] ?? [],
             "year" => $_POST["year"] ?? "",
             "pages" => $_POST["pages"] ?? ""
@@ -57,6 +58,7 @@ class BooksController extends Controller
             "filters" => [
                 "authors" => (new Books())->getAuthors(),
                 "genres" => (new Books())->getGenres(),
+                "publishers" => (new Books())->getPublishers(),
                 "languages" => (new Books())->getLanguages(),
                 "pages" => ["50", "100", "200", "500"]
             ],
@@ -70,12 +72,13 @@ class BooksController extends Controller
         ]);
     }
 
-    public function fetchAuthorsAndGenres()
+    public function fetchAuthorsGenresAndPublishers()
     {
         echo json_encode([
             "success" => true,
             "authors" => (new Books())->getAllAuthors(),
-            "genres" => (new Books())->getAllGenres()
+            "genres" => (new Books())->getAllGenres(),
+            "publishers" => (new Books())->getAllPublishers()
         ]);
     }
 
@@ -128,11 +131,14 @@ class BooksController extends Controller
             $formData["title"],
             $formData["author"],
             $formData["genre"],
+            $formData["publisher"],
             $formData["pages"],
             $formData["year"],
             null,
             $formData["link"],
-            $formData["language"]
+            $formData["language"],
+            $formData["description"],
+            $formData["isbn"]
         );
 
         if (!$book) {
@@ -171,6 +177,13 @@ class BooksController extends Controller
         return $this->view("manage-books",  $genre ? ["success" => "Género agregado exitosamente"] : ["error" => "El género ya existe"]);
     }
 
+    public function addPublisher()
+    {
+        $publisher = (new Books())->addPublisher($_POST["new_publisher"]);
+        return $this->view("manage-books",  $publisher ? ["success" => "Editorial agregada exitosamente"] : ["error" => "La editorial ya existe"]);
+    }
+
+
     // --------------------------
     // Editar y actualizar libros
     // --------------------------
@@ -181,13 +194,14 @@ class BooksController extends Controller
         // Obtener todos los autores y géneros
         $authors = (new Books())->getAuthors();
         $genres = (new Books())->getGenres();
+        $publishers = (new Books())->getPublishers();
 
         if (!$book) {
             header("Location: /");
             exit();
         }
 
-        return $this->view("edit-books", ["book" => $book, "authors" => $authors, "genres" => $genres]);
+        return $this->view("edit-books", ["book" => $book, "authors" => $authors, "genres" => $genres, "publishers" => $publishers]);
     }
 
     public function updateBook()
@@ -210,17 +224,23 @@ class BooksController extends Controller
             }
         }
 
+        // Comprobar si hay enlaces y convertir a JSON
+        $links = isset($_POST["links"]) && !empty($_POST["links"]) ? json_encode($_POST["links"]) : null;
+
         // Actualizar el libro
         $bookUpdated = (new Books())->updateBook(
             $id,
             $_POST["title"],
             $_POST["author"],
             $_POST["genre"],
+            $_POST["publisher"],
             $_POST["pages"],
             $_POST["year"],
             $coverName,
-            $_POST["link"],
-            $_POST["language"]
+            $links,
+            $_POST["language"],
+            $_POST["description"],
+            $_POST["isbn"]
         );
 
         $updateSuccessful = $updateSuccessful || $bookUpdated;
@@ -242,5 +262,25 @@ class BooksController extends Controller
     {
         $success = (new Books())->deleteBook($id);
         echo json_encode(["success" => $success]);
+    }
+
+    // --------------------
+    // Detalles de un libro
+    // --------------------
+
+    // Formatear el título para la URL (Llamado en la vista)
+    private function sanitizeTitle($title)
+    {
+        // Convertir caracteres acentuados a equivalentes sin acento
+        $unaccented = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $title);
+        // Convertir a minúsculas, quitar caracteres especiales y reemplazar espacios con guiones
+        $sanitized = str_replace(" ", "-", preg_replace("/[^a-z0-9 ]/", "", strtolower($unaccented)));
+        return $sanitized;
+    }
+
+    public function viewBookDetails($id)
+    {
+        $book = (new Books())->getBookById($id);
+        include(__DIR__ . "/../views/" . ($book ? "book-details.php" : "404.html"));
     }
 }
