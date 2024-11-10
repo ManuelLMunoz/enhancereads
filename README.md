@@ -46,7 +46,6 @@ Este proyecto está organizado de la siguiente manera:
 - **public/**: Contiene los archivos públicos accesibles, como `index.php`, imágenes, estilos CSS, JS y fuentes.
 - **src/**: Contiene los archivos PHP de la aplicación. Dado que se sigue el patrón MVC, aquí se encuentran los archivos correspondientes a las vistas, modelos y controladores.
 - **vendor/**: Directorio donde Composer instala las dependencias.
-- **lib/**: Contiene bibliotecas adicionales necesarias para la aplicación.
 - **sql/**: Directorio destinado a almacenar scripts SQL, como los utilizados para crear y poblar bases de datos.
 - **.htaccess**: Archivo de configuración para el servidor web, utilizado para controlar la redirección y otros comportamientos del servidor.
 - **composer.json**: Archivo de configuración de Composer, especificando las dependencias del proyecto.

@@ -4,7 +4,7 @@
 require_once "../vendor/autoload.php";
 
 // Clases
-use Lib\Route;
+use Src\Route;
 use Src\Controllers\{
     GoogleController,
     BooksController,

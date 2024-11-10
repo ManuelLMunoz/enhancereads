@@ -16,9 +16,7 @@
     "license": "GNU/GPL",
     "autoload": {
         "psr-4": {
-            "Src\\": "src/",
-            "Lib\\": "lib/",
-            "Clases\\": "src/"
+            "Lib\\": "lib/"
         }
     },
     "authors": [

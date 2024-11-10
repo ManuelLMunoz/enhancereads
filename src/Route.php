@@ -1,6 +1,6 @@
 <?php
 
-namespace Lib;
+namespace Src;
 
 // Clase para gestionar las rutas de la aplicación
 class Route
