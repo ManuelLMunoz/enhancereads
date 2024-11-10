@@ -45,20 +45,3 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-// ------------------------------------
-// Crear y mostrar los mensajes "toast"
-// ------------------------------------
-const showToast = (message, type) => {
-  const toast = document.createElement("div");
-  toast.className = `toast ${type}`;
-  toast.innerText = message;
-  document.body.appendChild(toast);
-
-  // Mostrar el toast y ocultarlo después de 3 segundos
-  setTimeout(() => toast.style.opacity = 1, 10);
-  setTimeout(() => {
-    toast.style.opacity = 0;
-    setTimeout(() => toast.remove(), 500);
-  }, 3000);
-};
-

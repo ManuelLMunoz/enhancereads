@@ -2,7 +2,6 @@
 
 namespace Src\Models;
 
-use PDO;
 use PDOException;
 
 class Users extends Connection
@@ -119,7 +118,7 @@ class Users extends Connection
     {
         try {
             $stmt = $this->connection->prepare("UPDATE users SET password = :password WHERE email = :email");
-            $stmt->execute(compact("newPassword", "email"));
+            $stmt->execute([":password" => $newPassword, ":email" => $email]);
             return true;
         } catch (PDOException $e) {
             error_log("Error al actualizar la contraseña: " . $e->getMessage());

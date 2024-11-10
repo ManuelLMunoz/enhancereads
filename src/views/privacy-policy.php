@@ -31,7 +31,7 @@
 
         <h1>Política de privacidad</h1>
 
-        <div id="terms-content">
+        <div class="terms-content">
 
             <p>En Enhancereads, valoramos y respetamos su privacidad. Esta política de privacidad explica cómo recopilamos, usamos y protegemos su información personal cuando utiliza nuestro sitio web.</p><br>
 

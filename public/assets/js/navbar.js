@@ -146,27 +146,38 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cargar las notificaciones en el modal
   const loadNotifications = async () => {
     try {
-      // Solicitud para obtener las notificaciones en forma JSON
       const response = await fetch("/get-notifications");
       const data = await response.json();
 
       // Actualizar la lista de notificaciones
       notificationList.innerHTML = data.success && data.notifications.length
         ? data.notifications.map(notification => `
-      <div class="notification-item">
-          <img class="avatar" src="assets/img/avatars/${notification.notifier_avatar}" alt="Avatar">
-          <div class="notification-content">
-              <p class="notification-header">
-                  <strong class="notifier">${notification.notifier}</strong> ${getMessage(notification)}
-                  <span class="notification-date"> (${notification.formatted_date})</span>
-              </p>
-              <p class="notification-body">"${notification.content.slice(0, 50)}"...</p>
-          </div>
-      </div>`).join("")
+    <div class="notification-item" data-post-id="${notification.post_id}">
+        <img class="avatar" src="assets/img/avatars/${notification.notifier_avatar}" alt="Avatar">
+        <div class="notification-content">
+            <p class="notification-header">
+                <strong class="notifier">${notification.notifier}</strong> ${getMessage(notification)}
+                <span class="notification-date"> (${notification.formatted_date})</span>
+            </p>
+            <p class="notification-body">"${notification.content.slice(0, 50)}"...</p>
+        </div>
+    </div>`).join("")
         : `<div class="notification-item"> No tienes nuevas notificaciones. </div>`;
 
       $("#mark-all-read").toggleClass("disabled", !data.success || !data.notifications.length);
       updateNotificationCount();
+
+      // Evento de clic en un item de notificación para abrir el post correspondiente
+      const notificationItems = document.querySelectorAll(".notification-item");
+      notificationItems.forEach(item => {
+        item.addEventListener("click", (event) => {
+          const postId = item.getAttribute("data-post-id");
+          if (postId) {
+            window.location.href = `/posts/${postId}`;
+          }
+        });
+      });
+
     } catch {
       notificationList.innerHTML = "Error al cargar notificaciones.";
       $("#mark-all-read").addClass("disabled");
@@ -190,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const response = await fetch("/mark-all-notifications-read", { method: "POST" });
         const data = await response.json();
         if (data.success) {
-          notificationList.textContent = "Todas las notificaciones han sido marcadas como leídas.";
+          notificationList.textContent = "No tienes nuevas notificaciones.";
           updateNotificationCount();
         }
       } catch (error) {

@@ -3,139 +3,121 @@
 
 /* Variables para los colores */
 :root {
-    --light-black: rgba(0, 0, 0, 0.15);
+  --light-black: rgba(0, 0, 0, 0.15);
 }
 
 /* -------------------- */
 /* Estilos de los posts */
 /* -------------------- */
 .post-info {
-    text-align: left;
-    border: 1px solid var(--light-black);
-    border-radius: 10px;
-    padding: 30px;
-    margin: 20px;
-    cursor: pointer;
-    transition: box-shadow 0.3s;
-    word-break: break-word;
+  text-align: left;
+  border: 1px solid var(--light-black);
+  border-radius: 10px;
+  padding: 30px;
+  margin: 20px;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+  word-break: break-word;
 
-    &:hover {
-        box-shadow: 0 0 10px var(--light-black);
-    }
+  &:hover {
+    box-shadow: 0 0 10px var(--light-black);
+  }
 }
 
-/* Margen derecho en el contenido de los post para no solaparse con el botón "X" de cierre */
+.post-info.details {
+  &:hover {
+    box-shadow: none;
+    cursor: initial;
+  }
+}
+
+/* Margen derecho para no solapar el contenido con el botón "X" de cierre */
 .post-data {
-    margin-right: 35px;
+  margin-right: 35px;
 }
 
 /* Datos del usuario del post */
 .user-data {
-    display: flex;
-    align-items: center;
-    padding-bottom: 10px;
-}
+  display: flex;
+  align-items: center;
+  padding-bottom: 10px;
 
-.user-avatar {
+  /* El nombre y fecha se muestran debajo de la foto del usuario */
+  @media screen and (max-width: 768px) {
+    display: block;
+  }
+
+  .user-avatar {
     height: 50px;
     width: 50px;
     border-radius: 50%;
     margin-right: 10px;
+  }
 }
 
-/* Detalles y contenido del post */
-.post-details {
-    padding-top: 10px;
-}
-
+/* Contenido del post */
 .post-content {
-    padding-bottom: 30px;
-}
+  padding-bottom: 30px;
 
-.post-content h2 {
+  h2 {
     font-size: 1.3rem;
     padding: 20px 0;
-}
+  }
 
-.post-content p {
+  p {
     /* Se ajusta al tamaño a 4 líneas */
     line-height: 1.5em;
     max-height: 6em;
     overflow: hidden;
+  }
 }
 
 .formatted-text {
-    /* Mantiene los espacios y saltos de línea */
-    white-space: pre-wrap;
+  /* Mantiene los espacios y saltos de línea */
+  white-space: pre-wrap;
 }
 
 /* ------------------------- */
 /* Parte social de los posts */
 /* ------------------------- */
-.post-share {
+.post-community {
+  .post-share {
     display: flex;
     gap: 15px;
     padding-bottom: 10px;
-}
 
-.post-share button {
-    background: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-
-    /* El nombre y fecha se muestran debajo de la foto del usuario */
-    .user-data {
-        display: block;
+    button {
+      background: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
-}
 
-/* Likes */
-/* ------*/
-.like-button i,
-.comment-button i {
-    /* Contorno del icono en negro */
-    text-shadow: 1px 1px 0 black, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black;
-    color: white;
-}
+    /* Color dorado al dar like */
+    .like-button {
+      &.liked i {
+        color: gold;
+      }
+    }
 
-/* Color dorado al dar like */
-.like-button.liked i {
-    color: gold;
+    .like-button i,
+    .comment-button i {
+      /* Contorno del icono en negro */
+      text-shadow: 1px 1px 0 black, -1px -1px 0 black, -1px 1px 0 black,
+        1px -1px 0 black;
+      color: white;
+    }
+  }
 }
 
 /* Comentarios del post (Ocultos por defecto) */
 /* ------------------------------------------ */
-.comment-content {
-    padding-bottom: 10px;
-}
-
-.comment {
-    /* Da la posibilidad de ajustar la posición de los botones */
-    position: relative;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 10px;
-    border: 1px solid var(--light-black);
-}
-
 .post-comments,
 .comment-form {
-    display: none;
-}
+  display: none;
 
-/* Formulario para agregar comentarios */
-.comment-form {
-    padding: 10px 0;
-}
-
-.comment-form textarea,
-.post-comments textarea {
+  textarea {
     border: 1px solid black;
     border-radius: 10px;
     width: 100%;
@@ -144,42 +126,66 @@
     resize: none;
     /* Oculta la barra de desplazamiento */
     overflow: hidden;
+    field-sizing: content;
+  }
 }
 
-/* Botones de editar y borrar comentarios */
-.manage-comments {
+/* Contenedor de los comentarios */
+.comment {
+  position: relative;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid var(--light-black);
+
+  /* Contenido de los comentarios */
+  .comment-content {
+    padding-bottom: 10px;
+  }
+
+  /* Botones de editar y borrar comentarios */
+  .manage-comments {
     position: absolute;
     top: 15px;
     right: 15px;
     cursor: pointer;
+
+    .edit-comment-button {
+      text-decoration: none;
+
+      i:hover {
+        color: green;
+      }
+    }
+
+    .delete-comment-button {
+      text-decoration: none;
+
+      i:hover {
+        color: red;
+      }
+    }
+  }
 }
 
-.edit-comment-button,
-.delete-comment-button {
-    text-decoration: none;
-}
-
-.edit-comment-button i:hover {
-    color: green;
-}
-
-.delete-comment-button i:hover {
-    color: red;
+/* Formulario para agregar comentarios */
+.comment-form {
+  padding: 10px 0;
 }
 
 /* -------------------- */
 /* Botones de los posts */
 /* -------------------- */
 .manage-posts {
-    display: none;
-    padding: 15px 0 0 0;
-    width: auto;
-    justify-content: start;
-    gap: 5px;
+  display: none;
+  padding: 15px 0 0 0;
+  width: auto;
+  justify-content: start;
+  gap: 5px;
 
-    i {
-        color: white;
-    }
+  i {
+    color: white;
+  }
 }
 
 /* ----------------------------- */
@@ -187,21 +193,22 @@
 /* ----------------------------- */
 
 .modal-open {
-    /* Evita hacer scroll en la página principal */
-    overflow: hidden;
-}
+  /* Evita hacer scroll en la página principal */
+  overflow: hidden;
 
-/* Fondo oscuro al abrir el modal */
-.modal-open:before {
-    content: '';
+  /* Fondo oscuro al abrir el modal */
+  &:before {
+    content: "";
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.7);
     z-index: 10;
+  }
 }
 
 /* Post ampliado */
-.post-info.zoom {
+.post-info {
+  &.zoom {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -215,51 +222,55 @@
     padding: 30px 15px 30px 30px;
     max-height: 90%;
     margin: 0;
-    /* Se restaura el cursor*/
     cursor: default;
-}
 
-/* El contenido del post se muestra completamente */
-.post-info.zoom .post-content p {
-    max-height: none;
-    overflow: visible;
+    /* El contenido del post se muestra completamente */
+    .post-content {
+      p {
+        max-height: none;
+        overflow: visible;
+      }
+    }
+  }
 }
 
 /* Botón de cierre en la esquina superior derecha */
 .close-button {
-    position: sticky;
-    float: right;
-    top: 0px;
-    cursor: pointer;
-    background: none;
+  position: sticky;
+  float: right;
+  top: 0px;
+  cursor: pointer;
+  background: none;
 
-    i {
-        color: red;
-        font-size: 28px;
-    }
+  i {
+    color: red;
+    font-size: 28px;
+  }
 }
 
 /* ---------------------- */
 /* Modal para crear posts */
 /* ---------------------- */
-
 .create-content {
-    max-width: 1000px;
-    max-height: 80vh;
-    overflow-y: auto;
+  max-width: 1000px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-.post-content input,
-.post-content textarea {
+.post-content {
+  input,
+  textarea {
     border-bottom: 1px solid black;
     width: 100%;
     padding: 10px;
     margin-top: 10px;
-}
+  }
 
-.post-content textarea {
+  textarea {
     min-height: 200px;
     resize: none;
     /* Oculta la barra de desplazamiento */
     overflow: hidden;
+    field-sizing: content;
+  }
 }

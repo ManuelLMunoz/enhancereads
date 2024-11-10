@@ -1,44 +1,44 @@
 /* Se importan los estilos base */
 @import url("base.css");
 
-/* Contenedor de libros con grid adaptable */
+/* ----------------------------------------------------------------- */
+/* Contenedor de libros con grid adaptable (Fichero fetch_books.php) */
+/* ----------------------------------------------------------------- */
 .book-container {
   padding: 15px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   /* Espacio solo entre filas */
   row-gap: 25px;
-}
 
-/* Estilos para la información del libro */
-.book-info {
-  padding-bottom: 20px;
-}
+  #title {
+    font-weight: bold;
+    padding: 15px 0;
+  }
 
-.book-container #title {
-  font-weight: bold;
-  padding: 15px 0;
-}
+  p {
+    font-size: 1.1rem;
+  }
 
-.book-container p {
-  font-size: 1.1rem;
-}
+  img {
+    max-height: 250px;
+    max-width: 200px;
+    object-fit: cover;
 
-/* Estilos para la imagen del libro */
-.book-container img {
-  max-height: 250px;
-  max-width: 200px;
-  object-fit: cover;
-
-  &:hover {
-    transform: scale(1.1);
+    &:hover {
+      transform: scale(1.1);
+    }
   }
 }
 
-/* -------------------*/
-/* Detalles del libro */
-/* -------------------*/
+/* Información del libro */
+.book-info {
+  padding: 0 0 20px 20px;
+}
 
+/* ---------------------------------------------------------- */
+/* Detalles del libro seleccionado (Fichero book-details.php) */
+/* ---------------------------------------------------------- */
 .book-details {
   display: flex;
   margin: 0 20px;
@@ -48,61 +48,62 @@
   padding: 20px;
   transition: transform 0.3s;
   color: black;
-}
 
-.book-cover-container {
-  flex: 1;
-  text-align: center;
-}
+  .book-cover-container {
+    flex: 1;
+    text-align: center;
 
-.book-details h1 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  padding: 0;
-}
+    .book-cover {
+      max-width: 250px;
+      object-fit: cover;
+      padding-bottom: 10px;
+      cursor: pointer;
+    }
+  }
 
-.book-info {
-  flex: 2;
-  padding-left: 20px;
-}
+  /* Información del libro */
+  .book-info {
+    flex: 2;
+    padding: 0 0 20px 20px;
 
-.book-cover {
-  max-width: 250px;
-  object-fit: cover;
-  padding-bottom: 10px;
-  cursor: pointer;
-}
+    h1 {
+      font-size: 1.5rem;
+      font-weight: bold;
+      padding: 0;
+    }
 
-.book-details p {
-  margin: 10px 0;
-}
+    p {
+      margin: 10px 0;
+    }
 
-.book-info .description {
-  line-height: 1.5em;
-  max-height: 4.5em; /* Limita a 3 líneas */
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-}
+    /* Iconos */
+    .link-item {
+      display: inline-block;
+      padding: 0 5px;
+    }
+    .shop-logo {
+      width: 60px;
+      height: auto;
+    }
 
-.book-info .description.expanded {
-  max-height: none;
-}
+    .description {
+      line-height: 1.5em;
+      max-height: 4.5em; /* Limita a 3 líneas */
+      overflow: hidden;
+      transition: max-height 0.3s ease;
 
-.view-more {
-  display: inline-block;
-  color: #007bff;
-  cursor: pointer;
-  margin-top: 10px;
-}
+      &.expanded {
+        max-height: none;
+      }
+    }
 
-/* Iconos */
-.link-item {
-  display: inline-block;
-  padding: 0 5px;
-}
-.shop-logo {
-  width: 60px;
-  height: auto;
+    .view-more {
+      display: inline-block;
+      color: #007bff;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  }
 }
 
 /* Responsive */
@@ -121,7 +122,9 @@
   }
 }
 
+/* ------------------------------------- */
 /* Modal para mostrar la imagen ampliada */
+/* ------------------------------------- */
 .zoom-modal {
   display: none;
   position: fixed;
@@ -133,19 +136,19 @@
   background-color: rgba(0, 0, 0, 0.8);
   justify-content: center;
   align-items: center;
-}
 
-.zoom-modal img {
-  max-width: 80%;
-  max-height: 80%;
-}
+  img {
+    max-width: 80%;
+    max-height: 80%;
+  }
 
-.close-button {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  color: red;
-  font-size: 2rem;
-  cursor: pointer;
-  z-index: 100;
+  .close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: red;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 100;
+  }
 }

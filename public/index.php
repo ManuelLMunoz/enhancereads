@@ -104,10 +104,10 @@ Route::post("delete-book/{id}", [BooksController::class, "deleteBook"]);
 //---------------
 
 // Página principal 
-foreach (["posts", "posts.php"] as $route) {
+foreach (["posts", "posts.php","posts/page={page}"] as $route) {
     Route::get($route, [PostController::class, "posts"]);
 }
-Route::get("posts/page={page}", [PostController::class, "posts"]);
+Route::get("posts/{id}/{title}", [PostController::class, "viewPostDetails"]);
 
 // Opciones de los posts
 Route::post("fetch-posts", [PostController::class, "fetchPosts"]);

@@ -77,6 +77,7 @@ if (!in_array($_SESSION["role"], $allowed_roles)) {
           <i class="fas fa-lock icon"></i>
           <input type="password" id="pass" name="pass" aria-label="Contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
             title="La contraseña debe tener al menos 8 caracteres e incluir al menos un número." autocomplete="new-password" />
+          <i class="fas fa-eye icon show-pass"></i>
         </label>
 
         <!-- Validar contraseña -->
@@ -84,23 +85,28 @@ if (!in_array($_SESSION["role"], $allowed_roles)) {
           <i class="fas fa-lock icon"></i>
           <input type="password" id="verify-pass" name="verify_pass" aria-label="Validar contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
             title="La contraseña debe tener al menos 8 caracteres e incluir al menos un número." autocomplete="new-password" />
+          <i class="fas fa-eye icon show-pass"></i>
         </label>
 
         <p>Nota: Si no se indica contraseña, se mantiene la actual</p>
 
       </div>
 
-      <!-- Mensajes de error / success -->
-      <?php if (isset($error)) : ?>
-        <div class="message error"><?php echo htmlspecialchars($error); ?></div>
-      <?php endif; ?>
-
-      <?php if (isset($success)) : ?>
-        <div class="message success"><?php echo htmlspecialchars($success); ?></div>
-      <?php endif; ?>
+      <!-- Mostrar mensajes toast al usuario según el tipo indicado en el controlador -->
+      <script>
+        <?php
+        $types = ["error", "success", "warning", "info"];
+        foreach ($types as $type) {
+          if (!empty($$type)) {
+            echo "showToast(" . json_encode($$type) . ", \"$type\");";
+            break;
+          }
+        }
+        ?>
+      </script>
 
       <button type="submit" style="margin-top: 15px;">Aceptar</button>
-      <button type="button" onclick="window.history.back()">Regresar</button>
+      <button type="button" onclick="window.location.href='/'">Regresar</button>
 
       <!-- Borrado de la cuenta (Solo para usuarios) -->
       <?php if ($_SESSION["role"] !== "admin") : ?>

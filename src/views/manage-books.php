@@ -161,15 +161,6 @@ $activeForm = $_POST["form_name"] ?? null;
         </div>
         <a href="#" id="add-link">Agregar enlace</a>
 
-        <!-- Mensajes de error / success -->
-        <?php if ($activeForm === "add-book" && isset($error)) : ?>
-          <div class="message error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-        <?php if ($activeForm === "add-book" && isset($success)) : ?>
-          <div class="message success"><?php echo htmlspecialchars($success); ?></div>
-        <?php endif; ?>
-
         <button type="submit" style="margin-top: 15px;">Agregar</button>
         <button type="button" onclick="window.location.href='/books'">Regresar</button>
 
@@ -186,15 +177,6 @@ $activeForm = $_POST["form_name"] ?? null;
           <i class="fas fa-user icon"></i>
           <input type="text" id="new-author" name="new_author" required aria-label="Nombre del autor" />
         </label>
-
-        <!-- Mensajes de error / success -->
-        <?php if ($activeForm === "add-author" && isset($error)) : ?>
-          <div class="message error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-        <?php if ($activeForm === "add-author" && isset($success)) : ?>
-          <div class="message success"><?php echo htmlspecialchars($success); ?></div>
-        <?php endif; ?>
 
         <button type="submit">Agregar</button>
         <button type="button" onclick="window.location.href='/books'">Regresar</button>
@@ -213,15 +195,6 @@ $activeForm = $_POST["form_name"] ?? null;
           <input type="text" id="new-genre" name="new_genre" required aria-label="Nombre del género" />
         </label>
 
-        <!-- Mensajes de error / success -->
-        <?php if ($activeForm === "add-genre" && isset($error)) : ?>
-          <div class="message error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-        <?php if ($activeForm === "add-genre" && isset($success)) : ?>
-          <div class="message success"><?php echo htmlspecialchars($success); ?></div>
-        <?php endif; ?>
-
         <button type="submit">Agregar</button>
         <button type="button" onclick="window.location.href='/books'">Regresar</button>
 
@@ -239,15 +212,6 @@ $activeForm = $_POST["form_name"] ?? null;
           <input type="text" id="new-publisher" name="new_publisher" required aria-label="Nombre de la editorial" />
         </label>
 
-        <!-- Mensajes de error / success -->
-        <?php if ($activeForm === "add-publisher" && isset($error)) : ?>
-          <div class="message error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-        <?php if ($activeForm === "add-publisher" && isset($success)) : ?>
-          <div class="message success"><?php echo htmlspecialchars($success); ?></div>
-        <?php endif; ?>
-
         <button type="submit">Agregar</button>
         <button type="button" onclick="window.location.href='/books'">Regresar</button>
 
@@ -256,6 +220,19 @@ $activeForm = $_POST["form_name"] ?? null;
     </div>
 
   </section>
+
+  <!-- Mostrar mensajes toast al usuario según el tipo indicado en el controlador -->
+  <script>
+    <?php
+    $types = ["error", "success", "warning", "info"];
+    foreach ($types as $type) {
+      if (!empty($$type)) {
+        echo "showToast(" . json_encode($$type) . ", \"$type\");";
+        break;
+      }
+    }
+    ?>
+  </script>
 
 </body>
 

@@ -46,24 +46,19 @@ $(document).ready(function () {
     // Cargar y obtener el género seleccionado en el formulario de crear post
     loadGenres($("#post-genre").data("selected"), "post-genre");
 
-    // ------------------------------------
-    // Crear y mostrar los mensajes "toast"
-    // ------------------------------------
-    const showToast = (message, type) => {
-        const toast = document.createElement("div");
-        toast.className = `toast ${type}`;
-        toast.innerText = message;
-        document.body.appendChild(toast);
-
-        // Mostrar el toast y ocultarlo tras 3 segundos
-        setTimeout(() => toast.style.opacity = 1, 10);
-        setTimeout(() => { toast.style.opacity = 0; setTimeout(() => toast.remove(), 500); }, 3000);
-    };
-
     // ----------------------------
     // Ampliar el post seleccionado
     // ----------------------------
+
+    // Guardar la URL previa
+    let previousURL = null;
+
     const toggleZoom = (post, zoomIn) => {
+        if (zoomIn) {
+            // Almacenar la URL actual antes de abrir el modal
+            previousURL = window.location.href;
+        }
+
         // Alternar la clase "zoom" y visibilidad de elementos
         $(post).toggleClass("zoom", zoomIn);
         $(post).find(".close-button").css("display", zoomIn ? "block" : "none");
@@ -72,39 +67,66 @@ $(document).ready(function () {
 
         // Mostrar/ocultar la sección de comentarios
         $(post).find(".post-comments, .comment-form").css("display", zoomIn ? "block" : "none");
+
+        // Obtener el ID y título del post
+        const postId = $(post).attr("id").split("-")[1];
+        const postTitle = $(post).find(".post-content h2").text().trim();
+
+        // Función para sanitizar el título
+        const sanitizeTitle = (title) => {
+            return title
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase()
+                .replace(/[^a-z0-9 ]/g, "")
+                .replace(/\s+/g, "-")
+                .replace(/^-+|-+$/g, "");
+        };
+
+        // Actualizar la URL con el ID y título del post ampliado o restaurar la URL original
+        history.pushState(null, null, zoomIn ? `/posts/${postId}/${sanitizeTitle(postTitle)}` : previousURL);
     };
 
-    // Manejar el clic en un post
-    $(document).on("click", ".post-info", (event) => {
-        // Abrir el post si el clic no es en el botón de like
+    // Detectar si la URL vuelve a /posts y redirigir
+    window.addEventListener("popstate", () => {
+        const currentPath = window.location.pathname;
+        if (!currentPath.startsWith("/posts/") || currentPath.split("/").length <= 2) {
+            window.location.href = previousURL || "/posts"; // Restaurar la URL anterior o redirigir a la lista de posts
+        } else {
+            const postId = currentPath.split("/")[2];
+            const postTitle = currentPath.split("/")[3];
+            loadPostById(postId, postTitle);
+        }
+    });
+
+    // Función para cargar un post por ID y título
+    const loadPostById = (postId, postTitle = null) => {
+        const url = postTitle ? `/posts/${postId}/${postTitle}` : `/posts/${postId}`;
+        window.location.href = url;
+    };
+
+    // Ampliar el post al hacer clic
+    $(document).on("click", ".post-info:not(.details)", (event) => {
         if (!$(event.target).closest(".like-button").length) {
             toggleZoom(event.currentTarget, true);
         }
     });
 
     // Botón de cierre del post
-    //-------------------------
     $(document).on("click", ".close-button", (event) => {
-
         event.stopPropagation();
         const post = $(event.currentTarget).closest(".post-info")[0];
 
-        // Restaurar el contenido original del post
         restoreOriginalContent(post);
-
-        // Mostrar los botones y elementos ocultos del post
         [".edit-button", ".delete-button", ".post-community"].forEach(selector => {
             const element = post.querySelector(selector);
             if (element) element.style.display = "initial";
         });
 
-        // Reiniciar los campos de comentarios en el post
         $(post).find(".comment-form textarea").each((_, textarea) => resetTextarea(textarea));
-
-        // Desactivar el zoom en el post
         toggleZoom(post, false);
     });
-
+    
     // ----------------------
     // Modal para crear posts
     // ----------------------
@@ -132,7 +154,7 @@ $(document).ready(function () {
         const formData = $(this).serialize();
 
         // Petición POST
-        $.post($(this).attr('action'), formData, function (data) {
+        $.post($(this).attr("action"), formData, function (data) {
             if (data.success) {
                 // Se crea el post, muestra un mensaje y carga la primera página
                 showToast(data.message, "success");
@@ -141,7 +163,7 @@ $(document).ready(function () {
                 $("#create-post-form textarea").each((_, textarea) => resetTextarea(textarea));
                 window.myApp?.load_data?.(1);
             }
-        }, 'json').fail(function () {
+        }, "json").fail(function () {
             showToast("Error al crear el post. Inténtalo de nuevo.", "error");
         });
     });
@@ -195,7 +217,15 @@ $(document).ready(function () {
                         toggleZoom($zoomPost[0], false);
                     }
                     $(`#post-${idToDelete}`).remove();
-                    window.myApp?.load_data?.(1);
+
+                    // Si estamos en la página de detalles, volver a /posts tras borrar
+                    if (window.location.pathname.startsWith("/posts/") && !isNaN(parseInt(window.location.pathname.split("/")[2]))) {
+                        localStorage.setItem("deleteSuccessMessage", result.message);
+                        window.location.href = "/posts";
+                    } else {
+                        // En otro contexto, cargar la primera página
+                        window.myApp?.load_data?.(1);
+                    }
                 } else if (deleteType === "comment") {
                     // Eliminar el comentario y actualizar el post
                     $(`#comment-${idToDelete}`).remove();
@@ -213,23 +243,30 @@ $(document).ready(function () {
         });
     });
 
+    // Mostrar el mensaje de borrado si lo hay 
+    const deleteSuccessMessage = localStorage.getItem("deleteSuccessMessage");
+    if (deleteSuccessMessage) {
+        showToast(deleteSuccessMessage, "success");
+        localStorage.removeItem("deleteSuccessMessage");
+    }
+
     // ----------------------------------------
     // Restaurar el contenido original del post
     // ----------------------------------------
 
     // Manejar los caracteres especiales
     const escapeHtml = (text) => text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
     const unescapeHtml = (text) => text
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, "\"")
         .replace(/&#039;/g, "'");
 
     const restoreOriginalContent = (post) => {

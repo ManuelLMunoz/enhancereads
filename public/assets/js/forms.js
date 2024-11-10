@@ -33,3 +33,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 });
+
+// ----------------------------------------
+// Boton para mostrar/ocultar la contraseña
+// ----------------------------------------
+document.querySelectorAll('.show-pass').forEach(togglePassword => {
+    const passwordInput = togglePassword.previousElementSibling;
+
+    togglePassword.addEventListener('click', () => {
+        passwordInput.type = passwordInput.type === 'password' ? 'text' : 'password';
+        togglePassword.classList.toggle('fa-eye');
+        togglePassword.classList.toggle('fa-eye-slash');
+    });
+});

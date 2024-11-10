@@ -41,17 +41,8 @@
           <i class="fas fa-lock icon"></i>
           <input id="login-pass" type="password" name="pass" required aria-label="Contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
             title="La contraseña debe tener al menos 8 caracteres e incluir al menos un número." autocomplete="off" />
+          <i class="fas fa-eye icon show-pass"></i>
         </label>
-
-        <!-- Mensajes de error / success -->
-        <?php if (isset($error) && $form === "login") : ?>
-          <div class="message error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-        <?php if (isset($_SESSION["success"])) : ?>
-          <div class="message success"><?php echo htmlspecialchars($_SESSION["success"]); ?></div>
-          <?php unset($_SESSION["success"]); ?>
-        <?php endif; ?>
 
         <!-- Enlaces adicionales -->
         <p><a id="forgot-password-link" href="#">¿Olvidaste la contraseña?</a></p>
@@ -92,6 +83,7 @@
           <i class="fas fa-lock icon"></i>
           <input id="register-pass" type="password" name="pass" required aria-label="Contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
             title="La contraseña debe tener al menos 8 caracteres e incluir al menos un número." autocomplete="new-password" />
+          <i class="fas fa-eye icon show-pass"></i>
         </label>
 
         <!-- Validar contraseña -->
@@ -99,17 +91,8 @@
           <i class="fas fa-lock icon"></i>
           <input id="register-verify-pass" type="password" name="verify_pass" aria-label="Validar contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
             title="La contraseña debe tener al menos 8 caracteres e incluir al menos un número." autocomplete="new-password" />
+          <i class="fas fa-eye icon show-pass"></i>
         </label>
-
-        <!-- Mensajes de error / success -->
-        <?php if (isset($error) && $form === "register") : ?>
-          <div class="message error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-        <?php if (isset($_SESSION["success"])) : ?>
-          <div class="message success"><?php echo htmlspecialchars($_SESSION["success"]); ?></div>
-          <?php unset($_SESSION["success"]); ?>
-        <?php endif; ?>
 
         <button type="submit">Crear Cuenta</button>
         <p>¿Ya tienes una cuenta? <a id="back-login-from-register" href="#">Acceder</a></p>
@@ -134,6 +117,7 @@
           <i class="fas fa-lock icon"></i>
           <input id="reset-pass" type="password" name="pass" required aria-label="Contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
             title="La contraseña debe tener al menos 8 caracteres e incluir al menos un número." autocomplete="new-password" />
+          <i class="fas fa-eye icon show-pass"></i>
         </label>
 
         <!-- Validar contraseña -->
@@ -141,17 +125,8 @@
           <i class="fas fa-lock icon"></i>
           <input id="reset-verify-pass" type="password" name="verify_pass" required aria-label="Validar contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
             title="La contraseña debe tener al menos 8 caracteres e incluir al menos un número." autocomplete="new-password" />
+          <i class="fas fa-eye icon show-pass"></i>
         </label>
-
-        <!-- Mensajes de error / success -->
-        <?php if (isset($error) && $form === "reset-password") : ?>
-          <div class="message error"><?php echo htmlspecialchars($error); ?></div>
-        <?php endif; ?>
-
-        <?php if (isset($_SESSION["success"])) : ?>
-          <div class="message success"><?php echo htmlspecialchars($_SESSION["success"]); ?></div>
-          <?php unset($_SESSION["success"]); ?>
-        <?php endif; ?>
 
         <div class="input-container"><button type="submit">Aceptar</button></div>
 
@@ -162,6 +137,19 @@
     </div>
 
   </section>
+
+  <!-- Mostrar mensajes toast al usuario según el tipo indicado en el controlador -->
+  <script>
+    <?php
+    $types = ["error", "success", "warning", "info"];
+    foreach ($types as $type) {
+      if (!empty($$type)) {
+        echo "showToast(" . json_encode($$type) . ", \"$type\");";
+        break;
+      }
+    }
+    ?>
+  </script>
 
 </body>
 

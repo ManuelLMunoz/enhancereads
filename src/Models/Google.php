@@ -15,7 +15,7 @@ class Google extends Connection
         $this->client = new Google_Client();
         $this->client->setClientId("623628310388-3m23goi4fnt8vaagi2r5qal8tb0eluo2.apps.googleusercontent.com");
         $this->client->setClientSecret("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");
-        $this->client->setRedirectUri("http://www.enhancereads.com/google-callback");
+        $this->client->setRedirectUri("http://localhost/google-callback");
         $this->client->addScope("email");
         $this->client->addScope("profile");
     }

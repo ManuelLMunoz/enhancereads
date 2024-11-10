@@ -23,7 +23,7 @@
     <div class="brand">
       <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logo de la marca"></a></h1>
       <h2><img id="slogan" src="assets/img/slogan.webp" alt="Slogan de la marca"></h2>
-      <div>
+    </div>
 
   </section>
 

@@ -31,7 +31,7 @@
 
         <h1>Términos y condiciones</h1>
 
-        <div id="terms-content">
+        <div class="terms-content">
 
             <h2>1. Aceptación de los términos</h2>
             <p>Al acceder y utilizar Enhancereads, usted acepta cumplir con estos términos y condiciones. Si no está de acuerdo con alguna parte de estos términos, le rogamos que no utilice nuestro sitio web.</p>

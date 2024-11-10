@@ -32,10 +32,18 @@
                     <input type="text" id="2fa-code" name="2fa_code" maxlength="6" pattern="\d{6}" inputmode="numeric" required autofocus>
                 </label>
 
-                <!-- Mensaje de error en caso de OTP incorrecto -->
-                <?php if (isset($error)) : ?>
-                    <div class="message error"><?php echo htmlspecialchars($error); ?></div>
-                <?php endif; ?>
+                <!-- Mostrar mensajes toast al usuario según el tipo indicado en el controlador -->
+                <script>
+                    <?php
+                    $types = ["error", "success", "warning", "info"];
+                    foreach ($types as $type) {
+                        if (!empty($$type)) {
+                            echo "showToast(" . json_encode($$type) . ", \"$type\");";
+                            break;
+                        }
+                    }
+                    ?>
+                </script>
 
                 <button type="submit">Verificar</button>
             </form>

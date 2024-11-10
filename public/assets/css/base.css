@@ -4,203 +4,205 @@
 
 /* Variables para los colores */
 :root {
-    --error-backgroud: #dc3545;
-    --success-backgroud: #28a745;
+  --color-success: #28a745;
+  --color-info: #17a2b8;
+  --color-warning: #ffc107;
+  --color-error: #dc3545;
 }
 
 /* Fuente principal */
 @font-face {
-    font-family: "Nunito";
-    src: url("../fonts/Nunito-Regular.ttf") format("truetype");
+  font-family: "Nunito";
+  src: url("../fonts/Nunito-Regular.ttf") format("truetype");
 }
 
 /* Formateo básico de la página */
 * {
-    margin: 0;
-    padding: 0;
-    border: 0;
-    color: black;
-    font-size: 1rem;
-    font-family: "Nunito", sans-serif;
-    box-sizing: border-box;
-    /* Transición suave */
-    scroll-behavior: smooth;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: black;
+  font-size: 1rem;
+  font-family: "Nunito", sans-serif;
+  box-sizing: border-box;
+  /* Transición suave */
+  scroll-behavior: smooth;
 }
 
 /* --------- */
 /* Secciones */
 /* --------- */
 section {
-    /* Contenido centrado */
-    justify-content: center;
-    text-align: center;
-    align-items: center;
-    /* El contenido no desborda */
-    overflow: hidden;
+  /* Contenido centrado */
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  /* El contenido no desborda */
+  overflow: hidden;
 
-    h1 {
-        font-size: 1.5rem;
-        padding: 0 10px;
-    }
+  h1 {
+    font-size: 1.5rem;
+    padding: 0 10px;
+  }
 
-}
-
-/* Sección 1 - Inicio */
-section#main {
-    background: linear-gradient(rgba(41, 78, 102, 0.7), rgba(255, 255, 255, 0.7)), url("../img/inicio.webp");
+  /* Sección 1 - Inicio */
+  &#main {
+    background: linear-gradient(
+        rgba(41, 78, 102, 0.7),
+        rgba(255, 255, 255, 0.7)
+      ),
+      url("../img/inicio.webp");
     background-repeat: no-repeat;
     background-size: cover;
-}
 
-/* Contenedor para el logo y slogan de la marca */
-.brand {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0 10px;
-    user-select: none;
-}
+    /* Contenedor para el logo y slogan de la marca */
+    .brand {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 10px;
+      user-select: none;
+    }
 
-#logotype {
-    width: 100%;
-    max-width: 500px;
-    height: auto;
-    user-select: none;
-}
+    #logotype,
+    #slogan {
+      width: 100%;
+      height: auto;
+      user-select: none;
+    }
 
-#slogan {
-    width: 100%;
-    max-width: 350px;
-    height: auto;
+    #logotype {
+      max-width: 500px;
+    }
+    #slogan {
+      max-width: 350px;
+    }
+  }
 }
 
 /* ----------------------------------------------------------------- */
 /* Flecha para subir al inicio (Ubicada en la zona inferior derecha) */
 /* ----------------------------------------------------------------- */
 #up {
-    position: fixed;
-    bottom: 20px;
-    right: 0px;
-    /* Oculta por defecto */
-    display: none;
-    cursor: pointer;
-    margin: 10px;
-    background-color: transparent;
-}
+  position: fixed;
+  bottom: 20px;
+  right: 0px;
+  /* Oculta por defecto */
+  display: none;
+  cursor: pointer;
+  margin: 10px;
+  background-color: transparent;
 
-#arrow {
+  #arrow {
     width: 40px;
     height: 40px;
+  }
 }
 
-/* ------------------------ */
-/* Mensajes para el usuario */
-/* ------------------------ */
-
-/* Estáticos */
-.message {
-    font-weight: bold;
-    padding: 10px;
-    margin: 10px 0;
-    width: 100%;
-    border-radius: 5px;
-    font-size: 1rem;
-    color: white;
-}
-
-/* Dinámicos tipo toast */
+/* --------------------------------------------- */
+/* Mensajes dinámicos tipo toast para el usuario */
+/* --------------------------------------------- */
 .toast {
-    position: fixed;
-    top: 40px;
-    left: 50%;
-    transform: translateX(-50%);
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  max-width: 350px;
+  text-align: center;
+
+  i {
+    margin-right: 10px;
+    font-size: 20px;
+    vertical-align: middle;
     color: white;
-    padding: 15px;
-    border-radius: 5px;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-    max-width: 300px;
-    text-align: center;
-}
+  }
 
-.error,
-.toast.error {
-    background-color: var(--error-backgroud);
-}
-
-.success,
-.toast.success {
-    background-color: var(--success-backgroud);
+  &.success {
+    background-color: var(--color-success);
+  }
+  &.info {
+    background-color: var(--color-info);
+  }
+  &.warning {
+    background-color: var(--color-warning);
+  }
+  &.error {
+    background-color: var(--color-error);
+  }
 }
 
 /* --------------------------- */
 /* Estilos base de los modales */
 /* --------------------------- */
 .modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-}
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
 
-.content {
+  .content {
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     width: 90%;
     position: relative;
+  }
 }
 
 .hidden {
-    display: none;
+  display: none;
 }
 
 .disabled {
-    pointer-events: none;
-    color: gray;
-    opacity: 0.6;
-  }
-  
-/* -----------------------------------------------------------------------  */
-/* Modal para confirmar el borrado de usuarios, libros, posts y comentarios */
-/* -----------------------------------------------------------------------  */
+  pointer-events: none;
+  color: gray;
+  opacity: 0.6;
+}
 
+/* ------------------------------------------------------------------------ */
+/* Modal para confirmar el borrado de usuarios, libros, posts y comentarios */
+/* ------------------------------------------------------------------------ */
 .delete-content {
-    max-width: 350px;
-    text-align: center;
+  max-width: 350px;
+  text-align: center;
 }
 
 .confirm-button,
 .cancel-button {
-    padding: 10px;
-    margin: 15px 5px 5px 0;
-    border-radius: 5px;
-    cursor: pointer;
-    color: white;
-    font-size: 1rem;
+  padding: 10px;
+  margin: 15px 5px 5px 0;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  font-size: 1rem;
 
-    &:hover {
-        opacity: 0.8;
-    }
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 /* Por defecto, el botón de confirmar en verde */
 .confirm-button {
-    background-color: rgb(41, 150, 41);
+  background-color: var(--color-success);
 }
 
 /* Botón de confirmar el borrado en rojo */
 .delete-content .confirm-button {
-    background-color: rgb(197, 53, 53);
+  background-color: var(--color-error);
 }
 
 /* Botón de cancelar en gris */
 .cancel-button {
-    background-color: gray;
+  background-color: gray;
 }

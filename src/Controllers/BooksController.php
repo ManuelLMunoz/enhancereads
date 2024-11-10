@@ -94,7 +94,7 @@ class BooksController extends Controller
 
         // Verificar si hubo algún error durante la subida
         if ($cover["error"] !== UPLOAD_ERR_OK) {
-            return ["success" => false, "message" => "Error al subir el archivo"];
+            return ["success" => false, "message" => "Error al subir el archivo. Pruebe de nuevo"];
         }
 
         // Comprobar que el tamaño del archivo no exceda de 1MB
@@ -135,7 +135,7 @@ class BooksController extends Controller
             $formData["pages"],
             $formData["year"],
             null,
-            $formData["link"],
+            $formData["links"],
             $formData["language"],
             $formData["description"],
             $formData["isbn"]
@@ -162,25 +162,25 @@ class BooksController extends Controller
             }
         }
 
-        return $this->view("manage-books", ["success" => "Libro agregado exitosamente"]);
+        return $this->view("manage-books", ["success" => "Libro agregado con éxito"]);
     }
 
     public function addAuthor()
     {
         $author = (new Books())->addAuthor($_POST["new_author"]);
-        return $this->view("manage-books", $author ? ["success" => "Autor agregado exitosamente"] : ["error" => "El autor ya existe"]);
+        return $this->view("manage-books", $author ? ["success" => "Autor agregado con éxito"] : ["error" => "El autor ya existe"]);
     }
 
     public function addGenre()
     {
         $genre = (new Books())->addGenre($_POST["new_genre"]);
-        return $this->view("manage-books",  $genre ? ["success" => "Género agregado exitosamente"] : ["error" => "El género ya existe"]);
+        return $this->view("manage-books",  $genre ? ["success" => "Género agregado con éxito"] : ["error" => "El género ya existe"]);
     }
 
     public function addPublisher()
     {
         $publisher = (new Books())->addPublisher($_POST["new_publisher"]);
-        return $this->view("manage-books",  $publisher ? ["success" => "Editorial agregada exitosamente"] : ["error" => "La editorial ya existe"]);
+        return $this->view("manage-books",  $publisher ? ["success" => "Editorial agregada con éxito"] : ["error" => "La editorial ya existe"]);
     }
 
 
@@ -191,7 +191,7 @@ class BooksController extends Controller
     {
         $book = (new Books())->getBookById($id);
 
-        // Obtener todos los autores y géneros
+        // Obtener todos los autores, géneros y editoriales
         $authors = (new Books())->getAuthors();
         $genres = (new Books())->getGenres();
         $publishers = (new Books())->getPublishers();
@@ -206,20 +206,32 @@ class BooksController extends Controller
 
     public function updateBook()
     {
-        $id = $_POST["id"];
+        // Obtener el ID del libro del cuerpo de la solicitud
+        $id = $_POST["id"] ?? null;
+        if (!$id) {
+            echo json_encode(["success" => false, "message" => "ID del libro no proporcionado"]);
+            return;
+        }
+
+        // Obtener el libro actual
         $currentBook = (new Books())->getBookById($id);
+        if (!$currentBook) {
+            echo json_encode(["success" => false, "message" => "Libro no encontrado"]);
+            return;
+        }
+
         $coverName = $currentBook["cover"];
         $updateSuccessful = false;
-        $message = "Error al actualizar el libro";  // Mensaje por defecto
+        $message = "Error al actualizar el libro";
 
         // Manejar la actualización de la portada si se ha enviado un nuevo archivo
         if (isset($_FILES["cover"]) && $_FILES["cover"]["error"] !== UPLOAD_ERR_NO_FILE) {
             $coverUploadResult = $this->handleCoverUpload($_FILES["cover"], $id, $currentBook["cover"]);
             if ($coverUploadResult["success"]) {
                 $coverName = $coverUploadResult["coverName"] ?? $currentBook["cover"];
-                $updateSuccessful = true;
+                $updateSuccessful = true; // Marcamos como actualizado si se subió una nueva portada
             } else {
-                // Si hubo un error al subir la portada, capturar el mensaje
+                // Capturar el mensaje si hubo un error al subir la portada
                 $message = $coverUploadResult["message"];
             }
         }
@@ -237,15 +249,16 @@ class BooksController extends Controller
             $_POST["pages"],
             $_POST["year"],
             $coverName,
-            $links,
+            $links,  // Aquí se pasan los enlaces
             $_POST["language"],
             $_POST["description"],
             $_POST["isbn"]
         );
 
+        // Determinar si la actualización fue exitosa
         $updateSuccessful = $updateSuccessful || $bookUpdated;
 
-        // Si la actualización del libro fue exitosa, cambiar el mensaje
+        // Cambiar el mensaje si la actualización fue exitosa
         if ($updateSuccessful) {
             $message = "Libro actualizado correctamente";
         }
@@ -281,6 +294,6 @@ class BooksController extends Controller
     public function viewBookDetails($id)
     {
         $book = (new Books())->getBookById($id);
-        include(__DIR__ . "/../views/" . ($book ? "book-details.php" : "404.html"));
+        return $this->view("book-details", ["book" => $book]);
     }
 }

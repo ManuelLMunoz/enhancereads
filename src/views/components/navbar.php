@@ -61,7 +61,9 @@ use Src\Controllers\GoogleController;
 
             <!-- Apartado de notificaciones (Solo disponible si el usuario ha iniciado sesión) -->
             <?php
-            session_start();
+            if (!isset($_SESSION)) {
+                session_start();
+            }
             if (isset($_SESSION["user"])): ?>
                 <li id="notifications" class="notifications">
                     <a>

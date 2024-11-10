@@ -1,8 +1,8 @@
 $(document).ready(function () {
 
-    // -----------------------------------------------------------------------------------------------
-    // Cargar los autores y géneros desde el servidor en los formularios de agregar y modificar libros
-    // -----------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
+    // Cargar los autores, géneros y editoriales desde el servidor en los formularios de agregar y modificar libros
+    // ------------------------------------------------------------------------------------------------------------
     const loadAuthorsGenresAndPublishers = (selectedAuthor, selectedGenre, selectedPublisher) => {
         $.post("fetch-authors-and-genres", ({ success, authors, genres, publishers }) => {
             if (success) {
@@ -59,10 +59,13 @@ $(document).ready(function () {
         $.post(`/delete-book/${id}`)
             .done(response => {
                 try {
-                    // Si la respuesta es exitosa, se recargan los datos y muestra un mensaje de éxito
+                    // Si la respuesta es exitosa, guarda el mensaje en localStorage y redirige
                     if (JSON.parse(response).success) {
-                        window.myApp?.load_data?.(1);
-                        showToast("Libro borrado con éxito", "success");
+                        localStorage.setItem("deleteSuccess", "Libro borrado con éxito");
+                        // Redirigir a la vista de libros
+                        window.location.href = "/books";
+                    } else {
+                        showToast("Error al borrar el libro", "error");
                     }
                 } catch {
                     showToast("Error al borrar el libro", "error");
@@ -72,19 +75,15 @@ $(document).ready(function () {
             // Se oculta el modal al final de la operación
             .always(() => $("#delete-modal").addClass("hidden"));
     });
+
+    // Mostrar toast si hay un mensaje de borrado en localStorage
+    const message = localStorage.getItem("deleteSuccess");
+    if (message) {
+        showToast(message, "success");
+        localStorage.removeItem("deleteSuccess");
+    }
+
 });
-
-// ------------------------------------
-// Crear y mostrar los mensajes "toast"
-// ------------------------------------
-const showToast = (message, type) => {
-    const $toast = $("<div>").addClass(`toast ${type}`).text(message);
-    $("body").append($toast);
-
-    // Mostrar el toast y ocultarlo después de 3 segundos
-    setTimeout(() => $toast.css("opacity", 1), 10);
-    setTimeout(() => { $toast.css("opacity", 0); setTimeout(() => $toast.remove(), 500); }, 3000);
-};
 
 // -------------------------------------------------------------
 // Actualizar los datos del libro de forma dinámica sin recargar
@@ -92,22 +91,21 @@ const showToast = (message, type) => {
 $("#edit-books").submit(async (event) => {
     event.preventDefault();
     try {
-        // Solicitud al servidor con los datos del formulario
-        const { success, message } = await fetch(event.target.action, {
+        const formData = new FormData(event.target); // Mantén el uso de FormData para manejar archivos
+
+        const response = await fetch(event.target.action, {
             method: event.target.method,
-            body: new FormData(event.target),
-        }).then(res => res.json());
-        // Mensaje basado en la respuesta del servidor
-        showMessage(success, message);
-    } catch {
-        showMessage(false, "Error al actualizar el libro");
+            body: formData, // Enviamos directamente el FormData
+        });
+
+        const jsonResponse = await response.json();
+
+        showToast(jsonResponse.message, jsonResponse.success ? "success" : "error");
+    } catch (error) {
+        console.error("Error:", error);
+        showToast("Error al actualizar el libro", "error");
     }
 });
-// Mostrar el mensaje en la vista
-const showMessage = (success, message) => {
-    const msg = $(`.message.${success ? "success" : "error"}`);
-    msg.text(message).fadeIn().delay(3000).fadeOut();
-};
 
 // --------------------------------
 // Ampliar la descripción del libro
@@ -136,20 +134,27 @@ document.addEventListener("click", ({ target }) => {
 // Agregar inputs para los enlaces en los formularios de crear y editar libros
 // ---------------------------------------------------------------------------
 const container = document.getElementById("links-container");
-document.getElementById("add-link").onclick = (event) => {
-    event.preventDefault();
-    // Agregar un nuevo input dentro del contenedor de enlaces
-    container.insertAdjacentHTML("beforeend",
-        `<div class="link-input">
-        <div class="remove-link-icon-container">
-            <i class="fas fa-trash-alt remove-link-icon"></i>
-        </div>
-        <input type="url" name="links[]" required placeholder="Ingresa un enlace">
-    </div>`);
-};
+const addLinkButton = document.getElementById("add-link");
+
+if (addLinkButton) {
+    addLinkButton.onclick = (event) => {
+        event.preventDefault();
+        // Agregar un nuevo input dentro del contenedor de enlaces
+        container.insertAdjacentHTML("beforeend",
+            `<div class="link-input">
+                <div class="remove-link-icon-container">
+                    <i class="fas fa-trash-alt remove-link-icon"></i>
+                </div>
+                <input type="url" name="links[]" required placeholder="Ingresa un enlace">
+            </div>`);
+    };
+}
+
 // Borrar del contenedor el input seleccionado
-container.onclick = (event) => {
-    if (event.target.classList.contains("remove-link-icon")) {
-        event.target.closest(".link-input").remove();
-    }
-};
+if (container) {
+    container.onclick = (event) => {
+        if (event.target.classList.contains("remove-link-icon")) {
+            event.target.closest(".link-input").remove();
+        }
+    };
+}

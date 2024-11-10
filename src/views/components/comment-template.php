@@ -27,7 +27,7 @@ if (!function_exists("renderComments")) {
                 <p class="formatted-text comment-content"><?php echo htmlspecialchars($comment["comment"]); ?></p>
 
                 <!-- Si el comentario pertenece al usuario logado, se muestran los botones de administración -->
-                <?php if ($comment["is_user_comment"]) : ?>
+                <?php if (isset($_SESSION["id"]) && $_SESSION["id"] == $comment["user_id"]) : ?>
                     <div class="manage-comments">
                         <a class="edit-comment-button" href="editComment/<?php echo htmlspecialchars($comment["id"]); ?>">
                             <i class="fa-solid fa-edit" title="Editar"></i>

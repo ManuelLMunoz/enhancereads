@@ -12,79 +12,120 @@
 /* Sección 2 - Contenido */
 section#content {
   display: flex;
-}
 
-#content a {
-  text-decoration: none;
-  text-transform: uppercase;
-}
+  a {
+    text-decoration: none;
+    text-transform: uppercase;
+  }
 
-#content h1 {
-  font-size: 2.3rem;
-}
+  h1 {
+    font-size: 2.3rem;
+  }
 
-.books,
-.posts {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /* Cada uno ocupa la mitad de la página */
-  width: 50%;
-  min-height: 100vh;
-  min-height: 100dvh;
-}
+  .books,
+  .posts {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Cada uno ocupa la mitad de la página */
+    width: 50%;
+    min-height: 100vh;
+    min-height: 100dvh;
 
-.books {
-  background: linear-gradient(rgba(197, 189, 124, 0.5), rgb(179, 211, 255, 0.4)), url("../img/books.webp") no-repeat center / cover;
-}
+    &.books {
+      background: linear-gradient(
+          rgba(197, 189, 124, 0.5),
+          rgba(179, 211, 255, 0.4)
+        ),
+        url("../img/books.webp") no-repeat center / cover;
+    }
 
-.posts {
-  background: linear-gradient(rgba(206, 192, 188, 0.4), rgba(185, 223, 222, 0.8)), url("../img/posts.webp") no-repeat center top / cover;
-}
+    &.posts {
+      background: linear-gradient(
+          rgba(206, 192, 188, 0.4),
+          rgba(185, 223, 222, 0.8)
+        ),
+        url("../img/posts.webp") no-repeat center top / cover;
+    }
 
-.books:hover,
-.posts:hover {
-  transform: scale(1.1);
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
 }
 
 /* Sección 3 - Sobre nosotros */
 section#about-us {
   height: auto;
   background: linear-gradient(rgb(255, 230, 223), rgba(173, 206, 230, 0.2));
-}
 
-.know-us,
-.testimonials {
-  margin: 50px 25px;
-  max-width: 800px;
-  /* Centra el contenido*/
-  margin-left: auto;
-  margin-right: auto;
-}
+  .know-us,
+  .testimonials {
+    margin: 50px 25px;
+    max-width: 800px;
+    /* Centra el contenido*/
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-.know-us p {
-  font-size: 1.2rem;
-  padding: 25px 40px 0 40px;
-  text-align: left;
-}
+  .know-us {
+    .text {
+      position: relative;
+      opacity: 0;
+      /* Transición para la opacidad */
+      transition: opacity 0.5s ease-out;
 
-.know-us p strong {
-  /* Hereda el tamaño de fuente del párrafo */
-  font-size: inherit;
-}
+      p {
+        font-size: 1.2rem;
+        padding: 25px 40px 0 40px;
+        text-align: left;
 
-.text {
-  position: relative;
-  opacity: 0;
-  /* Transición para la opacidad */
-  transition: opacity 0.5s ease-out;
+        strong {
+          /* Hereda el tamaño de fuente del párrafo */
+          font-size: inherit;
+        }
+      }
 
-}
+      &.animate {
+        animation: text-slide-in 1s ease-in-out forwards;
+        opacity: 1;
+      }
+    }
+  }
 
-/* Ejecutado cuando se añade la clase "animate" */
-.text.animate {
-  animation: text-slide-in 1s ease-in-out forwards;
-  opacity: 1;
+  /* Silder automático para las valoraciones de los usuarios */
+  .testimonial-slider {
+    margin: 20px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+
+    .slides {
+      display: flex;
+      /* Efecto de desplazamiento */
+      transition: transform 0.5s ease-in-out;
+
+      .slide {
+        min-width: 100%;
+        box-sizing: border-box;
+        padding: 20px;
+
+        p {
+          font-size: 1.2rem;
+          text-align: left;
+        }
+
+        .testimonial {
+          text-wrap: wrap;
+          padding-bottom: 15px;
+        }
+
+        .user {
+          font-weight: bold;
+        }
+      }
+    }
+  }
 }
 
 /* Efecto de la animación */
@@ -98,58 +139,22 @@ section#about-us {
   }
 }
 
-/* Silder automático para las valoraciones de los usuarios */
-.testimonial-slider {
-  margin: 20px;
-  overflow: hidden;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-}
-
-.slides {
-  display: flex;
-  /* Efecto de desplazamiento */
-  transition: transform 0.5s ease-in-out;
-}
-
-.slide {
-  min-width: 100%;
-  box-sizing: border-box;
-  padding: 20px;
-}
-
-.slide p {
-  font-size: 1.2rem;
-  text-align: left;
-}
-
-.testimonial {
-  text-wrap: wrap;
-  padding-bottom: 15px;
-}
-
-.user {
-  font-weight: bold;
-}
-
 /* ---------- */
 /* Responsive */
 /* ---------- */
 
 @media only screen and (max-width: 1024px) {
-
   /* Sección 2 - Contenido */
 
   /* Se elimina display flex para mostar el contenido uno debajo del otro */
   section#content {
     display: block;
-  }
 
-  .posts,
-  .books {
-    width: 100%;
-    min-height: 50vh;
-    min-height: 50dvh;
+    .posts,
+    .books {
+      width: 100%;
+      min-height: 50vh;
+      min-height: 50dvh;
+    }
   }
-
 }

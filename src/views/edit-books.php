@@ -25,20 +25,13 @@ if ($_SESSION["role"] !== "admin") {
     <link rel="stylesheet" href="assets/css/forms.css">
     <script src="assets/js/books.js" type="module"></script>
 
-    <script>
-        // Pasar variables PHP a JavaScript
-        window.selectedAuthor = <?php echo isset($book["author"]) ? json_encode($book["author"]) : "null"; ?>;
-        window.selectedGenre = <?php echo isset($book["genre"]) ? json_encode($book["genre"]) : "null"; ?>;
-        window.selectedPublisher = <?php echo isset($book["publisher"]) ? json_encode($book["publisher"]) : "null"; ?>;
-    </script>
-
     <!-- Yearpicker para seleccionar el año en formato calendario -->
     <link rel="stylesheet" href="assets/css/yearpicker.css">
     <script src="assets/js/yearpicker.js" type="module"></script>
     <script>
         $(document).ready(function() {
             // Se asigna el valor del año obtenido
-            var year = <?php echo json_encode($book["year"]); ?>;
+            let year = <?php echo json_encode($book["year"]); ?>;
             $("#year").val(year);
 
             // Se inicializa el yearpicker con el rango de años y el valor seleccionado
@@ -156,10 +149,19 @@ if ($_SESSION["role"] !== "admin") {
                 </div>
                 <a href="#" id="add-link">Agregar enlace</a>
 
-                <!-- Mensajes de error / success -->
-                <div class="message error" style="display: none;"></div>
-                <div class="message success" style="display: none;"></div>
-
+                <!-- Mostrar mensajes toast al usuario según el tipo indicado en el controlador -->
+                <script>
+                    <?php
+                    $types = ["error", "success", "warning", "info"];
+                    foreach ($types as $type) {
+                        if (!empty($$type)) {
+                            echo "showToast(" . json_encode($$type) . ", \"$type\");";
+                            break;
+                        }
+                    }
+                    ?>
+                </script>
+                
                 <button type="submit" style="margin-top: 15px;">Actualizar </button>
                 <button type="button" onclick="window.history.back()">Regresar</button>
 

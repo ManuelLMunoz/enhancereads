@@ -12,6 +12,24 @@ class PostController extends Controller
         return $this->view("posts", ["page" => $page]);
     }
 
+
+    public function viewPostDetails($id)
+    {
+        $post = (new Posts())->getPostById($id);
+        return $this->view("post-details", ["post" => $post]);
+    }
+
+    // Formatear el título para la URL (Llamado en la vista)
+    private function sanitizeTitle($title)
+    {
+        // Convertir caracteres acentuados a equivalentes sin acento
+        $unaccented = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $title);
+        // Convertir a minúsculas, quitar caracteres especiales y reemplazar espacios con guiones
+        $sanitized = str_replace(" ", "-", preg_replace("/[^a-z0-9 ]/", "", strtolower($unaccented)));
+        return $sanitized;
+    }
+
+
     // ---------------------------------------------
     // Obtener y filtrar los posts según parámetros
     // ---------------------------------------------

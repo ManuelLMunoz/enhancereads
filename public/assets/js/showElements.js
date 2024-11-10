@@ -50,6 +50,10 @@ $(document).ready(() => {
     // Exponer la función de carga de datos de forma global para su uso en otros ficheros
     window.myApp = { ...window.myApp, load_data };
 
+    // Cargar los datos iniciales y manejar la navegación del historial
+    load_data(currentPage, false);
+    $(window).on("popstate", event => event.originalEvent.state?.page && load_data(event.originalEvent.state.page, false));
+
     // --------------------------------------
     // Actualizar las opciones de los filtros
     // --------------------------------------
@@ -115,10 +119,6 @@ $(document).ready(() => {
         $(target).find(".show-all").show();
         filtersExpanded[target] = false;
     });
-
-    // Cargar los datos iniciales y manejar la navegación del historial
-    load_data(currentPage, false);
-    $(window).on("popstate", event => event.originalEvent.state?.page && load_data(event.originalEvent.state.page, false));
 
     // ------------------------------------------
     // Visualización de los filtros en responsive 

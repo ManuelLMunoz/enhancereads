@@ -91,7 +91,7 @@ class AccountController extends Controller
         }
 
         // En caso de credenciales incorrectas, se retorna un error
-        return $this->view("account", ["error" => "Credenciales incorrectas", "form" => "login"]);
+        return $this->view("account", ["error" => "Las credenciales son incorrectas", "form" => "login"]);
     }
 
     // -----------------------------------------
@@ -158,9 +158,9 @@ class AccountController extends Controller
         exit();
     }
 
-    // ------------------------
+    // --------------------------------
     // Procesamiento de los formularios
-    // ------------------------
+    // --------------------------------
     public function processForm($form)
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
@@ -181,7 +181,7 @@ class AccountController extends Controller
 
         // Validación de contraseñas
         if (($form === "reset-password" || !empty($pass)) && ($pass !== $verifyPass || strlen($pass) < 8 || !preg_match("/[A-Za-z]/", $pass) || !preg_match("/[0-9]/", $pass))) {
-            return $this->view($form === "update-profile" ? "profile" : "account", ["error" => "Contraseña inválida o no coinciden", "form" => $form]);
+            return $this->view($form === "update-profile" ? "profile" : "account", ["error" => "La contraseña es inválida o no coinciden", "form" => $form]);
         }
 
         // Cifrado de la contraseña
@@ -209,7 +209,7 @@ class AccountController extends Controller
 
         // Se verifica si el email ya está registrado
         if ($registeredEmail && $registeredEmail["id"] !== $id) {
-            return $this->view("profile", ["error" => "Email ya registrado"]);
+            return $this->view("profile", ["error" => "El email ya está registrado"]);
         }
 
         // Manejo de la subida del avatar 
@@ -220,13 +220,13 @@ class AccountController extends Controller
 
             $uploadDirectory = __DIR__ . "/../../public/assets/img/avatars/";
             $avatarExtension = strtolower(pathinfo($_FILES["avatar"]["name"], PATHINFO_EXTENSION));
-            $allowedExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
+            $allowedExtensions = ["jpg", "jpeg", "png", "webp"];
 
             // Se verifica el tamaño y la extensión del archivo (Máximo 200KB)
             if (!in_array($avatarExtension, $allowedExtensions)) {
-                $avatarError = "Extensión no válida. Los archivos permitidos son: jpg, jpeg, png, gif y webp";
+                $avatarError = "Extensión no válida. Los archivos permitidos son: jpg, jpeg, png y webp";
             } elseif ($_FILES["avatar"]["size"] > 200 * 1024) {
-                $avatarError = "El tamaño máximo permitido son 200KB";
+                $avatarError = "El tamaño máximo de imagen permitido son 200KB";
             } else {
                 // Ruta y nombre del avatar
                 $avataName = "avatar_user_" . $id . ".webp";
@@ -275,7 +275,7 @@ class AccountController extends Controller
             $updates["avatar"] ?? $currentUserData["avatar"]
         )) {
             $_SESSION = array_merge($_SESSION, array_filter($updates));
-            return $this->view("profile", ["success" => "Datos actualizados"]);
+            return $this->view("profile", ["success" => "Datos actualizados con éxito"]);
         } else {
             return $this->view("profile", ["error" => "Error al actualizar los datos"]);
         }
@@ -288,17 +288,15 @@ class AccountController extends Controller
     {
         // Se verifica si el email ya está registrado
         if ($registeredEmail) {
-            return $this->view("account", ["error" => "Email ya registrado", "form" => "register"]);
+            return $this->view("account", ["error" => "El email ya está registrado", "form" => "register"]);
         }
 
         // Insertar el nuevo usuario (El rol siempre será "user")
         if ($accountManager->insertUser($user, $email, $cipheredPass, "user")) {
             // Se redirige a la vista de login y se muestra el mensaje de cambio exitoso
-            $_SESSION["success"] = "Usuario registrado";
-            unset($_SESSION["error"]);
-            return $this->view("account", ["form" => "login"]);
+            return $this->view("account", ["success" => "Usuario registrado con éxito", "form" => "login"]);
         } else {
-            return $this->view("account", ["error" => "Error al registrar usuario", "form" => "register"]);
+            return $this->view("account", ["error" => "Error al registrar el usuario", "form" => "register"]);
         }
     }
 
@@ -309,14 +307,12 @@ class AccountController extends Controller
     {
         // Si el email no está registrado o si el usuario tiene el rol "google", no se permite cambiar la contraseña
         if (!$registeredEmail || $accountManager->getUserRole($email) === "google") {
-            return $this->view("account", ["error" => "Email inválido", "form" => "reset-password"]);
+            return $this->view("account", ["error" => "El email es inválido", "form" => "reset-password"]);
         }
         // Actualizar la contraseña del usuario en la BBDD
         if ($accountManager->updatePassword($email, $cipheredPass)) {
             // Se redirige a la vista de login y se muestra el mensaje de cambio exitoso
-            $_SESSION["success"] = "Contraseña actualizada";
-            unset($_SESSION["error"]);
-            return $this->view("account", ["form" => "login"]);
+            return $this->view("account", ["success" => "Contraseña actualizada con éxito", "form" => "login"]);
         } else {
             return $this->view("account", ["error" => "Error al actualizar la contraseña", "form" => "reset-password"]);
         }

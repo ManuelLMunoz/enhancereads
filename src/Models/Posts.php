@@ -137,6 +137,44 @@ class Posts extends Connection
         return $this->connection->query("SELECT DISTINCT language FROM posts")->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    // Obtener post por ID
+    public function getPostById($id)
+    {
+        try {
+            // Consulta base para obtener el post
+            $baseQuery = "FROM posts p
+                LEFT JOIN genres g ON p.genre = g.id
+                LEFT JOIN users u ON p.user = u.id
+                WHERE p.id = ?";
+    
+            // Consulta para obtener los datos del post por ID
+            $postQuery = "SELECT p.id, p.title, p.content, p.user as user_id, u.user as user_name, p.language, p.created_at, g.name as genre, u.avatar as user_avatar, p.edited_at
+                          $baseQuery";
+    
+            $stmt = $this->connection->prepare($postQuery);
+            $stmt->execute([$id]);
+            $post = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+            // Si el post se encuentra, agregar datos adicionales
+            if ($post) {
+                // Obtener likes y comentarios relacionados con este post
+                $post["likes_count"] = $this->getPostLikes($post["id"]);
+                $currentUserId = $_SESSION["id"] ?? null;
+                $commentsData = $this->getPostComments($post["id"], $currentUserId);
+                $post["comments"] = $commentsData["commentTree"];
+                $post["comments_count"] = $commentsData["totalCount"];
+                $post["word_count"] = str_word_count($post["content"]);
+                $post["user_liked"] = $this->isLikePost($currentUserId, $post["id"]);
+                $post["edited_at"] = $post["edited_at"] ?? null;
+            }
+    
+            return $post;
+        } catch (PDOException $e) {
+            error_log("Error al obtener el post: " . $e->getMessage());
+            return null;
+        }
+    }
+
     // -------------
     // Insertar post
     // -------------
@@ -194,7 +232,7 @@ class Posts extends Connection
     public function getPostComments($postId, $currentUserId = null)
     {
         try {
-            $query = "SELECT pc.id, pc.comment, pc.created_at, pc.edited_at, pc.parent_comment_id, u.user as user_name, u.avatar as user_avatar,
+            $query = "SELECT pc.id, pc.user_id, pc.comment, pc.created_at, pc.edited_at, pc.parent_comment_id, u.user as user_name, u.avatar as user_avatar,
                 CASE WHEN pc.user_id = ? THEN 1 ELSE 0 END as is_user_comment,
                 (SELECT COUNT(*) FROM post_likes WHERE comment_id = pc.id) as likes_count,
                 CASE WHEN EXISTS (SELECT 1 FROM post_likes WHERE comment_id = pc.id AND user_id = ?) THEN 1 ELSE 0 END as user_liked

@@ -30,18 +30,6 @@ if (session_status() === PHP_SESSION_NONE) {
                     <img src="assets/img/books/<?php echo $book["cover"]; ?>" alt="Portada del libro">
                 </a>
 
-                <!-- Si el usuario es "admin" se mostrarán los botones para editar y borrar los libros -->
-                <?php if (isset($_SESSION["role"]) && $_SESSION["role"] == "admin") : ?>
-                    <div class="manage-buttons">
-                        <a class="edit-button" href="edit-books/<?php echo $book["id"]; ?>">
-                            <i class="fa-solid fa-edit"></i> Editar
-                        </a>
-                        <a class="delete-button" href="#" data-id="<?php echo $book["id"]; ?>">
-                            <i class="fa-solid fa-trash"></i> Borrar
-                        </a>
-                    </div>
-                <?php endif; ?>
-
                 <!-- Datos del libro -->
                 <p id="title"><?php echo $book["title"]; ?></p>
                 <p><strong>Autor:</strong> <?php echo $book["author_name"]; ?></p>
@@ -99,11 +87,3 @@ if (session_status() === PHP_SESSION_NONE) {
     <p>No se encontraron libros 😥</p>
 <?php endif; ?>
 
-<!-- Modal de confirmación del borrado del libro -->
-<div id="delete-modal" class="modal hidden">
-    <div class="delete-content content">
-        <p id="delete-message">¿Está seguro de borrar este libro?</p>
-        <button id="confirm-delete" class="confirm-button">Eliminar</button>
-        <button id="cancel-delete" class="cancel-button">Cancelar</button>
-    </div>
-</div>

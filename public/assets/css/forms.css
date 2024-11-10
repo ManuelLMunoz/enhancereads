@@ -23,102 +23,109 @@ section#main {
   padding: 1rem;
   background-color: rgba(193, 237, 255, 0.5);
   border-radius: 5px;
-  /* Borde sombreado */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-}
 
-.form h1 {
-  padding-bottom: 30px;
-  text-transform: uppercase;
-}
+  h1 {
+    padding-bottom: 30px;
+    text-transform: uppercase;
+  }
 
-.form p,
-.form a {
-  padding: 5px 0;
-  font-size: 1.1rem;
-  font-weight: bold;
-}
+  p,
+  a {
+    padding: 5px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
 
-/* Campos del formulario */
-.form input,
-.form select,
-input[type="url"] {
-  width: 100%;
-  background: transparent;
-  font-size: 1.1rem;
-  border-bottom: 2px solid black;
-  flex: 1;
-  /* Espacio a la izquierda para evitar escribir encima del icono */
-  padding: 10px 10px 10px 40px;
-  box-sizing: border-box;
-}
+  /* Campos del formulario */
+  input,
+  select,
+  input[type="url"] {
+    width: 100%;
+    background: transparent;
+    font-size: 1.1rem;
+    border-bottom: 2px solid black;
+    flex: 1;
+    /* Espacio a la izquierda para evitar escribir encima del icono */
+    padding: 10px 10px 10px 40px;
+    box-sizing: border-box;
+  }
 
-input::placeholder {
-  color: black;
-}
+  input::placeholder {
+    color: black;
+  }
 
-.form input[type="file"] {
-  font-size: 0.9rem;
-}
+  input[type="file"] {
+    font-size: 0.9rem;
+  }
 
-.form textarea {
-  margin-top: 5px;
-  padding: 10px;
-  height: 200px;
-  width: 100%;
-  resize: none;
-  border: 1px solid black;
-  border-radius: 4px;
-  background: transparent;
-}
+  textarea {
+    margin-top: 5px;
+    padding: 10px;
+    height: 200px;
+    width: 100%;
+    resize: none;
+    border: 1px solid black;
+    border-radius: 4px;
+    background: transparent;
+  }
 
-.link-input {
-  position: relative;
-  margin-bottom: 5px;
-}
+  .link-input {
+    position: relative;
+    margin-bottom: 5px;
+  }
 
-/* Etiquetas de los campos */
-.form label {
-  display: block;
-  align-items: center;
-  margin-bottom: 15px;
-  position: relative;
-  text-transform: uppercase;
-  font-weight: bold;
-}
+  /* Etiquetas de los campos */
+  label {
+    display: block;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+    text-transform: uppercase;
+    font-weight: bold;
 
-/* Iconos de los campos */
-.form label .icon,
-.remove-link-icon-container {
-  position: absolute;
-  left: 10px;
-  /* Ajusta el icono verticalmente */
-  top: 50%;
-  font-size: 18px;
-}
+    .icon {
+      position: absolute;
+      left: 10px;
+      /* Ajusta el icono verticalmente */
+      top: 50%;
+      font-size: 18px;
+    }
 
-.remove-link-icon-container {
-  transform: translateY(-50%);
-  cursor: pointer;
-}
+    /* Ícono para mostrar la contraseña */
+    .show-pass {
+      left: 90%;
+      cursor: pointer;
+    }
+  }
 
-/* Botones del formulario */
-/* ---------------------- */
-.form button,
-.form .google-button {
-  margin: 5px 0;
-  padding: 10px;
-  cursor: pointer;
-  width: 100%;
-  color: white;
-  background: rgba(0, 0, 0, 0.7);
-  border-radius: 5px;
-  font-size: 1rem;
-  transition: background-color 0.3s;
-  box-sizing: border-box;
+  .remove-link-icon-container {
+    transform: translateY(-50%);
+    cursor: pointer;
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    font-size: 18px;
+  }
 
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.9);
+  /* Botones del formulario */
+  /* ---------------------- */
+  button,
+  .google-button {
+    margin: 5px 0;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    box-sizing: border-box;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.9);
+    }
   }
 }
 
@@ -128,12 +135,12 @@ input::placeholder {
   justify-content: center;
   align-items: center;
   text-decoration: none;
-}
 
-.google-icon {
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
+  .google-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+  }
 }
 
 /* Formulario 2FA para el usuario admin */
@@ -142,32 +149,28 @@ input::placeholder {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
 
-.OTP img {
-  width: 100%;
-  max-width: 220px;
-  height: auto;
-  margin: 20px 0;
-}
+  img {
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    margin: 20px 0;
+  }
 
-.OTP input {
-  padding: 0;
-  text-align: center;
-  margin-top: 20px;
-  width: 50%;
+  input {
+    padding: 0;
+    text-align: center;
+    margin-top: 20px;
+    width: 50%;
+  }
 }
 
 /* Estilos para los formularios de "manage-books" */
-/* --------------------------------------------- */
-.hidden {
-  display: none;
-}
-
+/* ---------------------------------------------- */
 .form-option {
   cursor: pointer;
-}
 
-.form-option.active {
-  border-bottom: 2px solid black;
+  &.active {
+    border-bottom: 2px solid black;
+  }
 }

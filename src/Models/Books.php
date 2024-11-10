@@ -170,12 +170,16 @@ class Books extends Connection
     }
 
 
-    public function addBook($title, $authorId, $genreId, $publisher, $pages, $year, $cover, $link, $language, $description, $isbn)
+    public function addBook($title, $authorId, $genreId, $publisher, $pages, $year, $cover, $links, $language, $description, $isbn)
     {
+        // Convertimos el array de enlaces a JSON
+        $link = json_encode($links);
+
         $query = "INSERT INTO books (title, author, genre, publisher, pages, year, cover, link, language, description, isbn) 
-                  VALUES (:title, :authorId, :genreId, :publisher, :pages, :year, :cover, :link, :language , :description, :isbn)";
+                  VALUES (:title, :authorId, :genreId, :publisher, :pages, :year, :cover, :link, :language, :description, :isbn)";
         try {
             $stmt = $this->connection->prepare($query);
+            // Compact con 'link' en lugar de 'linksJson'
             $stmt->execute(compact("title", "authorId", "genreId", "publisher", "pages", "year", "cover", "link", "language", "description", "isbn"));
             return ["id" => $this->connection->lastInsertId()];
         } catch (PDOException $e) {
@@ -183,7 +187,7 @@ class Books extends Connection
             return false;
         }
     }
-
+    
     // -----------------
     // Actualizar libros
     // -----------------

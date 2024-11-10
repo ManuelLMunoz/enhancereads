@@ -81,7 +81,7 @@ $currentUserId = $_SESSION["id"] ?? null;
 
                     <!-- Título y contenido del post -->
                     <div class="post-content">
-                        <h2><?php echo htmlspecialchars($post["title"]); ?></h2>
+                        <h2 class="post-title"><?php echo htmlspecialchars($post["title"]); ?></h2>
                         <p class="formatted-text"><?php echo htmlspecialchars($post["content"]); ?></p>
                     </div>
 
