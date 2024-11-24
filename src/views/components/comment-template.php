@@ -1,29 +1,24 @@
 <?php
 // Este archivo se encargará de renderizar los comentarios (Fichero separado para poder ser reutilizado)
-
-// Se define la función para mostrar los comentarios si no existe
 if (!function_exists("renderComments")) {
-    function renderComments($comments, $postsModel)
+    function renderComments($comments)
     {
-        // Bucle que itera sobre cada comentario
+        // Iterar sobre cada comentario
         foreach ($comments as $comment) : ?>
             <div class="comment" id="comment-<?php echo htmlspecialchars($comment["id"]); ?>">
 
-                <!-- Datos del usuario -->
                 <div class="user-data">
-                    <img class="user-avatar" src="/assets/img/avatars/<?php echo htmlspecialchars($comment["user_avatar"]); ?>" alt="Avatar de <?php echo htmlspecialchars($comment["user_name"]); ?>">
+                    <img class="user-avatar" src="/assets/img/avatars/<?php echo htmlspecialchars($comment["user_avatar"]); ?>"
+                        alt="Avatar de <?php echo htmlspecialchars($comment["user_name"]); ?>">
                     <div class="user-details">
                         <p><strong><?php echo htmlspecialchars($comment["user_name"]); ?></strong></p>
                         <p class="timestamp">
-                            <?php echo $postsModel->formatDateAgo($comment["created_at"]); ?>
-                            <?php if (!empty($comment["edited_at"])): ?>
-                                (editado)
-                            <?php endif; ?>
+                            <?php echo htmlspecialchars($comment["formatted_date"]); ?>
+                            <?php echo !empty($comment["is_edited"]) ? htmlspecialchars($comment["is_edited"]) : ""; ?>
                         </p>
                     </div>
                 </div>
 
-                <!-- Contenido del comentario -->
                 <p class="formatted-text comment-content"><?php echo htmlspecialchars($comment["comment"]); ?></p>
 
                 <!-- Si el comentario pertenece al usuario logado, se muestran los botones de administración -->
@@ -58,7 +53,7 @@ if (!function_exists("renderComments")) {
                 <!-- Si el comentario tiene respuestas, se muestran de forma anidada -->
                 <?php if (!empty($comment["children"])) : ?>
                     <div class="comment-children">
-                        <?php renderComments($comment["children"], $postsModel); ?>
+                        <?php renderComments($comment["children"]); ?>
                     </div>
                 <?php endif; ?>
             </div>
@@ -69,12 +64,9 @@ if (!function_exists("renderComments")) {
 
 // Se define la función para mostrar los comentarios disponibles si no existe
 if (!function_exists("renderCommentsIfAvailable")) {
-    function renderCommentsIfAvailable($comments, $postsModel)
+    function renderCommentsIfAvailable($comments)
     {
-        // Si existen comentarios, se muestran llamando a la función "renderComments()"
-        if (!empty($comments)) {
-            renderComments($comments, $postsModel);
-        }
+        if ($comments) renderComments($comments);
     }
 }
 ?>

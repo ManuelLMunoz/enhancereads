@@ -1,4 +1,3 @@
-/* Se importan los estilos base */
 @import url("base.css");
 
 /* Sección principal */
@@ -19,6 +18,7 @@ section#main {
 /* ----------- */
 .form {
   max-width: 370px;
+  width: 90%;
   margin: 0 auto 60px;
   padding: 1rem;
   background-color: rgba(193, 237, 255, 0.5);
@@ -51,10 +51,6 @@ section#main {
     box-sizing: border-box;
   }
 
-  input::placeholder {
-    color: black;
-  }
-
   input[type="file"] {
     font-size: 0.9rem;
   }
@@ -68,11 +64,6 @@ section#main {
     border: 1px solid black;
     border-radius: 4px;
     background: transparent;
-  }
-
-  .link-input {
-    position: relative;
-    margin-bottom: 5px;
   }
 
   /* Etiquetas de los campos */
@@ -92,11 +83,19 @@ section#main {
       font-size: 18px;
     }
 
-    /* Ícono para mostrar la contraseña */
     .show-pass {
       left: 90%;
       cursor: pointer;
     }
+  }
+
+  .link-input {
+    position: relative;
+    margin-bottom: 5px;
+  }
+
+  input::placeholder {
+    color: black;
   }
 
   .remove-link-icon-container {
@@ -109,7 +108,6 @@ section#main {
   }
 
   /* Botones del formulario */
-  /* ---------------------- */
   button,
   .google-button {
     margin: 5px 0;
@@ -129,7 +127,6 @@ section#main {
   }
 }
 
-/* Botón de Google */
 .google-button {
   display: flex;
   justify-content: center;
@@ -143,13 +140,15 @@ section#main {
   }
 }
 
-/* Formulario 2FA para el usuario admin */
-/* ------------------------------------ */
+/* -------------------- */
+/* Formulario 2FA (OTP) */
+/* -------------------- */
 .OTP {
   display: flex;
   flex-direction: column;
   align-items: center;
 
+  /* Imagen QR */
   img {
     width: 100%;
     max-width: 220px;
@@ -165,6 +164,7 @@ section#main {
   }
 }
 
+/* ---------------------------------------------- */
 /* Estilos para los formularios de "manage-books" */
 /* ---------------------------------------------- */
 .form-option {

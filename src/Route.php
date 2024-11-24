@@ -2,7 +2,6 @@
 
 namespace Src;
 
-// Clase para gestionar las rutas de la aplicación
 class Route
 {
     // Array para almacenar las rutas según el método HTTP (GET y POST)
@@ -17,13 +16,11 @@ class Route
         self::$routes[$method][trim($uri, "/")] = $callback;
     }
 
-    // Registrar una ruta GET
     public static function get($uri, $callback)
     {
         self::addRoute("GET", $uri, $callback);
     }
 
-    // Registrar una ruta POST
     public static function post($uri, $callback)
     {
         self::addRoute("POST", $uri, $callback);
@@ -55,7 +52,7 @@ class Route
                     ? $callback(...array_values($params))
                     : (new $callback[0])->{$callback[1]}(...array_values($params));
 
-                // Enviar la respuesta en formato JSON o texto plano en caso contrario
+                // Enviar la respuesta en formato JSON o en caso contrario en texto plano
                 if (is_array($response) || is_object($response)) {
                     header("Content-Type: application/json");
                     echo json_encode($response);

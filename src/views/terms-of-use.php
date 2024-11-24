@@ -2,23 +2,16 @@
 <html lang="es">
 
 <head>
-    <!-- Configuración base -->
     <?php require_once("components/head.php"); ?>
-
-    <!-- Configuración concreta -->
     <title>Términos y condiciones</title>
     <link rel="stylesheet" href="assets/css/legal.css">
-
 </head>
 
 <body>
-    <!-- Sección 1 - Inicio -->
-    <section id="main">
 
-        <!-- Menú de navegación -->
+    <section id="main">
         <?php require_once("components/navbar.php"); ?>
 
-        <!-- Logo y slogan de la marca -->
         <div class="brand">
             <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logo de la marca"></a></h1>
             <h2><img id="slogan" src="assets/img/slogan.webp" alt="Slogan de la marca"></h2>
@@ -26,7 +19,6 @@
 
     </section>
 
-    <!-- Sección 2 - Contenido -->
     <section id="content">
 
         <h1>Términos y condiciones</h1>
@@ -49,7 +41,7 @@
             <p>Nuestro sitio puede contener enlaces a sitios web de terceros. No nos hacemos responsables del contenido o las prácticas de privacidad de estos sitios.</p>
 
             <h2>6. Limitación de responsabilidad</h2>
-            <p>Enhancereads se proporciona "tal cual", sin garantías de ningún tipo. No nos hacemos responsables de cualquier daño directo, indirecto, incidental o consecuente que pueda surgir del uso de nuestro sitio.</p>
+            <p>No nos hacemos responsables de cualquier daño directo, indirecto, incidental o consecuente que pueda surgir del uso de nuestro sitio.</p>
 
             <h2>7. Modificaciones</h2>
             <p>Nos reservamos el derecho de modificar estos términos y condiciones en cualquier momento. Los cambios entrarán en vigor inmediatamente después de su publicación en el sitio web.</p>
@@ -60,7 +52,6 @@
 
     </section>
 
-    <!-- Footer -->
     <?php require_once("components/footer.php"); ?>
 
 </body>

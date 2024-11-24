@@ -2,40 +2,32 @@
 <html lang="es">
 
 <head>
-    <!-- Configuración base -->
     <?php require_once("components/head.php"); ?>
-
-    <!-- Configuración concreta -->
     <title><?php echo $book["title"]; ?></title>
-    <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/content.css">
     <link rel="stylesheet" href="assets/css/books.css">
-    <script src="assets/js/books.js"></script>
-
+    <script src="assets/js/books.js" type="module"></script>
 </head>
 
 <body>
-    <!-- Sección 1 - Inicio -->
+    
     <section id="main">
-
-        <!-- Menú de navegación -->
         <?php require_once("components/navbar.php"); ?>
 
-        <!-- Logo y slogan de la marca -->
         <div class="brand">
             <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logotipo de la marca"></a></h1>
             <h2 id="type">Detalles del Libro</h2>
         </div>
     </section>
 
-    <!-- Sección 2 - Contenido -->
     <section id="content">
+
         <div class="book-details">
 
             <div class="book-cover-container">
                 <img class="book-cover" src="assets/img/books/<?php echo $book["cover"]; ?>" alt="Portada del libro">
 
-                <!-- Si el usuario es "admin" se mostrarán los botones para editar y borrar los libros -->
+                <!-- Botones para editar y borrar libros (Solo disponible para administradores) -->
                 <?php if (isset($_SESSION["role"]) && $_SESSION["role"] == "admin") : ?>
                     <div class="manage-buttons">
                         <a class="edit-button" href="edit-books/<?php echo $book["id"]; ?>">
@@ -47,21 +39,6 @@
                     </div>
                 <?php endif; ?>
 
-            </div>
-
-            <!-- Modal de confirmación del borrado del libro -->
-            <div id="delete-modal" class="modal hidden">
-                <div class="delete-content content">
-                    <p id="delete-message">¿Está seguro de borrar este libro?</p>
-                    <button id="confirm-delete" class="confirm-button">Eliminar</button>
-                    <button id="cancel-delete" class="cancel-button">Cancelar</button>
-                </div>
-            </div>
-
-            <!-- Contenedor para mostrar la imagen ampliada -->
-            <div id="image-modal" class="zoom-modal">
-                <i class="fas fa-times close-button"></i>
-                <img src="" alt="Portada ampliada">
             </div>
 
             <div class="book-info">
@@ -76,7 +53,6 @@
                 <p><?php echo !empty($book["isbn"]) ? "<strong>ISBN:</strong> " . htmlspecialchars($book["isbn"]) : ""; ?></p>
 
                 <?php
-                // Decodificar el JSON en un array
                 $links = json_decode($book["link"], true);
 
                 if (!empty($links) && is_array($links)): ?>
@@ -91,10 +67,10 @@
                             "buscalibre" => "assets/img/buscalibre.webp",
                         ];
 
-                        // Iterar sobre los enlaces y mostrar el logo correspondiente segun la URL
+                        // Iterar sobre los enlaces de compra y mostrar el logo correspondiente
                         foreach ($links as $link): ?>
                             <div class="link-item">
-                                <a href="<?php echo htmlspecialchars($link); ?>" target="_blank">
+                                <a href="<?php echo htmlspecialchars($link); ?>" target="_blank" rel="noopener noreferrer">
                                     <?php
                                     $logo = "";
                                     foreach ($logos as $keyword => $url) {
@@ -103,7 +79,7 @@
                                             break;
                                         }
                                     }
-                                    echo $logo ?: htmlspecialchars($link); // Mostrar el logo o el enlace si no existe imagen
+                                    echo $logo ?: htmlspecialchars($link);
                                     ?>
                                 </a>
                             </div>
@@ -116,13 +92,29 @@
                     <div class="description" id="description">
                         <?php echo nl2br(htmlspecialchars($book["description"])); ?>
                     </div>
-                    <span class="view-more" onclick="toggleDescription(this)">Ver más</span>
+                    <span class="view-more">Ver más</span>
                 <?php endif; ?>
 
             </div>
+        </div>
+
+        <!-- Modal de confirmación del borrado del libro -->
+        <div id="delete-modal" class="modal hidden">
+            <div class="delete-content content">
+                <p id="delete-message">¿Está seguro de borrar este libro?</p>
+                <button id="confirm-delete" class="confirm-button">Eliminar</button>
+                <button id="cancel-delete" class="cancel-button">Cancelar</button>
+            </div>
+        </div>
+
+        <!-- Contenedor para mostrar la imagen ampliada -->
+        <div id="image-modal" class="img-zoom-modal">
+            <i class="fas fa-times close-button"></i>
+            <img src="" alt="Portada ampliada">
+        </div>
+        
     </section>
 
-    <!-- Footer -->
     <?php require_once("components/footer.php"); ?>
 
 </body>

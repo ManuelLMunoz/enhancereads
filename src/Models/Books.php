@@ -23,7 +23,7 @@ class Books extends Connection
             $filters = [
                 "author" => ["field" => "a.id", "values" => $params["author"] ?? []],
                 "genre" => ["field" => "g.id", "values" => $params["genre"] ?? []],
-                "publisher" => ["field" => "p.id", "values" => $params["publisher"] ?? []], // Publisher filter added
+                "publisher" => ["field" => "p.id", "values" => $params["publisher"] ?? []],
                 "language" => ["field" => "b.language", "values" => $params["language"] ?? []],
                 "pages" => ["field" => "b.pages", "values" => $params["pages"] ?? null]
             ];
@@ -33,26 +33,20 @@ class Books extends Connection
             $filterValues = [];
             foreach ($filters as $filter) {
                 if (!empty($filter["values"])) {
-                    if (is_array($filter["values"])) {
-                        // Para filtros con múltiples valores (IN)
-                        $placeholders = implode(",", array_fill(0, count($filter["values"]), "?"));
-                        $filterClauses[] = "{$filter["field"]} IN ($placeholders)";
-                        $filterValues = array_merge($filterValues, $filter["values"]);
-                    } else {
-                        // Para filtros de valor único (mayor que o igual a)
-                        $operator = $filter["values"] > 0 ? ">" : "=";
-                        $filterClauses[] = "{$filter["field"]} $operator ?";
-                        $filterValues[] = $filter["values"] > 0 ? $filter["values"] - 1 : $filter["values"];
-                    }
+                    // Usar "IN" para múltiples valores, o ">" / "=" para filtros de valores únicos
+                    $placeholders = is_array($filter["values"]) ? implode(",", array_fill(0, count($filter["values"]), "?")) : "?";
+                    $operator = is_array($filter["values"]) ? "IN" : ($filter["values"] > 0 ? ">" : "=");
+                    // Agregar la cláusula y los valores de filtro
+                    $filterClauses[] = "{$filter["field"]} $operator ($placeholders)";
+                    $filterValues = array_merge($filterValues, is_array($filter["values"]) ? $filter["values"] : [$filter["values"] > 0 ? $filter["values"] - 1 : $filter["values"]]);
                 }
             }
-            $filterQuery = !empty($filterClauses) ? "AND " . implode(" AND ", $filterClauses) : "";
+            // Combinar las cláusulas con "AND" para la consulta final
+            $filterQuery = $filterClauses ? "AND " . implode(" AND ", $filterClauses) : "";
 
-            // Consulta base común para libros y conteo total
             $baseQuery = "FROM books b LEFT JOIN authors a ON b.author = a.id LEFT JOIN genres g ON b.genre = g.id 
             LEFT JOIN publishers p ON b.publisher = p.id  WHERE (b.title LIKE ? OR a.name LIKE ?) $filterQuery";
 
-            // Consulta para obtener los libros
             $booksQuery = "SELECT b.id, b.title, b.pages, b.year, b.cover, b.link, b.language, a.name as author_name, 
             g.name as genre_name, p.name as publisher_name $baseQuery ORDER BY b.title $order LIMIT ? OFFSET ?";
 
@@ -74,6 +68,7 @@ class Books extends Connection
             $totalStmt->execute();
             $total = $totalStmt->fetch(PDO::FETCH_ASSOC)["total"];
 
+            // Devolver los libros y el conteo total
             return ["books" => $books, "total" => $total];
         } catch (PDOException $e) {
             error_log("Error al mostrar los libros: " . $e->getMessage());
@@ -85,28 +80,24 @@ class Books extends Connection
     // Búsquedas
     // ---------
 
-    // Autores que tienen al menos un libro publicado
     public function getAuthors()
     {
         $query = "SELECT DISTINCT a.id, a.name FROM authors a JOIN books b ON a.id = b.author ORDER BY a.name";
         return $this->connection->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Todos los autores
     public function getAllAuthors()
     {
         $query = "SELECT DISTINCT id, name FROM authors ORDER BY name";
         return $this->connection->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Géneros que aparecen al menos en un libro
     public function getGenres()
     {
         $query = "SELECT DISTINCT g.id, g.name FROM genres g JOIN books b ON g.id = b.genre ORDER BY g.name";
         return $this->connection->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Todos los géneros
     public function getAllGenres()
     {
         $query = "SELECT DISTINCT id, name FROM genres ORDER BY name";
@@ -119,15 +110,12 @@ class Books extends Connection
         return $this->connection->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Todas las editoriales
     public function getAllPublishers()
     {
         $query = "SELECT DISTINCT id, name FROM publishers ORDER BY name";
         return $this->connection->query($query)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
-    // Todos los idiomas
     public function getLanguages()
     {
         $query = "SELECT DISTINCT language FROM books";
@@ -172,14 +160,12 @@ class Books extends Connection
 
     public function addBook($title, $authorId, $genreId, $publisher, $pages, $year, $cover, $links, $language, $description, $isbn)
     {
-        // Convertimos el array de enlaces a JSON
         $link = json_encode($links);
 
         $query = "INSERT INTO books (title, author, genre, publisher, pages, year, cover, link, language, description, isbn) 
                   VALUES (:title, :authorId, :genreId, :publisher, :pages, :year, :cover, :link, :language, :description, :isbn)";
         try {
             $stmt = $this->connection->prepare($query);
-            // Compact con 'link' en lugar de 'linksJson'
             $stmt->execute(compact("title", "authorId", "genreId", "publisher", "pages", "year", "cover", "link", "language", "description", "isbn"));
             return ["id" => $this->connection->lastInsertId()];
         } catch (PDOException $e) {
@@ -187,7 +173,7 @@ class Books extends Connection
             return false;
         }
     }
-    
+
     // -----------------
     // Actualizar libros
     // -----------------
@@ -233,17 +219,15 @@ class Books extends Connection
     public function deleteBook($id)
     {
         try {
-            // Obtener la portada del libro
+            // Obtener y borrar la portada del libro si existe
             $stmt = $this->connection->prepare("SELECT cover FROM books WHERE id = :id");
             $stmt->execute(compact("id"));
             $cover = $stmt->fetchColumn();
 
-            // Eliminar la portada del servidor si existe
             if ($cover && file_exists($coverPath = __DIR__ . "/../../public/assets/img/books/" . $cover)) {
                 unlink($coverPath);
             }
 
-            // Eliminar el libro
             $stmt = $this->connection->prepare("DELETE FROM books WHERE id = :id");
             return $stmt->execute(compact("id"));
         } catch (PDOException $e) {

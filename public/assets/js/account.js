@@ -3,41 +3,45 @@ document.addEventListener("DOMContentLoaded", () => {
   // -------------------------------------------------------
   // Cargar el formulario seleccionado o "login" por defecto
   // -------------------------------------------------------
-  const form = document.querySelector("#main").dataset.activeForm || "login";
-  toggleForm(form, false);
-  history.replaceState({ form }, "", `/${form}`); // Se actualiza el historial
+  const activeForm = document.querySelector("#main").dataset.activeForm || "login";
 
-  // Mostrar/ocultar los formularios según el seleccionado
-  function toggleForm(formName, updateHistory = true) {
-    ["login", "register", "reset-password"].forEach(form => {
-      const formElement = document.getElementById(`${form}-form`);
-      if (formElement) {
-        formElement.style.display = form === formName ? "block" : "none";
+  // Alternar la visibilidad de los formularios
+  const toggleForm = (formName, updateHistory = true) => {
+    const forms = ["login", "register", "reset-password"];
+    forms.forEach(form => {
+      const element = document.getElementById(`${form}-form`);
+      if (element) {
+        element.style.display = form === formName ? "block" : "none";
       }
-      document.querySelectorAll(`.error-${form}`).forEach(el => el.innerHTML = "");
     });
 
-    // Se actualiza el historial si está habilitado
-    updateHistory && history.pushState({ form: formName }, "", `/${formName}`);
+    // Actualizar la URL sin recargar la página
+    const historyMethod = updateHistory ? "pushState" : "replaceState";
+    history[historyMethod]({ form: formName }, "", `/${formName}`);
   }
 
+  // Mostrar el formulario correcto cuando hay un cambio en el historial sin actualizarlo
+  toggleForm(activeForm, false);
+  window.onpopstate = ({ state }) => toggleForm(state?.form || "login", false);
+
+  // ---------------------------------------------------
   // Manejar los clics en los enlaces de los formularios
-  ["forgot-password-link", "register-link", "back-login-from-register", "back-login-from-reset-pass"].forEach(id => {
+  // ---------------------------------------------------
+
+  // Objeto con los enlaces y sus respectivos formularios
+  const links = {
+    "forgot-password-link": "reset-password",
+    "register-link": "register",
+    "back-login-from-register": "login",
+    "back-login-from-reset-pass": "login"
+  };
+
+  // Iterar y agregar los eventos de clic a los enlaces
+  Object.entries(links).forEach(([id, form]) => {
     document.getElementById(id)?.addEventListener("click", (event) => {
       event.preventDefault();
-      toggleForm(
-        id === "forgot-password-link" ? "reset-password" :
-          id === "back-login-from-register" ? "login" :
-            id === "back-login-from-reset-pass" ? "login" :
-              "register"
-      );
+      toggleForm(form);
     });
-  });
-
-  // Mostrar el formulario correcto sin actualizar de nuevo el historial
-  window.addEventListener("popstate", (event) => {
-    const formName = event.state?.form || "login";
-    toggleForm(formName, false);
   });
 
 });

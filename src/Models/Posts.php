@@ -21,6 +21,7 @@ class Posts extends Connection
             $filters = [
                 "genre" => ["field" => "g.id", "values" => $params["genre"] ?? []],
                 "language" => ["field" => "p.language", "values" => $params["language"] ?? []],
+                // Conteo de palabras del post para el filtro 
                 "words" => ["field" => "LENGTH(p.content) - LENGTH(REPLACE(p.content, \" \", \"\")) + 1", "values" => $params["words"] ?? null],
                 "favorites" => ["field" => "p.id", "values" => $userId && $params["liked"] == "on" ? $userId : null]
             ];
@@ -30,29 +31,24 @@ class Posts extends Connection
             $filterValues = [];
             foreach ($filters as $filterName => $filter) {
                 if (!empty($filter["values"])) {
+                    // Filtro específico para favoritos
                     if ($filterName === "favorites" && $userId && $params["liked"] == "on") {
-                        // Filtro específico para favoritos
                         $filterClauses[] = "{$filter['field']} IN (SELECT post_id FROM post_likes WHERE user_id = ? AND comment_id IS NULL)";
                         $filterValues[] = $userId;
-                    } elseif (is_array($filter["values"])) {
-                        // Para filtros con múltiples valores (IN)
-                        $placeholders = implode(",", array_fill(0, count($filter["values"]), "?"));
-                        $filterClauses[] = "{$filter["field"]} IN ($placeholders)";
-                        $filterValues = array_merge($filterValues, $filter["values"]);
                     } else {
-                        // Para filtros de valor único (mayor o igual a)
-                        $operator = $filter["values"] > 0 ? ">=" : "=";
-                        $filterClauses[] = "{$filter["field"]} $operator ?";
-                        $filterValues[] = $filter["values"];
+                        // Filtros con múltiples valores o valor único
+                        $placeholders = is_array($filter["values"]) ? implode(",", array_fill(0, count($filter["values"]), "?")) : "?";
+                        $operator = is_array($filter["values"]) ? "IN" : ($filter["values"] > 0 ? ">=" : "=");
+                        $filterClauses[] = "{$filter["field"]} $operator ($placeholders)";
+                        $filterValues = array_merge($filterValues, is_array($filter["values"]) ? $filter["values"] : [$filter["values"]]);
                     }
                 }
             }
-            $filterQuery = !empty($filterClauses) ? "AND " . implode(" AND ", $filterClauses) : "";
+            // Combinar las cláusulas con "AND" para la consulta final
+            $filterQuery = $filterClauses ? "AND " . implode(" AND ", $filterClauses) : "";
 
-            // Consulta base común para posts
             $baseQuery = "FROM posts p LEFT JOIN genres g ON p.genre = g.id LEFT JOIN users u ON p.user = u.id WHERE (p.title LIKE ? OR u.user LIKE ?) $filterQuery";
 
-            // Consulta para obtener los posts
             $postsQuery = "SELECT p.id, p.title, p.content, p.user as user_id, u.user as user_name, p.language, p.created_at, g.name as genre, u.avatar as user_avatar, p.edited_at
                $baseQuery ORDER BY p.created_at $order LIMIT ? OFFSET ?";
 
@@ -64,13 +60,12 @@ class Posts extends Connection
             $stmt->execute();
             $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Procesamiento adicional de posts
             if (session_status() == PHP_SESSION_NONE) {
                 session_start();
             }
 
+            // Obtener los likes y comentarios relacionados con cada post
             $currentUserId = $_SESSION["id"] ?? null;
-
             foreach ($posts as &$post) {
                 $post["likes_count"] = $this->getPostLikes($post["id"]);
                 $commentsData = $this->getPostComments($post["id"], $currentUserId);
@@ -79,6 +74,9 @@ class Posts extends Connection
                 $post["word_count"] = str_word_count($post["content"]);
                 $post["user_liked"] = $this->isLikePost($currentUserId, $post["id"]);
                 $post["edited_at"] = $post["edited_at"] ?? null;
+                // Formatear la fecha del post antes de pasarlo a la vista
+                $post["formatted_date"] = $this->formatDateAgo($post["created_at"]);
+                $post["is_edited"] = !empty($post["edited_at"]) ? "(editado)" : "";
             }
 
             // Consulta para obtener el conteo total de posts
@@ -90,6 +88,7 @@ class Posts extends Connection
             $totalStmt->execute();
             $totalRow = $totalStmt->fetch(PDO::FETCH_ASSOC)["total"];
 
+            // Devolver los posts y el conteo total
             return ["posts" => $posts, "total" => $totalRow];
         } catch (PDOException $e) {
             error_log("Error al mostrar los posts: " . $e->getMessage());
@@ -102,10 +101,10 @@ class Posts extends Connection
     // --------------------
     public function formatDateAgo($createdAt)
     {
+        // Obtener la diferencia entre la fecha actual y la fecha del post y devolver la unidad correspondiente
         $interval = (new \DateTime($createdAt))->diff(new \DateTime());
         $units = ["y" => "año", "m" => "mes", "d" => "día", "h" => "hora", "i" => "minuto"];
 
-        // Se devuelve la diferencia con la unidad correspondiente, usando el plural "s" si es mayor a uno
         foreach ($units as $key => $label) {
             if ($interval->$key) {
                 return "Hace {$interval->$key} {$label}" . ($interval->$key > 1 ? "s" : "");
@@ -118,46 +117,34 @@ class Posts extends Connection
     // ---------
     // Búsquedas
     // ---------
-
-    // Géneros con mínimo un post asociado
     public function getGenres()
     {
         return $this->connection->query("SELECT DISTINCT g.id, g.name FROM genres g JOIN posts p ON g.id = p.genre ORDER BY g.name ASC")->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Todos los géneros
     public function getAllGenres()
     {
         return $this->connection->query("SELECT id, name FROM genres ORDER BY name ASC")->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Todos los idiomas
     public function getLanguages()
     {
         return $this->connection->query("SELECT DISTINCT language FROM posts")->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Obtener post por ID
     public function getPostById($id)
     {
         try {
-            // Consulta base para obtener el post
-            $baseQuery = "FROM posts p
-                LEFT JOIN genres g ON p.genre = g.id
-                LEFT JOIN users u ON p.user = u.id
-                WHERE p.id = ?";
-    
-            // Consulta para obtener los datos del post por ID
-            $postQuery = "SELECT p.id, p.title, p.content, p.user as user_id, u.user as user_name, p.language, p.created_at, g.name as genre, u.avatar as user_avatar, p.edited_at
-                          $baseQuery";
-    
-            $stmt = $this->connection->prepare($postQuery);
+            $query = "SELECT p.id, p.title, p.content, p.user AS user_id, u.user AS user_name, p.language, p.created_at, 
+            g.name AS genre, u.avatar AS user_avatar, p.edited_at FROM posts p LEFT JOIN genres g ON p.genre = g.id 
+            LEFT JOIN users u ON p.user = u.id WHERE p.id = ?";
+
+            $stmt = $this->connection->prepare($query);
             $stmt->execute([$id]);
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
-    
-            // Si el post se encuentra, agregar datos adicionales
+
+            // Si el post se encuentra, agregar datos adicionales y obtener los likes y comentarios relacionados
             if ($post) {
-                // Obtener likes y comentarios relacionados con este post
                 $post["likes_count"] = $this->getPostLikes($post["id"]);
                 $currentUserId = $_SESSION["id"] ?? null;
                 $commentsData = $this->getPostComments($post["id"], $currentUserId);
@@ -166,8 +153,10 @@ class Posts extends Connection
                 $post["word_count"] = str_word_count($post["content"]);
                 $post["user_liked"] = $this->isLikePost($currentUserId, $post["id"]);
                 $post["edited_at"] = $post["edited_at"] ?? null;
+                $post["formatted_date"] = $this->formatDateAgo($post["created_at"]);
+                $post["is_edited"] = !empty($post["edited_at"]) ? "(editado)" : "";
             }
-    
+
             return $post;
         } catch (PDOException $e) {
             error_log("Error al obtener el post: " . $e->getMessage());
@@ -242,17 +231,18 @@ class Posts extends Connection
             $stmt->execute([$currentUserId, $currentUserId, $postId]);
             $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Estructurar comentarios en jerarquía
             $commentTree = [];
             $commentsById = [];
 
-            // Primero, organizar comentarios por ID
+            // Organizar los comentarios por ID
             foreach ($comments as $comment) {
+                $comment["formatted_date"] = $this->formatDateAgo($comment["created_at"]);
+                $comment["is_edited"] = !empty($comment["edited_at"]) ? "(editado)" : "";
                 $comment["children"] = [];
                 $commentsById[$comment["id"]] = $comment;
             }
 
-            // Luego, construir la jerarquía
+            // Construir la jerarquía
             foreach ($commentsById as $id => $comment) {
                 if ($comment["parent_comment_id"]) {
                     // Si el comentario tiene un padre, se añade como hijo
@@ -291,18 +281,16 @@ class Posts extends Connection
                 // Notificar al creador del post o del comentario que ha recibido un nuevo comentario o respuesta
                 $recipientId = $parentCommentId ? $this->getOwnerId("post_comments", "user_id", $parentCommentId) : $this->getOwnerId("posts", "user", $postId);
                 if ($recipientId !== $userId) { // Evitar notificaciones a uno mismo
-                    // Definir el tipo de notificación
-                    $notificationType = $parentCommentId ? "reply" : "comment";
 
                     $notificationParams = [
                         "notifierId" => $userId,
                         "recipientId" => $recipientId,
                         "postId" => $parentCommentId ? $this->getPostIdByComment($parentCommentId) : $postId,
                         "commentId" => $parentCommentId ?: null,
-                        "type" => $notificationType
+                        "type" => $parentCommentId ? "reply" : "comment"
                     ];
 
-                    // Insertar notificación
+                    // Insertar la notificación
                     $queryNotification = "INSERT INTO notifications (notifier_id, recipient_id, post_id, comment_id, created_at, is_read, type) 
                                            VALUES (:notifierId, :recipientId, :postId, :commentId, NOW(), 0, :type)";
                     $this->connection->prepare($queryNotification)->execute($notificationParams);
@@ -315,6 +303,7 @@ class Posts extends Connection
             return false;
         }
     }
+
     // --------------------------------------------------------------------------------
     // Borrar comentarios (Tanto anidados a otros comentarios como comentarios de post)
     // --------------------------------------------------------------------------------
@@ -324,13 +313,8 @@ class Posts extends Connection
             $this->connection->beginTransaction();
 
             // Obtener los comentarios a eliminar (incluyendo anidados)
-            $queryCommentIds = "WITH RECURSIVE comment_tree AS (
-                                    SELECT id FROM post_comments WHERE id = :id 
-                                    UNION ALL 
-                                    SELECT c.id FROM post_comments c 
-                                    JOIN comment_tree ct ON c.parent_comment_id = ct.id
-                                )
-                                SELECT id FROM comment_tree";
+            $queryCommentIds = "WITH RECURSIVE comment_tree AS (SELECT id FROM post_comments WHERE id = :id  
+            UNION ALL SELECT c.id FROM post_comments c JOIN comment_tree ct ON c.parent_comment_id = ct.id) SELECT id FROM comment_tree";
 
             $stmtCommentIds = $this->connection->prepare($queryCommentIds);
             $stmtCommentIds->bindParam(":id", $commentId);
@@ -397,7 +381,7 @@ class Posts extends Connection
             return false;
         }
 
-        // Se diferencia si el like es para un post o para un comentario
+        // Diferenciar si el like es para un post o para un comentario
         $isPost = $type === "post";
         $params = [
             "userId" => $userId,
@@ -424,6 +408,7 @@ class Posts extends Connection
                     "type" => "like"
                 ];
 
+                // Insertar la notificación
                 $queryNotification = "INSERT INTO notifications (notifier_id, recipient_id, post_id, comment_id, created_at, is_read, type) 
                                        VALUES (:notifierId, :recipientId, :postId, :commentId, NOW(), 0, :type)";
                 $this->connection->prepare($queryNotification)->execute($notificationParams);
@@ -450,6 +435,7 @@ class Posts extends Connection
         }
     }
 
+    // Obtener el ID del post por comentario
     private function getPostIdByComment($commentId)
     {
         $query = "SELECT post_id FROM post_comments WHERE id = :commentId";
@@ -464,6 +450,7 @@ class Posts extends Connection
         }
     }
 
+    // Obtener la cantidad de likes del post
     public function getPostLikes($postId)
     {
         $query = "SELECT COUNT(*) as likes_count FROM post_likes WHERE post_id = :postId AND comment_id IS NULL";
@@ -515,6 +502,8 @@ class Posts extends Connection
     // -----------------------------
     // Gestión de las notificaciones
     // -----------------------------
+
+    // Obtener el propietario del post o comentario
     private function getOwnerId($table, $column, $id)
     {
         try {
@@ -530,24 +519,20 @@ class Posts extends Connection
     public function getNotifications($userId)
     {
         $query = "SELECT n.*, u.user AS notifier, u.avatar AS notifier_avatar, 
-              CASE 
-                  WHEN n.type = 'reply' THEN (SELECT comment FROM post_comments WHERE id = n.comment_id) 
-                  WHEN n.post_id IS NOT NULL THEN (SELECT title FROM posts WHERE id = n.post_id) 
-                  ELSE (SELECT comment FROM post_comments WHERE id = n.comment_id) 
-              END AS content 
-              FROM notifications n 
-              JOIN users u ON n.notifier_id = u.id 
-              WHERE n.recipient_id = :userId AND n.is_read = 0 
-              ORDER BY n.created_at DESC";
+              CASE WHEN n.type = 'reply' THEN (SELECT comment FROM post_comments WHERE id = n.comment_id) 
+              WHEN n.post_id IS NOT NULL THEN (SELECT title FROM posts WHERE id = n.post_id) 
+              ELSE (SELECT comment FROM post_comments WHERE id = n.comment_id) 
+              END AS content FROM notifications n JOIN users u ON n.notifier_id = u.id 
+              WHERE n.recipient_id = :userId AND n.is_read = 0 ORDER BY n.created_at DESC";
 
         try {
             $stmt = $this->connection->prepare($query);
             $stmt->execute(["userId" => $userId]);
             $notifications = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            // Formateo de la fecha para cada notificación
+            // Formatear la fecha para cada notificación
             foreach ($notifications as &$notification) {
-                $notification['formatted_date'] = $this->formatDateAgo($notification['created_at']);
+                $notification["formatted_date"] = $this->formatDateAgo($notification["created_at"]);
             }
 
             return $notifications;
@@ -556,6 +541,7 @@ class Posts extends Connection
             return [];
         }
     }
+    
     public function markAllAsRead($userId)
     {
         try {

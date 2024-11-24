@@ -1,7 +1,5 @@
-/* Se importan los estilos base */
 @import url("base.css");
 
-/* Variables para los colores */
 :root {
   --light-black: rgba(0, 0, 0, 0.15);
 }
@@ -24,6 +22,7 @@
   }
 }
 
+/* Página de detalles (post-details.php) */
 .post-info.details {
   &:hover {
     box-shadow: none;
@@ -36,7 +35,6 @@
   margin-right: 35px;
 }
 
-/* Datos del usuario del post */
 .user-data {
   display: flex;
   align-items: center;
@@ -55,7 +53,6 @@
   }
 }
 
-/* Contenido del post */
 .post-content {
   padding-bottom: 30px;
 
@@ -73,7 +70,7 @@
 }
 
 .formatted-text {
-  /* Mantiene los espacios y saltos de línea */
+  /* Mantener los espacios y saltos de línea */
   white-space: pre-wrap;
 }
 
@@ -94,7 +91,6 @@
       gap: 5px;
     }
 
-    /* Color dorado al dar like */
     .like-button {
       &.liked i {
         color: gold;
@@ -122,9 +118,7 @@
     border-radius: 10px;
     width: 100%;
     padding: 10px;
-    /* Se evita redimensionar el textarea a mano */
     resize: none;
-    /* Oculta la barra de desplazamiento */
     overflow: hidden;
     field-sizing: content;
   }
@@ -138,9 +132,9 @@
   border-radius: 10px;
   border: 1px solid var(--light-black);
 
-  /* Contenido de los comentarios */
   .comment-content {
     padding-bottom: 10px;
+    padding-right: 20px;
   }
 
   /* Botones de editar y borrar comentarios */
@@ -193,10 +187,9 @@
 /* ----------------------------- */
 
 .modal-open {
-  /* Evita hacer scroll en la página principal */
+  /* Evitar scroll en la página principal */
   overflow: hidden;
 
-  /* Fondo oscuro al abrir el modal */
   &:before {
     content: "";
     position: fixed;
@@ -234,7 +227,6 @@
   }
 }
 
-/* Botón de cierre en la esquina superior derecha */
 .close-button {
   position: sticky;
   float: right;
@@ -269,7 +261,6 @@
   textarea {
     min-height: 200px;
     resize: none;
-    /* Oculta la barra de desplazamiento */
     overflow: hidden;
     field-sizing: content;
   }

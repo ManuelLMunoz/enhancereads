@@ -40,9 +40,10 @@ cat <<EOF > /etc/bind/zones/db.enhancereads.com
                          604800 )       ; Negative Cache TTL
 
 @       IN      NS      dns.enhancereads.com.
-dns     IN      A       192.168.1.20
-mail    IN      A       192.168.1.15
-www     IN      A       192.168.1.15
+cliente IN      A       192.168.1.100
+web     IN      A       192.168.1.15
+dns     IN      A       192.168.1.10
+www     IN      CNAME   web.enhancereads.com
 
 EOF
 
@@ -56,11 +57,10 @@ cat <<EOF > /etc/bind/zones/db.192.168.1
                         2419200         ; Expire
                          604800 )       ; Negative Cache TTL
 
-
 @      IN      NS      dns.enhancereads.com.
-20     IN      PTR     dns.enhancereads.com.
-15     IN      PTR     mail.enhancereads.com.
-15     IN      PTR     www.enhancereads.com.
+10     IN      PTR     dns.enhancereads.com.
+15     IN      PTR     web.enhancereads.com.
+100    IN      PTR     cliente.enhancereads.com.
 EOF
 
 # Verificar configuración
@@ -80,9 +80,9 @@ network:
       dhcp4: yes # Habilitado DHCP para tener conexión en la interfaz NAT
     enp0s8:
       dhcp4: no
-      addresses: [192.168.1.20/24]
+      addresses: [192.168.1.10/24]
       nameservers:
-        addresses: [192.168.1.20] # IP del servidor DNS
+        addresses: [192.168.1.10] # IP del servidor DNS
 EOF
 netplan apply
 

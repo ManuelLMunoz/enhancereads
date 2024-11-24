@@ -6,29 +6,30 @@ use Src\Models\Posts;
 
 class PostController extends Controller
 {
-    // Se retorna la vista de la lista de posts con soporte para paginación
     public function posts($page = 1)
     {
         return $this->view("posts", ["page" => $page]);
     }
 
-
-    public function viewPostDetails($id)
+    public function viewPostDetails($id, $title)
     {
         $post = (new Posts())->getPostById($id);
+
+        // Verificar si el post existe y si el título coincide con el formateado
+        if (!$post || $this->sanitizeTitle($post["title"]) !== $title) {
+            return $this->view("404", [], 404);
+        }
+
         return $this->view("post-details", ["post" => $post]);
     }
 
-    // Formatear el título para la URL (Llamado en la vista)
     private function sanitizeTitle($title)
     {
-        // Convertir caracteres acentuados a equivalentes sin acento
+        // Eliminar acentos y caracteres especiales, convertir a minúsculas y reemplazar espacios por guiones
         $unaccented = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $title);
-        // Convertir a minúsculas, quitar caracteres especiales y reemplazar espacios con guiones
-        $sanitized = str_replace(" ", "-", preg_replace("/[^a-z0-9 ]/", "", strtolower($unaccented)));
-        return $sanitized;
+        $sanitized = preg_replace("/[^a-z0-9 ]/", "", strtolower($unaccented));
+        return str_replace(" ", "-", trim($sanitized));
     }
-
 
     // ---------------------------------------------
     // Obtener y filtrar los posts según parámetros
@@ -42,7 +43,7 @@ class PostController extends Controller
         $params = [
             "search" => $_POST["query"] ?? "",
             "order" => $_POST["order"] ?? "desc",
-            "limit" => 5,
+            "limit" => 5, // Nº de elementos a mostrar por página
             "page" => intval($_POST["page"] ?? 1),
             "genre" => $_POST["genre"] ?? [],
             "language" => $_POST["language"] ?? [],
@@ -51,27 +52,27 @@ class PostController extends Controller
             "user_id" => $userId
         ];
 
+        // Obtener los posts y la información de paginación
         $postsData = (new Posts())->getAllPosts($params);
         $posts = $postsData["posts"];
-
-        // Valores de la paginación
         $totalRows = $postsData["total"];
         $totalPages = ceil($totalRows / $params["limit"]);
         $page = max(min($params["page"], $totalPages), 1);
         $startElement = ($page - 1) * $params["limit"] + 1;
         $endElement = min($page * $params["limit"], $totalRows);
 
-        // Se renderiza la vista de los posts
+        // Renderizar la vista de los posts
         ob_start();
         include(__DIR__ . "/../views/components/fetch_posts.php");
         $output = ob_get_clean();
 
-        // Respuesta en formato JSON
+        // Respuesta con los datos en formato JSON
+        $post = new Posts();
         echo json_encode([
             "html" => $output,
             "filters" => [
-                "genres" => (new Posts())->getGenres(),
-                "languages" => (new Posts())->getLanguages()
+                "genres" =>  $post->getGenres(),
+                "languages" =>  $post->getLanguages()
             ],
             "pagination" => [
                 "total_pages" => $totalPages,
@@ -81,11 +82,10 @@ class PostController extends Controller
                 "total_row" => $totalRows
             ],
             "current_user_id" => $userId,
-            "posts_model" => (new Posts()) // Se pasa el modelo a la vista
+            "posts_model" => $post
         ]);
     }
 
-    // Obtener los géneros
     public function getGenres()
     {
         header("Content-Type: application/json");
@@ -126,7 +126,7 @@ class PostController extends Controller
     // ---------------
     public function updatePost()
     {
-        // Convierte el JSON recibido en un array asociativo
+        // Convertir el JSON recibido en un array asociativo
         $data = json_decode(file_get_contents("php://input"), true);
         $postId = $data["post_id"];
         $title = $data["title"];
@@ -153,11 +153,11 @@ class PostController extends Controller
         $currentUserId = $_SESSION["id"] ?? null;
         $commentsData = (new Posts())->getPostComments($postId, $currentUserId);
 
-        // Incluye el archivo de plantilla para los comentarios
+        // Incluir el archivo de plantilla para los comentarios
         ob_start();
         include(__DIR__ . "/../views/components/comment-template.php");
 
-        // Renderiza los comentarios principales
+        // Renderizar los comentarios principales
         if (!empty($commentsData["commentTree"])) {
             renderComments($commentsData["commentTree"], new Posts());
         }
@@ -183,6 +183,7 @@ class PostController extends Controller
         $comment = $_POST["comment"] ?? " ";
         $parentCommentId = $_POST["parent_comment_id"] ?? null;
 
+        // Verificar si el usuario está autenticado y si se proporcionó el ID del post
         if ($userId && $postId && !empty($comment)) {
             $success = (new Posts())->insertComment($postId, $userId, $comment, $parentCommentId);
             $response = ["success" => $success];
@@ -207,6 +208,7 @@ class PostController extends Controller
     // ---------------------
     public function updateComment()
     {
+        // Convertir el JSON recibido en un array asociativo
         $data = json_decode(file_get_contents("php://input"), true);
         $commentId = $data["comment_id"];
         $content = $data["content"];
@@ -219,26 +221,27 @@ class PostController extends Controller
         echo json_encode(["success" => $success, "message" => $success ? "Comentario actualizado con éxito" : "Error al actualizar el comentario"]);
     }
 
-    // ---------------------------------------------------
+    // ------------------------------------------------
     // Gestión de likes (Tanto a posts y a comentarios)
-    // ---------------------------------------------------
+    // ------------------------------------------------
     public function toggleLike($type)
     {
         session_start();
-
         $userId = $_SESSION["id"] ?? null;
         $itemId = $_POST[$type . "_id"] ?? null;
 
+        // Verificar si el usuario está autenticado y si se proporcionó el ID del post o comentario
         if (!$userId || !$itemId) {
             echo json_encode(["success" => false,  "error" => !$userId ? "Debes iniciar sesión para votar" : "ID del $type no proporcionado"]);
             return;
         }
 
-        // Se diferencia entre un like de post y un like a un comentario
+        $posts = new Posts();
+        // Diferenciar entre un like de post y un like a un comentario
         $methodPrefix = $type === "post" ? "Post" : "Comment";
-        $isLiked = (new Posts())->{"isLike$methodPrefix"}($userId, $itemId);
+        $isLiked = $posts->{"isLike{$methodPrefix}"}($userId, $itemId);
         $method = ($isLiked ? "unlike" : "like") . $methodPrefix;
-        $success = (new Posts())->$method($userId, $itemId);
+        $success = $posts->$method($userId, $itemId);
 
         echo json_encode(["success" => $success, "action" => $isLiked ? "unliked" : "liked"]);
     }
@@ -260,9 +263,19 @@ class PostController extends Controller
     {
         session_start();
         $userId = $_SESSION["id"] ?? null;
+        $posts = new Posts();
 
         if ($userId) {
-            $notifications = (new Posts())->getNotifications($userId);
+            $notifications = $posts->getNotifications($userId);
+
+            // Incluir el título del post en cada notificación
+            foreach ($notifications as &$notification) {
+                $post = $posts->getPostById($notification["post_id"]);
+                if ($post) {
+                    $notification["post_title"] = $this->sanitizeTitle($post["title"]);
+                }
+            }
+
             $response = ["success" => true, "notifications" => $notifications];
         } else {
             $response = ["success" => false, "notifications" => [], "error" => "Usuario no autenticado"];

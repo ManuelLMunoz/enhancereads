@@ -1,22 +1,16 @@
-// ------------------------------------
-// Crear y mostrar los mensajes "toast"
-// ------------------------------------
 const showToast = (message, type) => {
-    // Iconos según el tipo de toast
     const icons = {
-        success: "fas fa-check-circle",
-        info: "fas fa-info-circle",
-        warning: "fas fa-exclamation-circle",
-        error: "fas fa-times-circle",
+        success: "check",
+        info: "info",
+        warning: "exclamation",
+        error: "times"
     };
 
-    // Generar y agregar el toast al body
-    const toast = document.createElement("div");
-    toast.className = `toast ${type}`;
-    toast.innerHTML = `<i class="${icons[type] || ""}"></i> ${message}`;
-    document.body.appendChild(toast);
+    // Generar y agregar el toast al final del body
+    document.body.insertAdjacentHTML("beforeend", `<div class="toast ${type}"> <i class="fas fa-${icons[type]}-circle"></i> ${message} </div>`);
 
     // Mostrar el toast y ocultarlo después de 3 segundos
+    const toast = document.querySelector(".toast:last-child");
     setTimeout(() => toast.style.opacity = 1, 10);
     setTimeout(() => {
         toast.style.opacity = 0;

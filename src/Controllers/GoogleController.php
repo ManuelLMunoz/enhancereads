@@ -8,9 +8,6 @@ class GoogleController extends Controller
 {
     private $google;
 
-    // -----------------------------------------------
-    // Inicializar la clase Google en el constructor
-    // -----------------------------------------------
     public function __construct()
     {
         $this->google = new Google();
@@ -36,7 +33,7 @@ class GoogleController extends Controller
             if (isset($_GET["code"])) {
                 $userInfo = $this->google->fetchUserInfo($_GET["code"]);
 
-                // Se almacenan los datos del usuario en un array
+                // Almacenar los datos del usuario en un array
                 $userinfo = [
                     "email" => $userInfo->email,
                     "first_name" => $userInfo->givenName,
@@ -47,19 +44,13 @@ class GoogleController extends Controller
                     "token" => $userInfo->id,
                 ];
 
-                // Se maneja el avatar del usuario
-                $avatarFilename = $this->google->handleUser($userInfo, __DIR__ . "/../../public/assets/img/avatars/");
-
-                // Se obtiene el ID del usuario de Google guardado en la BBDD
-                $userId = $this->google->getUserIdByEmail($userInfo->email);
-
-                // Se almacenan los datos del usuario en la sesión
+                // Almacenar los datos del usuario en la sesión
                 $_SESSION["user"] = $userinfo["full_name"];
                 $_SESSION["user_info"] = $userinfo;
                 $_SESSION["user_token"] = $_GET["code"];
                 $_SESSION["login_source"] = "google";
-                $_SESSION["avatar"] = $avatarFilename;
-                $_SESSION["id"] = $userId;
+                $_SESSION["avatar"] = $this->google->handleUser($userInfo, __DIR__ . "/../../public/assets/img/avatars/");
+                $_SESSION["id"] = $this->google->getUserIdByEmail($userInfo->email);
 
                 header("Location: /");
                 exit();

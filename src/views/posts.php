@@ -1,32 +1,26 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
-    <!-- Configuración base -->
     <?php require_once("components/head.php"); ?>
-
-    <!-- Configuración concreta -->
     <title>Posts</title>
     <link rel="stylesheet" href="assets/css/content.css">
     <link rel="stylesheet" href="assets/css/posts.css">
     <script src="assets/js/showElements.js" type="module"></script>
     <script src="assets/js/posts.js" type="module"></script>
-
 </head>
 
 <body>
 
-    <!-- Sección 1 - Inicio -->
     <section id="main">
-        <!-- Menú de navegación -->
         <?php require_once("components/navbar.php"); ?>
 
         <div class="brand">
             <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logotipo de la marca"></a></h1>
             <h2 id="type">Posts</h2>
-            <input type="text" id="search" placeholder="Busca por título o autor">
+            <input type="search" id="search" placeholder="Busca por título o autor">
 
-            <!-- Si el usuario ha iniciado sesión se muestra un botón para agregar posts -->
+            <!-- Botón para crear un post si el usuario está autenticado -->
             <?php if (isset($_SESSION["user"])) : ?>
                 <div class="manage-buttons">
                     <a id="create-post-button" class="create-button" href="javascript:void(0);">
@@ -38,10 +32,8 @@
 
     </section>
 
-    <!-- Sección 2 - Contenido -->
     <section id="content">
 
-        <!-- Filtros -->
         <div class="filters-container">
 
             <p>Filtros <span id="filter-icon" class="fas fa-filter"></span></p>
@@ -109,14 +101,12 @@
     <div id="create-post-modal" class="modal hidden">
         <div class="create-content content">
 
-            <!-- Botón de cierre -->
             <button id="close-popup" class="close-button"><i class="fas fa-times"></i></button>
 
             <div class="post-data">
 
                 <form id="create-post-form" method="post" action="create-post">
 
-                    <!-- Nombre y avatar del usuario -->
                     <div class="user-data">
                         <img class="user-avatar" src="/assets/img/avatars/<?php echo $_SESSION["avatar"]; ?>" alt="Avatar del usuario">
                         <div class="user-details">
@@ -125,7 +115,6 @@
                         </div>
                     </div>
 
-                    <!-- Catagoría e idioma del post -->
                     <div class="form-group">
                         <label for="post-genre"><strong>Categoría:</strong></label>
                         <select id="post-genre" name="genre" required> <!-- Obtenidos de forma dinámica de la BBDD --> </select>
@@ -139,7 +128,6 @@
                         </select>
                     </div>
 
-                    <!-- Título y contenido del post -->
                     <div class="post-content">
                         <input type="text" id="post-title" name="title" placeholder="Título" required>
                         <textarea id="post-content" name="content" placeholder="Contenido" required></textarea>
@@ -153,7 +141,6 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <?php require_once("components/footer.php"); ?>
 
 </body>

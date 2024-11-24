@@ -1,15 +1,18 @@
-/* Se importan los estilos base */
 @import url("base.css");
 
-/* ----------------------------------------------------------------- */
-/* Contenedor de libros con grid adaptable (Fichero fetch_books.php) */
-/* ----------------------------------------------------------------- */
+/* ---------------------------------------------- */
+/* Contenedor de libros (Fichero fetch_books.php) */
+/* ---------------------------------------------- */
 .book-container {
   padding: 15px;
   display: grid;
+  /* Responsive automático de las columnas */
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  /* Espacio solo entre filas */
   row-gap: 25px;
+
+  .book-info {
+    margin: 5px;
+  }
 
   #title {
     font-weight: bold;
@@ -24,16 +27,12 @@
     max-height: 250px;
     max-width: 200px;
     object-fit: cover;
+    border: 1px solid #ccc;
 
     &:hover {
       transform: scale(1.1);
     }
   }
-}
-
-/* Información del libro */
-.book-info {
-  padding: 0 0 20px 20px;
 }
 
 /* ---------------------------------------------------------- */
@@ -50,21 +49,21 @@
   color: black;
 
   .book-cover-container {
-    flex: 1;
+    flex: 1; /* Ocupa el espacio disponible */
     text-align: center;
+    margin-right: 20px;
 
     .book-cover {
       max-width: 250px;
       object-fit: cover;
-      padding-bottom: 10px;
       cursor: pointer;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
     }
   }
 
-  /* Información del libro */
   .book-info {
     flex: 2;
-    padding: 0 0 20px 20px;
 
     h1 {
       font-size: 1.5rem;
@@ -76,22 +75,24 @@
       margin: 10px 0;
     }
 
-    /* Iconos */
     .link-item {
       display: inline-block;
       padding: 0 5px;
-    }
-    .shop-logo {
-      width: 60px;
-      height: auto;
+
+      .shop-logo {
+        width: 60px;
+        height: auto;
+      }
     }
 
     .description {
+      /* Por defecto, contenido limitado a 3 líneas */
       line-height: 1.5em;
-      max-height: 4.5em; /* Limita a 3 líneas */
+      max-height: 4.5em;
       overflow: hidden;
       transition: max-height 0.3s ease;
 
+      /* Contenido expandido sin límite */
       &.expanded {
         max-height: none;
       }
@@ -99,33 +100,31 @@
 
     .view-more {
       display: inline-block;
-      color: #007bff;
+      color: #004b99;
       cursor: pointer;
       margin-top: 10px;
     }
   }
 }
 
-/* Responsive */
 @media screen and (max-width: 768px) {
   .book-details {
     flex-direction: column;
+
+    .book-cover-container {
+      margin-right: 0;
+    }
   }
 
   .book-info {
-    padding-left: 0;
     text-align: center;
-
-    h1 {
-      padding-top: 20px;
-    }
   }
 }
 
 /* ------------------------------------- */
 /* Modal para mostrar la imagen ampliada */
 /* ------------------------------------- */
-.zoom-modal {
+.img-zoom-modal {
   display: none;
   position: fixed;
   z-index: 100;

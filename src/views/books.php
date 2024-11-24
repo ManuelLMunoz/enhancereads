@@ -1,32 +1,26 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
-    <!-- Configuración base -->
     <?php require_once("components/head.php"); ?>
-
-    <!-- Configuración concreta -->
     <title>Libros</title>
     <link rel="stylesheet" href="assets/css/content.css">
     <link rel="stylesheet" href="assets/css/books.css">
     <script src="assets/js/showElements.js" type="module"></script>
     <script src="assets/js/books.js" type="module"></script>
-
 </head>
 
 <body>
 
-    <!-- Sección 1 - Inicio -->
     <section id="main">
-        <!-- Menú de navegación -->
         <?php require_once("components/navbar.php"); ?>
 
         <div class="brand">
             <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logotipo de la marca"></a></h1>
             <h2 id="type">Libros</h2>
-            <input type="text" id="search" placeholder="Busca por título o autor">
+            <input type="search" id="search" placeholder="Busca por título o autor">
 
-            <!-- Si el usuario es "admin" se mostrará un botón para agregar libros -->
+            <!-- Botón para agregar libros (Solo disponible para administradores) -->
             <?php if (isset($_SESSION["role"]) && $_SESSION["role"] == "admin") : ?>
                 <div class="manage-buttons">
                     <a class="create-button" href="manage-books">
@@ -38,10 +32,8 @@
 
     </section>
 
-    <!-- Sección 2 - Contenido -->
     <section id="content">
 
-        <!-- Filtros -->
         <div class="filters-container">
 
             <p>Filtros <span id="filter-icon" class="fas fa-filter"></span></p>
@@ -100,7 +92,6 @@
 
     </section>
 
-    <!-- Footer -->
     <?php require_once("components/footer.php"); ?>
 
 </body>

@@ -11,18 +11,16 @@
     display: flex;
     list-style-type: none;
 
-    /* Se balancea el contenido */
+    /* Balancear el contenido */
     &.left,
     &.right {
-      flex: 1;
+      flex: 1; /* Ocupar el espacio disponible */
     }
 
-    /* Contenido alineado a la derecha */
     &.right {
       justify-content: flex-end;
     }
 
-    /* Elementos del menú */
     li {
       a,
       .dropbtn {
@@ -42,39 +40,41 @@
   /* ----------------------------------------------------- */
   /* Menú desplegable con los datos del usurio "Mi cuenta" */
   /* ----------------------------------------------------- */
-  .user-menu-content {
-    display: none;
-    position: absolute;
-    background-color: white;
+  .user-menu {
+    .account-info {
+      display: flex;
 
-    a {
-      display: block;
-      text-align: left;
-      width: 158px;
-
-      &:hover {
-        background-color: rgba(131, 220, 255, 0.5);
-      }
-
-      /* Se anula el hover sobre el nombre de usuario */
-      &:first-child {
-        font-weight: 500;
-
-        &:hover {
-          background-color: transparent;
-        }
+      .profile-pic {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        margin: -5px 0 -5px 10px;
       }
     }
-  }
 
-  .account-info {
-    display: flex;
+    .user-menu-content {
+      display: none;
+      position: absolute;
+      background-color: white;
 
-    .profile-pic {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      margin: -5px 0 -5px 10px;
+      a {
+        display: block;
+        text-align: left;
+        width: 158px;
+
+        &:hover {
+          background-color: rgba(131, 220, 255, 0.5);
+        }
+
+        /* Hover anulado sobre el nombre del usuario */
+        &:first-child {
+          font-weight: 500;
+
+          &:hover {
+            background-color: transparent;
+          }
+        }
+      }
     }
   }
 }
@@ -95,7 +95,6 @@
   .menu {
     align-items: center;
 
-    /* Se ocultan los contenedores izquierdo y central */
     ul {
       &.left,
       &.center {
@@ -103,7 +102,6 @@
       }
     }
 
-    /* Estilos del menú desplegado */
     &.show-menu {
       ul.center {
         display: flex;
@@ -118,7 +116,7 @@
         overflow: hidden;
         align-items: flex-start;
 
-        /* Se quita el hover de los elementos */
+        /* Se elimina el hover de los elementos */
         li a:hover {
           background-color: transparent;
         }
@@ -132,20 +130,19 @@
   }
 }
 
-/* Se anula el scroll */
 .no-scroll {
   overflow: hidden;
 }
 
-/* -------------- */
-/* Modal de ayuda */
-/* -------------- */
+/* -------------------- */
+/* Modal de ayuda (FAQ) */
+/* -------------------- */
 .help-modal {
   display: none;
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.8);
-  z-index: 1000;
+  z-index: 100;
 
   .help-modal-content {
     margin: 10% auto;
@@ -167,30 +164,30 @@
       color: red;
     }
   }
-}
 
-/* Acordeón */
-/* ---------*/
-.accordion-item {
-  /* Preguntas */
-  .accordion-header {
-    cursor: pointer;
-    padding: 10px;
-    background-color: #eee;
-    border: 1px solid #ccc;
-    margin: 5px 0;
+  /* Acordeón */
+  /* ---------*/
+  .accordion-item {
+    /* Preguntas */
+    .accordion-header {
+      cursor: pointer;
+      padding: 10px;
+      background-color: #eee;
+      border: 1px solid #ccc;
+      margin: 5px 0;
 
-    &:hover {
-      background-color: #dbdbdb;
+      &:hover {
+        background-color: #dbdbdb;
+      }
     }
-  }
 
-  /* Respuestas */
-  .accordion-body {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-top: none;
-    text-transform: initial;
+    /* Respuestas */
+    .accordion-body {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-top: none;
+      text-transform: initial;
+    }
   }
 }
 
@@ -258,7 +255,6 @@
         height: 35px;
         border-radius: 50%;
         margin-right: 10px;
-        align-self: center;
       }
 
       .notification-header {

@@ -1,36 +1,14 @@
-<?php
-// Se inicia la sesión si no lo está 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-?>
-
-<script>
-    //Script para regresar al top tras cambiar de página
-    document.querySelector("#pagination").addEventListener("click", (event) => {
-        if (event.target.classList.contains("page-link") && !event.target.classList.contains("disabled")) {
-            window.scrollTo({
-                top: 0,
-                behavior: "instant" // Asegura que el scroll se realice de inmediato
-            });
-        }
-    });
-</script>
-
-<!-- Se muestran los libros si existen resultados en la BBDD -->
+<!-- Mostrar todos los libros encontrados en la BBDD -->
 <?php if (!empty($books)) : ?>
     <div class="book-container">
         <?php foreach ($books as $book) : ?>
 
-            <!-- Información del libro -->
             <div class="book-info">
 
-                <!-- Enlace para los detalles del libro -->
                 <a href="books/<?php echo $book["id"]; ?>/<?php echo $this->sanitizeTitle($book["title"]); ?>">
                     <img src="assets/img/books/<?php echo $book["cover"]; ?>" alt="Portada del libro">
                 </a>
 
-                <!-- Datos del libro -->
                 <p id="title"><?php echo $book["title"]; ?></p>
                 <p><strong>Autor:</strong> <?php echo $book["author_name"]; ?></p>
                 <p><strong>Género:</strong> <?php echo $book["genre_name"]; ?></p>
@@ -43,8 +21,8 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <?php
     // Configuración de la paginación
-    $page = isset($page) ? $page : 1;
-    $totalPages = isset($totalPages) ? $totalPages : 1;
+    $page = $page ?? 1;
+    $totalPages = $totalPages ?? 1;
     $maxPagesToShow = 3;
 
     // Cálculo del rango de páginas a mostrar
@@ -59,20 +37,17 @@ if (session_status() === PHP_SESSION_NONE) {
     }
     ?>
 
-    <!-- Paginación de los elementos -->
     <div id="pagination">
 
-        <!-- Botón de página anterior -->
         <span class="page-link prev<?php echo ($page > 1 ? "" : " disabled"); ?>" data-page="<?php echo max($page - 1, 1); ?>">
             <i class="fa-solid fa-angle-left" title="Anterior"></i>
         </span>
 
-        <!-- Enlaces a las páginas -->
-        <?php if ($startPage > 1) echo pageLink(1, $page) . ($startPage > 2 ? "<span class='page-link dots'>...</span>" : ""); ?>
+        <!-- Enlaces a las páginas (Mostrar puntos suspensivos cuando se superen 3 páginas por encima y/o por debajo) -->
+        <?php if ($startPage > 1) echo pageLink(1, $page) . ($startPage > 2 ? "<span class='page-link dots disabled'>...</span>" : ""); ?>
         <?php foreach (range($startPage, $endPage) as $i) echo pageLink($i, $page); ?>
-        <?php if ($endPage < $totalPages) echo ($endPage < $totalPages - 1 ? "<span class='page-link dots'>...</span>" : "") . pageLink($totalPages, $page); ?>
+        <?php if ($endPage < $totalPages) echo ($endPage < $totalPages - 1 ? "<span class='page-link dots disabled'>...</span>" : "") . pageLink($totalPages, $page); ?>
 
-        <!-- Botón de página siguiente -->
         <span class="page-link next<?php echo ($page < $totalPages ? "" : " disabled"); ?>" data-page="<?php echo min($page + 1, $totalPages); ?>">
             <i class="fa-solid fa-angle-right" title="Siguiente"></i>
         </span>
@@ -82,8 +57,6 @@ if (session_status() === PHP_SESSION_NONE) {
     <!-- Total de elementos encontrados -->
     <div id="element-range"><?php echo "$startElement - $endElement de $totalRows resultados"; ?></div>
 
-    <!-- Si no existen libros, se muestra un error -->
 <?php else : ?>
     <p>No se encontraron libros 😥</p>
 <?php endif; ?>
-

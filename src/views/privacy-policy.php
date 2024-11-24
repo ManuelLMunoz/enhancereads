@@ -2,23 +2,16 @@
 <html lang="es">
 
 <head>
-    <!-- Configuración base -->
     <?php require_once("components/head.php"); ?>
-
-    <!-- Configuración concreta -->
     <title>Política de privacidad</title>
     <link rel="stylesheet" href="assets/css/legal.css">
-
 </head>
 
 <body>
-    <!-- Sección 1 - Inicio -->
-    <section id="main">
 
-        <!-- Menú de navegación -->
+    <section id="main">
         <?php require_once("components/navbar.php"); ?>
 
-        <!-- Logo y slogan de la marca -->
         <div class="brand">
             <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logo de la marca"></a></h1>
             <h2><img id="slogan" src="assets/img/slogan.webp" alt="Slogan de la marca"></h2>
@@ -26,7 +19,6 @@
 
     </section>
 
-    <!-- Sección 2 - Contenido -->
     <section id="content">
 
         <h1>Política de privacidad</h1>
@@ -93,12 +85,11 @@
             <p>Nos reservamos el derecho de modificar esta política de privacidad en cualquier momento. Los cambios entrarán en vigor inmediatamente después de su publicación en el sitio web.</p>
 
             <h2>8. Contacto</h2>
-            <p>Si tiene preguntas sobre esta política de privacidad, por favor contáctenos a través de la información proporcionada en nuestra página de contacto.</p>
+            <p>Si tiene preguntas sobre esta política de privacidad, por favor contáctenos a través de nuestros canales de contacto.</p>
         </div>
 
     </section>
 
-    <!-- Footer -->
     <?php require_once("components/footer.php"); ?>
 
 </body>

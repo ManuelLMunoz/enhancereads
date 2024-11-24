@@ -1,12 +1,12 @@
-/* Se importan los estilos base */
 @import url("base.css");
 
 /* Sección 1 - Inicio */
-
-/* Se ocupa el 95% de la pantalla */
-.brand {
-  height: 95vh;
-  height: 95dvh;
+section#main {
+  /* Tamaño al 95% de la pantalla */
+  .brand {
+    height: 95vh;
+    height: 95dvh;
+  }
 }
 
 /* Sección 2 - Contenido */
@@ -32,24 +32,39 @@ section#content {
     min-height: 100vh;
     min-height: 100dvh;
 
-    &.books {
-      background: linear-gradient(
-          rgba(197, 189, 124, 0.5),
-          rgba(179, 211, 255, 0.4)
-        ),
-        url("../img/books.webp") no-repeat center / cover;
-    }
-
-    &.posts {
-      background: linear-gradient(
-          rgba(206, 192, 188, 0.4),
-          rgba(185, 223, 222, 0.8)
-        ),
-        url("../img/posts.webp") no-repeat center top / cover;
-    }
-
     &:hover {
       transform: scale(1.1);
+      transition: transform 0.3s ease-in-out;
+    }
+  }
+
+  .books {
+    background: linear-gradient(
+        rgba(197, 189, 124, 0.5),
+        rgba(179, 211, 255, 0.4)
+      ),
+      url("../img/books.webp") no-repeat center / cover;
+  }
+
+  .posts {
+    background: linear-gradient(
+        rgba(206, 192, 188, 0.4),
+        rgba(185, 223, 222, 0.8)
+      ),
+      url("../img/posts.webp") no-repeat center / cover;
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  section#content {
+    /* Mostar el contenido uno debajo del otro */
+    display: block;
+
+    .posts,
+    .books {
+      width: 100%;
+      min-height: 50vh;
+      min-height: 50dvh;
     }
   }
 }
@@ -72,8 +87,7 @@ section#about-us {
     .text {
       position: relative;
       opacity: 0;
-      /* Transición para la opacidad */
-      transition: opacity 0.5s ease-out;
+      text-wrap: wrap;
 
       p {
         font-size: 1.2rem;
@@ -81,7 +95,6 @@ section#about-us {
         text-align: left;
 
         strong {
-          /* Hereda el tamaño de fuente del párrafo */
           font-size: inherit;
         }
       }
@@ -102,7 +115,6 @@ section#about-us {
 
     .slides {
       display: flex;
-      /* Efecto de desplazamiento */
       transition: transform 0.5s ease-in-out;
 
       .slide {
@@ -136,25 +148,5 @@ section#about-us {
 
   100% {
     left: 0;
-  }
-}
-
-/* ---------- */
-/* Responsive */
-/* ---------- */
-
-@media only screen and (max-width: 1024px) {
-  /* Sección 2 - Contenido */
-
-  /* Se elimina display flex para mostar el contenido uno debajo del otro */
-  section#content {
-    display: block;
-
-    .posts,
-    .books {
-      width: 100%;
-      min-height: 50vh;
-      min-height: 50dvh;
-    }
   }
 }

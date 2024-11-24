@@ -9,19 +9,16 @@ use Endroid\QrCode\Writer\PngWriter;
 
 class AccountController extends Controller
 {
-    // Se retorna la vista de la cuenta
     public function account()
     {
         return $this->view("account");
     }
 
-    // Se retorna la vista del perfil
     public function profile()
     {
         return $this->view("profile");
     }
 
-    // Se retorna la vista de verificación 2FA para el administrador
     public function admin2FA()
     {
         session_start();
@@ -39,14 +36,13 @@ class AccountController extends Controller
 
         $user = (new Users())->findUser($_POST["user"]);
 
-        // Se verifica si el usuario existe y la contraseña coincide con la almacenada en BBDD
+        // Verificar si el usuario existe y la contraseña coincide con la almacenada en BBDD
         if ($user && password_verify($_POST["pass"], $user["password"])) {
             session_start();
 
             // Usuario común 
             // -------------
             if ($user["role"] == "user") {
-                // Se guardan los datos en la sesión y se redirige a la página principal
                 $_SESSION["id"] = $user["id"];
                 $_SESSION["user"] = $user["user"];
                 $_SESSION["email"] = $user["email"];
@@ -59,15 +55,13 @@ class AccountController extends Controller
                 // -------------
             } elseif ($user["role"] == "admin") {
 
-                // Se usa el secreto del usuario o se genera uno
+                // Usar el secreto del usuario o generar y guardar uno si no existe
                 $secret = $user["2fa_secret"] ?: (new Google2FA())->generateSecretKey();
-
-                // Se actualiza el secreto en la BBDD si no existía
                 if (!$user["2fa_secret"]) {
                     (new Users())->update2FASecret($user["id"], $secret);
                 }
 
-                // Se guardan los datos en una variable temporal (Para no iniciar sesión antes de validar el 2FA)
+                // Guardar los datos en una variable temporal para no iniciar sesión antes de validar el 2FA
                 $_SESSION["temp_user"] = [
                     "id" => $user["id"],
                     "user" => $user["user"],
@@ -77,20 +71,16 @@ class AccountController extends Controller
                     "2fa_secret" => $secret
                 ];
 
-                // URL del código QR
+                // Generar el código QR de Google Authenticator y convertirlo en una imagen PNG en base64
                 $qrCodeUrl = "otpauth://totp/" . urlencode("Enhancereads:" . $user["email"]) . "?secret={$secret}&issuer=" . urlencode("Enhancereads");
-
-                // Se genera el código QR y se convierte en una imagen PNG en base64
                 $qrCodeImage = (new PngWriter())->write(QrCode::create($qrCodeUrl));
                 $_SESSION["2fa_qr"] = base64_encode($qrCodeImage->getString());
 
-                // Se redirige a la página 2FA
                 header("Location: /2FA-verification");
                 exit();
             }
         }
 
-        // En caso de credenciales incorrectas, se retorna un error
         return $this->view("account", ["error" => "Las credenciales son incorrectas", "form" => "login"]);
     }
 
@@ -100,13 +90,10 @@ class AccountController extends Controller
     public function verify2FA()
     {
         session_start();
-        $code = $_POST["2fa_code"];
-        $secret = $_SESSION["temp_user"]["2fa_secret"];
 
-        // Si el OTP es correcto
-        if ((new Google2FA())->verifyKey($secret, $code)) {
+        if ((new Google2FA())->verifyKey($_SESSION["temp_user"]["2fa_secret"], $_POST["2fa_code"])) {
 
-            // Se pasan los datos de la variable temporal a la sesión
+            // Pasar los datos a la sesión principal
             $_SESSION["id"] = $_SESSION["temp_user"]["id"];
             $_SESSION["user"] = $_SESSION["temp_user"]["user"];
             $_SESSION["email"] = $_SESSION["temp_user"]["email"];
@@ -114,20 +101,18 @@ class AccountController extends Controller
             $_SESSION["avatar"] = $_SESSION["temp_user"]["avatar"];
             $_SESSION["2fa_verified"] = true;
 
+            // Eliminar la sesión temporal y redirigir a la página principal
             unset($_SESSION["temp_user"]);
-
-            // Se redirige a la página principal
             header("Location: /");
             exit();
         } else {
-            // En caso de OTP incorrecto, se retorna un error
             return $this->view("2FA-verification", ["error" => "Código OTP incorrecto"]);
         }
     }
 
-    // -------------------------------------------------
-    // Cerrar sesión (Se redirige a la página de inicio)
-    // -------------------------------------------------
+    // -------------
+    // Cerrar sesión
+    // -------------
     public function logout()
     {
         session_start();
@@ -144,10 +129,8 @@ class AccountController extends Controller
         session_start();
         $success = (new Users())->deleteUser($_SESSION["id"]);
 
-        // Respuesta JSON
         header("Content-Type: application/json");
         if ($success) {
-            session_unset();
             session_destroy();
             $response = ["success" => true, "message" => "Cuenta borrada con éxito"];
         } else {
@@ -165,13 +148,7 @@ class AccountController extends Controller
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
 
-        // Se verifica si se ha enviado el email o se redirige a la vista con un error
-        if (empty($_POST["email"])) {
-            return $this->view($form === "update-profile" ? "profile" : "account", ["error" => "Por favor, completa todos los campos", "form" => $form]);
-        }
-
-        // Variables comunes a los formularios
-        $user = trim($_POST["user"] ?? null);
+        $user = $_POST["user"] ?? null;
         $email = $_POST["email"];
         $pass = $_POST["pass"] ?? null;
         $verifyPass = $_POST["verify_pass"] ?? null;
@@ -179,12 +156,11 @@ class AccountController extends Controller
         $accountManager = new Users();
         $registeredEmail = $accountManager->findUserByEmail($email);
 
-        // Validación de contraseñas
+        // Validación de contraseñas tanto para la vista de acceso como la de actualización de perfil
         if (($form === "reset-password" || !empty($pass)) && ($pass !== $verifyPass || strlen($pass) < 8 || !preg_match("/[A-Za-z]/", $pass) || !preg_match("/[0-9]/", $pass))) {
             return $this->view($form === "update-profile" ? "profile" : "account", ["error" => "La contraseña es inválida o no coinciden", "form" => $form]);
         }
 
-        // Cifrado de la contraseña
         $cipheredPass = !empty($pass) ? password_hash($pass, PASSWORD_DEFAULT, ["cost" => 12]) : null;
 
         // Manejo de los formularios
@@ -203,11 +179,9 @@ class AccountController extends Controller
     // ------------------------------------
     private function updateProfileForm($accountManager, $registeredEmail, $user, $email, $cipheredPass)
     {
-        // Se obtienen los datos del usuario actual
         $id = $_SESSION["id"];
         $currentUserData = $accountManager->findUserById($id);
 
-        // Se verifica si el email ya está registrado
         if ($registeredEmail && $registeredEmail["id"] !== $id) {
             return $this->view("profile", ["error" => "El email ya está registrado"]);
         }
@@ -222,34 +196,33 @@ class AccountController extends Controller
             $avatarExtension = strtolower(pathinfo($_FILES["avatar"]["name"], PATHINFO_EXTENSION));
             $allowedExtensions = ["jpg", "jpeg", "png", "webp"];
 
-            // Se verifica el tamaño y la extensión del archivo (Máximo 200KB)
+            // Verificar el tamaño y la extensión del archivo (Máximo 200KB)
             if (!in_array($avatarExtension, $allowedExtensions)) {
                 $avatarError = "Extensión no válida. Los archivos permitidos son: jpg, jpeg, png y webp";
             } elseif ($_FILES["avatar"]["size"] > 200 * 1024) {
                 $avatarError = "El tamaño máximo de imagen permitido son 200KB";
             } else {
-                // Ruta y nombre del avatar
                 $avataName = "avatar_user_" . $id . ".webp";
                 $destPath = $uploadDirectory . $avataName;
 
-                // Si existe otro avatar del mismo usuario se elimina
+                // Si existe un avatar previo del mismo usuario, se elimina
                 if (!empty($currentUserData["avatar"]) && $currentUserData["avatar"] !== "default.svg") {
                     unlink($uploadDirectory . $currentUserData["avatar"]);
                 }
 
-                // Se mueve el avatar seleccionado al servidor
+                // Mover el avatar seleccionado al servidor
                 if (move_uploaded_file($_FILES["avatar"]["tmp_name"], $destPath)) {
                     $avatar = $avataName;
                 } else {
                     $avatarError = "Error al subir el archivo. Pruebe de nuevo";
                 }
             }
-            // En caso de no subir avatar, se mantiene el actual
+            // En caso de no subir avatar, mantener el actual
         } else {
             $avatar = $currentUserData["avatar"];
         }
 
-        // Guardado de los nuevos datos
+        // Guardado de los nuevos datos si hay cambios
         $updates = array_filter([
             "user" => $user && $user !== $currentUserData["user"] ? $user : null,
             "email" => $email && $email !== $currentUserData["email"] ? $email : null,
@@ -257,15 +230,13 @@ class AccountController extends Controller
             "avatar" => $avatar ?? $currentUserData["avatar"]
         ]);
 
-        // Si no hay actualizaciones de los datos ni errores en el avatar, se redirige sin cambios
         if (empty($updates) && !$avatarError) return $this->view("profile");
 
-        // En caso de error al subir el avatar, se muestra un error
         if ($avatarError) {
             return $this->view("profile", ["error" => $avatarError, "form" => "update-profile"]);
         }
 
-        // Se actualizan los datos del usuario
+        // Actualizar los datos del usuario
         if ($accountManager->updateUser(
             $id,
             $updates["user"] ?? $currentUserData["user"],
@@ -286,14 +257,11 @@ class AccountController extends Controller
     // ----------------------
     private function registerForm($accountManager, $registeredEmail, $user, $email, $cipheredPass)
     {
-        // Se verifica si el email ya está registrado
         if ($registeredEmail) {
             return $this->view("account", ["error" => "El email ya está registrado", "form" => "register"]);
         }
 
-        // Insertar el nuevo usuario (El rol siempre será "user")
         if ($accountManager->insertUser($user, $email, $cipheredPass, "user")) {
-            // Se redirige a la vista de login y se muestra el mensaje de cambio exitoso
             return $this->view("account", ["success" => "Usuario registrado con éxito", "form" => "login"]);
         } else {
             return $this->view("account", ["error" => "Error al registrar el usuario", "form" => "register"]);
@@ -305,13 +273,11 @@ class AccountController extends Controller
     // --------------------------------------
     private function resetPasswordForm($accountManager, $registeredEmail, $email, $cipheredPass)
     {
-        // Si el email no está registrado o si el usuario tiene el rol "google", no se permite cambiar la contraseña
         if (!$registeredEmail || $accountManager->getUserRole($email) === "google") {
             return $this->view("account", ["error" => "El email es inválido", "form" => "reset-password"]);
         }
-        // Actualizar la contraseña del usuario en la BBDD
+
         if ($accountManager->updatePassword($email, $cipheredPass)) {
-            // Se redirige a la vista de login y se muestra el mensaje de cambio exitoso
             return $this->view("account", ["success" => "Contraseña actualizada con éxito", "form" => "login"]);
         } else {
             return $this->view("account", ["error" => "Error al actualizar la contraseña", "form" => "reset-password"]);

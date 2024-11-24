@@ -1,8 +1,6 @@
 /* ------------------------------ */
 /* Estilos base de los documentos */
 /* ------------------------------ */
-
-/* Variables para los colores */
 :root {
   --color-success: #28a745;
   --color-info: #17a2b8;
@@ -10,10 +8,11 @@
   --color-error: #dc3545;
 }
 
-/* Fuente principal */
 @font-face {
   font-family: "Nunito";
-  src: url("../fonts/Nunito-Regular.ttf") format("truetype");
+  src: url("../fonts/Nunito-Regular.woff2") format("truetype");
+  /* Cargar fuente genérica mientras carga la principal */
+  font-display: swap;
 }
 
 /* Formateo básico de la página */
@@ -25,7 +24,6 @@
   font-size: 1rem;
   font-family: "Nunito", sans-serif;
   box-sizing: border-box;
-  /* Transición suave */
   scroll-behavior: smooth;
 }
 
@@ -33,11 +31,9 @@
 /* Secciones */
 /* --------- */
 section {
-  /* Contenido centrado */
   justify-content: center;
   text-align: center;
   align-items: center;
-  /* El contenido no desborda */
   overflow: hidden;
 
   h1 {
@@ -51,11 +47,10 @@ section {
         rgba(41, 78, 102, 0.7),
         rgba(255, 255, 255, 0.7)
       ),
-      url("../img/inicio.webp");
+      url("../img/home.webp");
     background-repeat: no-repeat;
     background-size: cover;
 
-    /* Contenedor para el logo y slogan de la marca */
     .brand {
       display: flex;
       flex-direction: column;
@@ -88,7 +83,6 @@ section {
   position: fixed;
   bottom: 20px;
   right: 0px;
-  /* Oculta por defecto */
   display: none;
   cursor: pointer;
   margin: 10px;
@@ -100,9 +94,9 @@ section {
   }
 }
 
-/* --------------------------------------------- */
-/* Mensajes dinámicos tipo toast para el usuario */
-/* --------------------------------------------- */
+/* ----------------------------- */
+/* Mensajes dinámicos tipo toast */
+/* ----------------------------- */
 .toast {
   position: fixed;
   top: 50px;
@@ -111,7 +105,7 @@ section {
   color: white;
   padding: 15px;
   border-radius: 5px;
-  z-index: 1000;
+  z-index: 100;
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
   max-width: 350px;
@@ -138,13 +132,13 @@ section {
   }
 }
 
-/* --------------------------- */
-/* Estilos base de los modales */
-/* --------------------------- */
+/* ---------------------- */
+/* Estilos de los modales */
+/* ---------------------- */
 .modal {
   display: none;
   position: fixed;
-  inset: 0;
+  inset: 0; /* Formateo de márgenes */
   background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
@@ -170,9 +164,9 @@ section {
   opacity: 0.6;
 }
 
-/* ------------------------------------------------------------------------ */
-/* Modal para confirmar el borrado de usuarios, libros, posts y comentarios */
-/* ------------------------------------------------------------------------ */
+/* ---------------------------------------- */
+/* Modal para confirmar el borrado de datos */
+/* ---------------------------------------- */
 .delete-content {
   max-width: 350px;
   text-align: center;
@@ -192,7 +186,6 @@ section {
   }
 }
 
-/* Por defecto, el botón de confirmar en verde */
 .confirm-button {
   background-color: var(--color-success);
 }
@@ -202,7 +195,6 @@ section {
   background-color: var(--color-error);
 }
 
-/* Botón de cancelar en gris */
 .cancel-button {
   background-color: gray;
 }

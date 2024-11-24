@@ -1,4 +1,4 @@
-# Se habilita el motor de reescritura de URL
+# Habilitar el motor de reescritura de URL
 RewriteEngine On
 
 # Eliminar la extensión .php

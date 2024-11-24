@@ -1,71 +1,87 @@
-$(document).ready(() => {
+document.addEventListener("DOMContentLoaded", () => {
 
-    // Configuración inicial basada en la URL y el contexto (libros o posts)
+    // Configuración inicial basada en el contexto (libros o posts)
     const context = window.location.pathname.includes("/books") ? "books" : "posts";
-    const fetchUrl = `fetch-${context}`;
     const defaultOrder = context === "books" ? "asc" : "desc";
-    let currentPage = parseInt(window.location.pathname.split("/").pop().split("=")[1]) || 1;
     let order = defaultOrder;
-
-    const $search = $("#search"), $liked = $("#liked");
-    const filtersExpanded = { "#author-filter": false, "#genre-filter": false, "#language-filter": false, "publisher-filter": false };
+    let currentPage = parseInt(window.location.pathname.split("/").pop().split("=")[1]) || 1;
+    const filtersExpanded = {};
 
     // ------------------------------------------------------------------------
     // Cargar los datos y actualizar la vista según los filtros y la paginación
     // ------------------------------------------------------------------------
-    function load_data(page = 1, updateHistory = true) {
-        // Valores actuales de los filtros
-        const filters = {
-            query: $search.val(),
-            author: context === "books" ? $("#author-filter input:checked").map((_, el) => el.value).get() : [],
-            genre: $("#genre-filter input:checked").map((_, el) => el.value).get(),
-            publisher: $("#publisher-filter input:checked").map((_, el) => el.value).get(),
-            language: $("#language-filter input:checked").map((_, el) => el.value).get(),
-            year: context === "books" ? $("#year").val() : null,
-            pages: $("#pages").val(),
-            words: context === "posts" ? $("#words").val() : null,
-            liked: $liked.is(":checked") ? "on" : ""
-        };
+    const load_data = async (page = 1, updateHistory = true) => {
 
-        // Construir la URL y actualizar el historial
-        const url = page === 1 ? `/${context}` : `/${context}/page=${page}`;
-        updateHistory ? history.pushState({ page }, "", url) : history.replaceState({ page }, "", url);
+        const getValues = (selector) =>
+            Array.from(document.querySelectorAll(selector)).map(element => element.value);
 
-        // Solicitud POST para obtener los datos filtrados y actualizar el contenido
-        $.post(fetchUrl, { ...filters, page, limit: $("#limitSelect").val(), order }, data => {
-            const response = JSON.parse(data);
-            $(".content-container").html(response.html);
+        // Obtener los filtros seleccionados
+        const filters = new FormData();
+        filters.append("query", document.querySelector("#search")?.value || "");
+        ["genre", "language"].forEach(type => getValues(`#${type}-filter input:checked`).forEach(value => filters.append(`${type}[]`, value)));
+
+        // Fltros especiales en base al contexto
+        if (context === "books") {
+            ["author", "publisher"].forEach(type => getValues(`#${type}-filter input:checked`).forEach(value => filters.append(`${type}[]`, value)));
+            filters.append("pages", document.querySelector("#pages")?.value || "");
+        } else if (context === "posts") {
+            filters.append("words", document.querySelector("#words")?.value || "");
+            if (document.querySelector("#liked")?.checked) filters.append("liked", "on");
+        }
+
+        // Agregar la paginación y el orden de los resultados
+        filters.append("page", page);
+        filters.append("order", order);
+
+        // Construir la URL con paginación y actualizar el historial (La página 1 redirecciona a la URL sin paginación)
+        const url = `/${context}${page > 1 ? `/page=${page}` : ""}`;
+        history[updateHistory ? "pushState" : "replaceState"]({ page }, "", url);
+
+        try {
+            const response = await fetch(`fetch-${context}`, {
+                method: "POST",
+                body: filters
+            });
+            const data = await response.json();
+
+            // Actualizar el contenido con los resultados
+            document.querySelector(".content-container").innerHTML = data.html;
+
+            // Actualizar el scroll de la web al hacer clic en la paginación
+            document.querySelector("#pagination")?.addEventListener("click", (event) => {
+                if (event.target.closest(".page-link")) window.scrollTo({ top: 0, behavior: "instant" });
+            });
 
             // Actualizar las opciones de los filtros según la respuesta
-            updateFilterOptions("#author-filter", response.filters.authors, "name", filters.author);
-            updateFilterOptions("#year", response.filters.years, "year", filters.year);
-            updateFilterOptions("#genre-filter", response.filters.genres, "name", filters.genre);
-            updateFilterOptions("#publisher-filter", response.filters.publishers, "name", filters.publisher);
-            updateFilterOptions("#language-filter", response.filters.languages, "language", filters.language);
-            updateFilterOptions("#pages", response.filters.pages, "pages", filters.pages);
-            context === "posts" && updateFilterOptions("#words", response.filters.words, "words", filters.words);
-        });
-    }
+            updateFilterOptions("#author-filter", data.filters.authors, "name", filters.getAll("author[]"));
+            updateFilterOptions("#genre-filter", data.filters.genres, "name", filters.getAll("genre[]"));
+            updateFilterOptions("#publisher-filter", data.filters.publishers, "name", filters.getAll("publisher[]"));
+            updateFilterOptions("#language-filter", data.filters.languages, "language", filters.getAll("language[]"));
+            updateFilterOptions("#pages", data.filters.pages, "pages", filters.get("pages"));
+            updateFilterOptions("#words", data.filters.words, "words", filters.get("words"));
+        } catch (error) {
+            console.error("Error al cargar los datos:", error);
+        }
+    };
 
     // Exponer la función de carga de datos de forma global para su uso en otros ficheros
     window.myApp = { ...window.myApp, load_data };
 
     // Cargar los datos iniciales y manejar la navegación del historial
     load_data(currentPage, false);
-    $(window).on("popstate", event => event.originalEvent.state?.page && load_data(event.originalEvent.state.page, false));
+    window.onpopstate = () => load_data(history.state?.page, false);
 
     // --------------------------------------
     // Actualizar las opciones de los filtros
     // --------------------------------------
-    function updateFilterOptions(selector, options = [], key, selectedValues) {
+    const updateFilterOptions = (selector, options = [], key, selectedValues) => {
 
         // Verificar que los valores y elementos sean válidos
-        if (!Array.isArray(selectedValues) || !Array.isArray(options) || !$(selector).length) return;
+        if (![selectedValues, options].every(Array.isArray) || !document.querySelector(selector)) return;
 
-        // Determinar el estado de expansión
+        // Determinar el estado de expansión y generar los botones de mostrar/ocultar
         const isExpanded = filtersExpanded[selector];
-        // Generar los botones de mostrar/ocultar
-        const buttonHtml = (expanded, type, icon) =>
+        const button = (expanded, type, icon) =>
             `<button class="btn-filter ${type}" data-target="${selector}" ${expanded ? "style='display: none;'" : ""}>
                 <span>Ver ${type === "show-all" ? "todos" : "menos"} <i class="fas fa-chevron-${icon}"></i></span>
             </button>`;
@@ -79,63 +95,69 @@ $(document).ready(() => {
             return `<div class="option${additionalClass}"${displayStyle}><input type="checkbox" value="${value}"${isChecked}> ${option[key]}</div>`;
         }).join("");
 
-        // Insertar el HTML generado en el selector
-        $(selector).html(optionsHtml + (options.length > 3 ? buttonHtml(isExpanded, "show-all", "down") + buttonHtml(!isExpanded, "show-less", "up") : ""));
+        // Insertar el HTML generado en el selector correspondiente
+        const container = document.querySelector(selector);
+        if (container) {
+            container.innerHTML = optionsHtml + (options.length > 3 ? button(isExpanded, "show-all", "down") + button(!isExpanded, "show-less", "up") : "");
+        }
     }
 
     // Eventos para las diferentes acciones de usuario
-    $("#limitSelect, #year, #pages, #words, #author-filter, #genre-filter, #publisher-filter, #language-filter, #search, #liked").on("change input", () => load_data(1));
-    $(document).on("click", ".page-link", function () { load_data($(this).data("page")); });
+    document.querySelectorAll("#pages, #words, #author-filter, #genre-filter, #publisher-filter, #language-filter, #search, #liked")
+        .forEach(element => element.addEventListener("input", () => load_data(1)));
 
-    // Limpiar filtros
-    $("#clear-filters").click(() => {
-        $('input[type="checkbox"]').prop("checked", false);
-        $('input[type="text"], select').val("");
-        $("#order").val(defaultOrder);
-        order = defaultOrder;
-        setTimeout(() => load_data(1), 10);
+    // Manejar la paginación de los resultados
+    document.addEventListener("click", (event) => {
+        if (event.target.closest(".page-link")) {
+            load_data(event.target.closest(".page-link").dataset.page);
+        }
     });
 
     // Cambiar el orden de los resultados
-    $("#order").change(function () {
-        order = $(this).val();
+    document.querySelector("#order").addEventListener("change", (event) => {
+        order = event.target.value;
         load_data(1);
     });
 
-    // Mostrar todas las opciones de los filtros reducidos
-    $(document).on("click", ".show-all", function () {
-        const target = $(this).data("target");
-        $(target).find(".option").show();
-        $(this).hide();
-        $(target).find(".show-less").show();
-        filtersExpanded[target] = true;
+    // Limpiar los filtros
+    document.getElementById("clear-filters").addEventListener("click", () => {
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
+        document.querySelectorAll('input[type="search"], select').forEach(input => input.value = "");
+        document.getElementById("order").value = defaultOrder;
+        order = defaultOrder;
+        load_data(1); // Cargar la primera página
     });
 
-    // Ocultar las opciones extra de los filtros
-    $(document).on("click", ".show-less", function () {
-        const target = $(this).data("target");
-        $(target).find(".option").hide().slice(0, 3).show();
-        $(this).hide();
-        $(target).find(".show-all").show();
-        filtersExpanded[target] = false;
+    // Mostrar/ocultar las opciones de filtro
+    document.addEventListener("click", ({ target }) => {
+        const button = target.closest(".show-all, .show-less");
+        if (!button) return;
+        const isShowAll = button.classList.contains("show-all");
+        const targetSelector = button.dataset.target;
+
+        // Mostrar el botón de "Ver todos" si hay más de 3 opciones en el filtro
+        document.querySelectorAll(`${targetSelector} .option`).forEach((option, index) => {
+            option.style.display = isShowAll || index < 3 ? "block" : "none";
+        });
+
+        document.querySelector(`${targetSelector} .show-all`).style.display = isShowAll ? "none" : "inline-block";
+        document.querySelector(`${targetSelector} .show-less`).style.display = isShowAll ? "inline-block" : "none";
+
+        // Actualizar el estado de expansión
+        filtersExpanded[targetSelector] = isShowAll;
     });
 
-    // ------------------------------------------
-    // Visualización de los filtros en responsive 
-    // ------------------------------------------
+    // ----------------------------------------------------------------
+    // Visualización de los filtros en responsive (Por defecto ocultos)
+    // ----------------------------------------------------------------
     let filtersVisible = false;
+    const toggleFilters = () => document.querySelector("#filters").style.display = (window.innerWidth > 1024 || filtersVisible) ? "block" : "none";
 
-    $("#filter-icon").on("click", () => {
+    document.querySelector("#filter-icon").addEventListener("click", () => {
         filtersVisible = !filtersVisible;
-        updateFiltersVisibility();
+        toggleFilters();
     });
 
-    $(window).on("resize", updateFiltersVisibility);
-
-    // Ocultar filtros por defecto en responsive
-    function updateFiltersVisibility() {
-        $("#filters").toggle(window.innerWidth > 1024 || filtersVisible);
-    }
-
-    updateFiltersVisibility();
+    window.addEventListener("resize", toggleFilters);
+    toggleFilters();
 });

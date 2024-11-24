@@ -1,23 +1,13 @@
-<?php
-
-// Autocarga de las clases
-require_once "../vendor/autoload.php";
-// Uso del controlador de Google
-use Src\Controllers\GoogleController;
-?>
-
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-    <!-- Metadatos -->
     <link rel="stylesheet" href="assets/css/navbar.css">
     <script src="assets/js/navbar.js" type="module"></script>
 </head>
 
 <body>
 
-    <!-- Barra de navegación -->
     <nav class="menu">
 
         <!-- Icono para desplegar el menú en dispositivos pequeños -->
@@ -26,7 +16,6 @@ use Src\Controllers\GoogleController;
         <!-- Vacío para alinear las otras opciones -->
         <ul class="left"></ul>
 
-        <!-- Enlaces de la web -->
         <ul class="center">
             <li><a href="books/">Libros</a></li>
             <li><a href="posts/">Posts</a></li>
@@ -36,7 +25,7 @@ use Src\Controllers\GoogleController;
         <ul class="right">
 
             <!-- Modal de FAQ -->
-            <li title="Ayuda"><a href="#" id="open-modal"> <i class="fa-regular fa-circle-question"></i></a></li>
+            <li title="Ayuda"><a href="javascript:void(0);" id="open-modal" aria-label="Preguntas frecuentes"> <i class="fa-regular fa-circle-question"></i></a></li>
 
             <div id="faq-modal" class="help-modal">
                 <div class="help-modal-content">
@@ -66,7 +55,7 @@ use Src\Controllers\GoogleController;
             }
             if (isset($_SESSION["user"])): ?>
                 <li id="notifications" class="notifications">
-                    <a>
+                    <a href="javascript:void(0);">
                         <i title="Notificaciones" class="fa-regular fa-bell"></i>
                         <span id="notification-count" class="notification-count"></span>
                     </a>
@@ -87,26 +76,22 @@ use Src\Controllers\GoogleController;
             <li class="user-menu">
                 <?php
                 // Instancia del controlador de Google para cargar los datos del usuario logado
-                (new GoogleController())->callback();
+                (new \Src\Controllers\GoogleController())->callback();
 
-                // Se verifica si existe la sesión del usuario y se obtiene
+                // Verificar si existe la sesión del usuario y obtener sus datos
                 if (isset($_SESSION["user"])) {
                     $isGoogleLogin = $_SESSION["login_source"] ?? "" === "google";
                     $userInfo = $isGoogleLogin ? $_SESSION["user_info"] : null;
 
                 ?>
-                    <!-- Información de la cuenta y avatar -->
                     <a href="#" class="dropbtn">
                         <div class="account-info"> Mi cuenta
                             <img src="assets/img/avatars/<?= $_SESSION["avatar"] ?>" alt="Foto de perfil" class="profile-pic">
                         </div>
                     </a>
 
-                    <!-- Menú deslplegable -->
                     <div class="user-menu-content">
-                        <!-- Nombre de usuario -->
                         <a><?= $isGoogleLogin ? $userInfo["full_name"] : $_SESSION["user"]; ?></a>
-                        <!-- Opciones según el origen del inicio de sesión -->
                         <?php if ($isGoogleLogin) : ?>
                             <a href="/google-logout"> <i class="fa-solid fa-arrow-right-from-bracket"></i> Salir </a>
                         <?php else : ?>
@@ -117,8 +102,9 @@ use Src\Controllers\GoogleController;
                     </div>
 
                 <?php
-                } else { // Si no hay sesión activa, se permite iniciar sesión 
+                } else {
                 ?>
+                    <!-- Si no hay sesión activa, permitir iniciar sesión -->
                     <a href="account">Acceder</a>
                 <?php } ?>
             </li>

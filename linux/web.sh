@@ -74,6 +74,23 @@ EOF
 chown -R www-data:www-data /var/www/enhancereads
 chmod -R 755 /var/www/enhancereads
 
+# Copia de seguridad de la base de datos
+progress_bar "Configurando copia de seguridad semanal de la base de datos..."
+
+# Script para realizar la copia de seguridad
+cat <<EOF > /usr/local/bin/backup_bbdd.sh
+#!/bin/bash
+BACKUP_DIR="/var/backups/mysql"
+DATE=\$(date +\%F_\%H-\%M)
+mkdir -p \$BACKUP_DIR
+mysqldump -u root -pV1O=z6N^6=wv enhancereads > \$BACKUP_DIR/enhancereads_\$DATE.sql
+EOF
+
+chmod +x /usr/local/bin/backup_bbdd.sh
+
+# Crear el cron job para la copia de seguridad semanal (domingos a las 2:00 AM)
+(crontab -l 2>/dev/null; echo "0 2 * * 0 /usr/local/bin/backup_bbdd.sh") | crontab -
+
 # Configurar las interfaces de red de manera persistente
 progress_bar "Configurando las interfaces de red..."
 cat <<EOF > /etc/netplan/50-cloud-init.yaml
@@ -86,7 +103,7 @@ network:
       dhcp4: no
       addresses: [192.168.1.15/24]
       nameservers:
-        addresses: [192.168.1.20] # IP del servidor DNS
+        addresses: [192.168.1.10] # IP del servidor DNS
 EOF
 netplan apply
 

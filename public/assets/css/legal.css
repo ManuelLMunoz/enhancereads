@@ -1,12 +1,12 @@
-/* Se importan los estilos base */
 @import url("base.css");
 
 /* Sección 1 - Inicio */
-
-/* Se ocupa el 40% de la pantalla */
-.brand {
-  height: 40vh;
-  height: 40dvh;
+section#main {
+  /* Tamaño al 40% de la pantalla */
+  .brand {
+    height: 40vh;
+    height: 40dvh;
+  }
 }
 
 /* Sección 2 - Contenido */

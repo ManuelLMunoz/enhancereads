@@ -1,79 +1,90 @@
-$(document).ready(function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-    // ------------------------------------------------------------------------------------------------------------
-    // Cargar los autores, géneros y editoriales desde el servidor en los formularios de agregar y modificar libros
-    // ------------------------------------------------------------------------------------------------------------
-    const loadAuthorsGenresAndPublishers = (selectedAuthor, selectedGenre, selectedPublisher) => {
-        $.post("fetch-authors-and-genres", ({ success, authors, genres, publishers }) => {
-            if (success) {
-                // Actualizar los selectores con las opciones recibidas
-                ["#author", "#genre", "#publisher"].forEach((selector, index) =>
-                    populateSelect(selector, [authors, genres, publishers][index], [selectedAuthor, selectedGenre, selectedPublisher][index])
-                );
+    // ---------------------------------------------------------------------------------------------------------
+    // Cargar los autores, géneros y editoriales desde el servidor en los formularios de agregar y editar libros
+    // ---------------------------------------------------------------------------------------------------------
+    const loadAndPopulateSelectors = async (selectedAuthor, selectedGenre, selectedPublisher) => {
+        try {
+            const response = await fetch("fetch-authors-genres-and-publishers", { method: "POST" });
+            const data = await response.json();
+
+            if (data.success) {
+                // Arrays para las opciones, selectores y opciones seleccionadas
+                const options = [data.authors, data.genres, data.publishers];
+                const selectors = ["#author", "#genre", "#publisher"];
+                const selectedOptions = [selectedAuthor, selectedGenre, selectedPublisher];
+
+                selectors.forEach((selector, index) => {
+                    // Obtener el elemento del selector
+                    const selectElement = document.querySelector(selector);
+                    if (selectElement) {
+                        // Establecer las opciones del selector, incluyendo una opción por defecto
+                        selectElement.innerHTML = `
+                            <option value="" disabled ${selectedOptions[index] === null ? "selected" : ""}>Seleccione una opción</option>
+                            ${options[index].map(option => `
+                                <option value="${option.id}" ${option.id == selectedOptions[index] ? "selected" : ""}>${option.name}</option>
+                            `).join("")}
+                        `;
+                    }
+                });
             }
-        }, "json").fail((_, status) => console.error(`Error AJAX: ${status}`));
+        } catch (error) {
+            console.error("Error:", error);
+        }
     };
 
-    // Llenar los selectores <select> con las opciones y seleccionar la opción por defecto
-    const populateSelect = (selector, options, selectedOption) => {
-        $(selector).empty().append(
-            `<option value="" disabled ${selectedOption === null ? "selected" : ""}>Seleccione una opción</option>`,
-            options.map(option =>
-                `<option value="${option.id}" ${option.id == selectedOption ? "selected" : ""}>${option.name}</option>`
-            )
-        );
+    // Obtener los valores marcados de los selectores
+    const getSelectedValue = (selector) => {
+        const element = document.querySelector(selector);
+        return element?.dataset.selected !== "null" ? element?.dataset.selected : null;
     };
 
-    // Obtener los valores seleccionados
-    const selectedAuthor = $("#author").data("selected");
-    const selectedGenre = $("#genre").data("selected");
-    const selectedPublisher = $("#publisher").data("selected");
-    loadAuthorsGenresAndPublishers(selectedAuthor, selectedGenre, selectedPublisher);
+    loadAndPopulateSelectors(getSelectedValue("#author"), getSelectedValue("#genre"), getSelectedValue("#publisher"));
 
     // --------------------------------------------
     // Borrar libros de forma dinámica sin recargar
     // --------------------------------------------
+    document.addEventListener("click", (event) => {
+        if (event.target.matches(".delete-button")) {
+            event.preventDefault();
+            const id = event.target.dataset.id;
 
-    // Evento en el botón para borrar un libro
-    $(document).on("click", ".delete-button", function (event) {
-        event.preventDefault();
-        const id = $(this).data("id");
-        id ? $("#delete-modal").removeClass("hidden").data("id", id) : showToast("Error al capturar el ID del libro", "error");
+            if (id) {
+                const modal = document.querySelector("#delete-modal");
+                modal.classList.remove("hidden");
+                modal.dataset.id = id;
+            } else {
+                showToast("Error al capturar el ID del libro", "error");
+            }
+        }
     });
 
-    // Evento al cancelar la confirmación
-    $(document).on("click", "#cancel-delete", () => $("#delete-modal").addClass("hidden"));
+    document.getElementById("cancel-delete")?.addEventListener("click", () => {
+        document.getElementById("delete-modal").classList.add("hidden");
+    })
 
-    // Evento al botón de confirmación
-    $(document).on("click", "#confirm-delete", function () {
-        const id = $("#delete-modal").data("id");
+    document.querySelector("#confirm-delete")?.addEventListener("click", async () => {
+        const modal = document.querySelector("#delete-modal");
+        const id = modal.dataset.id;
 
-        // Si no hay un ID, muestra un mensaje de error y oculta el modal
-        if (!id) {
-            showToast("No se ha seleccionado ningún libro para borrar", "error");
-            $("#delete-modal").addClass("hidden");
-            return;
+        if (!id) return showToast("No se ha seleccionado ningún libro para borrar", "error"), modal.classList.add("hidden");
+
+        try {
+            const response = await fetch(`/delete-book/${id}`, { method: "POST" });
+            const { success } = await response.json();
+
+            if (success) {
+                // Si la respuesta es exitosa, guardar el mensaje en localStorage y redirigir a la vista de libros
+                localStorage.setItem("deleteSuccess", "Libro borrado con éxito");
+                window.location.href = "/books";
+            } else {
+                showToast("Error al borrar el libro", "error");
+            }
+        } catch {
+            showToast("Error al procesar la solicitud", "error");
+        } finally {
+            modal.classList.add("hidden");
         }
-
-        // Solicitud POST al servidor para borrar el libro
-        $.post(`/delete-book/${id}`)
-            .done(response => {
-                try {
-                    // Si la respuesta es exitosa, guarda el mensaje en localStorage y redirige
-                    if (JSON.parse(response).success) {
-                        localStorage.setItem("deleteSuccess", "Libro borrado con éxito");
-                        // Redirigir a la vista de libros
-                        window.location.href = "/books";
-                    } else {
-                        showToast("Error al borrar el libro", "error");
-                    }
-                } catch {
-                    showToast("Error al borrar el libro", "error");
-                }
-            })
-            .fail(() => showToast("Error al procesar la solicitud", "error"))
-            // Se oculta el modal al final de la operación
-            .always(() => $("#delete-modal").addClass("hidden"));
     });
 
     // Mostrar toast si hay un mensaje de borrado en localStorage
@@ -83,78 +94,66 @@ $(document).ready(function () {
         localStorage.removeItem("deleteSuccess");
     }
 
-});
-
-// -------------------------------------------------------------
-// Actualizar los datos del libro de forma dinámica sin recargar
-// -------------------------------------------------------------
-$("#edit-books").submit(async (event) => {
-    event.preventDefault();
-    try {
-        const formData = new FormData(event.target); // Mantén el uso de FormData para manejar archivos
-
-        const response = await fetch(event.target.action, {
-            method: event.target.method,
-            body: formData, // Enviamos directamente el FormData
-        });
-
-        const jsonResponse = await response.json();
-
-        showToast(jsonResponse.message, jsonResponse.success ? "success" : "error");
-    } catch (error) {
-        console.error("Error:", error);
-        showToast("Error al actualizar el libro", "error");
-    }
-});
-
-// --------------------------------
-// Ampliar la descripción del libro
-// --------------------------------
-const toggleDescription = (button) => {
-    const description = document.getElementById("description");
-    description.classList.toggle("expanded");
-    button.textContent = description.classList.contains("expanded") ? "Ver menos" : "Ver más";
-};
-
-// ---------------------------------------
-// Ampliar la imagen al hacer clic en ella
-// ---------------------------------------
-document.addEventListener("click", ({ target }) => {
-    const modal = document.getElementById("image-modal");
-
-    if (target.classList.contains("book-cover")) {
-        modal.querySelector("img").src = target.src;
-        modal.style.display = "flex";
-    } else if (target.matches(".close-button, #image-modal")) {
-        modal.style.display = "none";
-    }
-});
-
-// ---------------------------------------------------------------------------
-// Agregar inputs para los enlaces en los formularios de crear y editar libros
-// ---------------------------------------------------------------------------
-const container = document.getElementById("links-container");
-const addLinkButton = document.getElementById("add-link");
-
-if (addLinkButton) {
-    addLinkButton.onclick = (event) => {
+    // -------------------------------------------------------------
+    // Actualizar los datos del libro de forma dinámica sin recargar
+    // -------------------------------------------------------------
+    document.getElementById("edit-books")?.addEventListener("submit", async (event) => {
         event.preventDefault();
-        // Agregar un nuevo input dentro del contenedor de enlaces
-        container.insertAdjacentHTML("beforeend",
-            `<div class="link-input">
-                <div class="remove-link-icon-container">
-                    <i class="fas fa-trash-alt remove-link-icon"></i>
-                </div>
-                <input type="url" name="links[]" required placeholder="Ingresa un enlace">
-            </div>`);
-    };
-}
+        try {
+            const response = await fetch(event.target.action, {
+                method: event.target.method,
+                body: new FormData(event.target), // Objeto FormData con los datos del formulario
+            });
+            const { message, success } = await response.json();
+            showToast(message, success ? "success" : "error");
+        } catch (error) {
+            showToast("Error al actualizar el libro", "error");
+        }
+    });
 
-// Borrar del contenedor el input seleccionado
-if (container) {
-    container.onclick = (event) => {
-        if (event.target.classList.contains("remove-link-icon")) {
+    // --------------------------------
+    // Ampliar la descripción del libro
+    // --------------------------------
+    document.querySelector(".view-more")?.addEventListener("click", (event) => {
+        const description = document.getElementById("description");
+        description.classList.toggle("expanded");
+        event.target.textContent = description.classList.contains("expanded") ? "Ver menos" : "Ver más";
+    });
+
+    // ----------------------------------------------
+    // Ampliar/cerrar la imagen al hacer clic en ella
+    // ----------------------------------------------
+    document.addEventListener("click", ({ target }) => {
+        const modal = document.getElementById("image-modal");
+
+        if (target.classList.contains("book-cover")) {
+            modal.querySelector("img").src = target.src;
+            modal.style.display = "flex";
+        } else if (target.matches(".close-button, #image-modal")) {
+            modal.style.display = "none";
+        }
+    });
+
+    // ---------------------------------------------------------------------------
+    // Agregar inputs para los enlaces en los formularios de crear y editar libros
+    // ---------------------------------------------------------------------------
+    document.getElementById("add-link")?.addEventListener("click", (event) => {
+        event.preventDefault();
+        // Agregar un nuevo input dentro del contenedor de enlaces (Por defecto se agrega uno)
+        document.getElementById("links-container").insertAdjacentHTML("beforeend", `
+        <div class="link-input">
+            <div class="remove-link-icon-container">
+                <i class="fas fa-trash-alt remove-link-icon"></i>
+            </div>
+            <input type="url" name="links[]" required placeholder="Ingresa un enlace">
+        </div>`);
+    });
+
+    // Borrar el input seleccionado
+    document.getElementById("links-container")?.addEventListener("click", (event) => {
+        if (event.target.closest(".remove-link-icon")) {
             event.target.closest(".link-input").remove();
         }
-    };
-}
+    });
+
+});

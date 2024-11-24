@@ -30,9 +30,9 @@ class Users extends Connection
         return $stmt->fetch(\PDO::FETCH_ASSOC);
     }
 
-    // ----------------------------
-    // Obtener el rol de un usuario
-    // ----------------------------
+    // ------------------------------------------
+    // Obtener el rol de un usuario por su email
+    // ------------------------------------------
     public function getUserRole($email)
     {
         try {
@@ -62,19 +62,19 @@ class Users extends Connection
         }
     }
 
-    // -------------------
+    // --------------
     // Borrar usuario
-    // -------------------
+    // --------------
     public function deleteUser($id)
     {
         try {
-            // Se obtiene el avatar y si es personalizado se elimina del servidor
+            // Obtener el avatar y si es personalizado eliminarlo del servidor
             $user = $this->connection->query("SELECT avatar FROM users WHERE id = $id")->fetch();
             if ($user && $user["avatar"] && $user["avatar"] !== "default.svg") {
                 $avatarPath = __DIR__ . "/../../public/assets/img/avatars/" . $user["avatar"];
                 if (file_exists($avatarPath)) unlink($avatarPath);
             }
-            // Se borra el usuario
+
             $stmt = $this->connection->prepare("DELETE FROM users WHERE id = :id");
             return $stmt->execute(["id" => $id]);
         } catch (PDOException $e) {
@@ -83,9 +83,9 @@ class Users extends Connection
         }
     }
 
-    // ----------------------------------
+    // ----------------------------
     // Actualizar datos del usuario
-    // ----------------------------------
+    // ----------------------------
     public function updateUser($id, $user, $email, $password = null, $avatar = null)
     {
         try {
@@ -96,10 +96,8 @@ class Users extends Connection
 
             if ($avatar) $params[":avatar"] = $avatar;
 
-            $query = "UPDATE users SET user = :user, email = :email" .
-                ($password ? ", password = :password" : "") .
-                ($avatar ? ", avatar = :avatar" : "") .
-                " WHERE id = :id";
+            $query = "UPDATE users SET user = :user, email = :email" . ($password ? ", password = :password" : "") .
+                ($avatar ? ", avatar = :avatar" : "") . " WHERE id = :id";
 
             $stmt = $this->connection->prepare($query);
 

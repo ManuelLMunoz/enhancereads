@@ -1,66 +1,32 @@
-<?php
-
-// Se inicia la sesión si no lo está 
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Instancia de la clase "Posts"
-use Src\Models\Posts;
-
-$postsModel = new Posts();
-
-// Se obtiene el ID del usuario actual
-$currentUserId = $_SESSION["id"] ?? null;
-?>
-
-<script>
-    //Script para regresar al top tras cambiar de página
-    document.querySelector("#pagination").addEventListener("click", (event) => {
-        if (event.target.classList.contains("page-link") && !event.target.classList.contains("disabled")) {
-            window.scrollTo({
-                top: 0,
-                behavior: "instant" // Asegura que el scroll se realice de inmediato
-            });
-        }
-    });
-</script>
-
-<!-- Se muestran los posts si existen resultados en la BBDD -->
+<!-- Mostrar todos los posts encontrados en la BBDD -->
 <?php if (!empty($posts)) : ?>
     <div class="post-container">
         <?php foreach ($posts as $post) : ?>
 
-            <div class="post-info" id="post-<?php echo $post['id']; ?>">
+            <div class="post-info" id="post-<?php echo $post["id"]; ?>">
 
-                <!-- Botón de cierre -->
-                <button class="close-button" style="display: none;"><i class='fas fa-times'></i></button>
+                <button class="close-button" style="display: none;"><i class="fas fa-times"></i></button>
 
                 <div class="post-data">
 
-                    <!-- Nombre y avatar del usuario -->
                     <div class="user-data">
-                        <img class="user-avatar" src="/assets/img/avatars/<?php echo $post['user_avatar']; ?>" alt="Avatar de <?php echo htmlspecialchars($post['user_name']); ?>">
+                        <img class="user-avatar" src="/assets/img/avatars/<?php echo $post["user_avatar"]; ?>" alt="Avatar de <?php echo htmlspecialchars($post["user_name"]); ?>">
                         <div class="user-details">
                             <p><strong><?php echo htmlspecialchars($post["user_name"]); ?></strong></p>
-                            <!-- Fecha del post formateada -->
                             <p class="timestamp">
-                                <?php echo $postsModel->formatDateAgo($post["created_at"]); ?>
-                                <?php if (!empty($post["edited_at"])): ?>
-                                    (editado)
-                                <?php endif; ?>
+                                <?php echo htmlspecialchars($post["formatted_date"]); ?>
+                                <?php echo !empty($post["is_edited"]) ? htmlspecialchars($post["is_edited"]) : ""; ?>
                             </p>
                         </div>
                     </div>
 
-                    <!-- Catagoría e idioma del post -->
                     <div class="post-details">
                         <p><strong>Categoría:</strong> <?php echo htmlspecialchars($post["genre"]); ?></p>
                         <p><strong>Idioma:</strong> <?php echo htmlspecialchars($post["language"]); ?></p>
                     </div>
 
                     <!-- Botones de editar y borrar (Aparecen en aquellos posts creados por el usuario logado) -->
-                    <?php if ($currentUserId == $post['user_id']) : ?>
+                    <?php if (isset($_SESSION["id"]) && $_SESSION["id"] == $post["user_id"]) : ?>
                         <div class="manage-posts">
                             <a class="delete-button" data-id="<?php echo $post["id"]; ?>">
                                 <i class="fa-solid fa-trash"></i> Borrar
@@ -71,7 +37,7 @@ $currentUserId = $_SESSION["id"] ?? null;
                         </div>
 
                         <!-- El admin puede borrar todos los posts -->
-                    <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') : ?>
+                    <?php elseif (isset($_SESSION["role"]) && $_SESSION["role"] === "admin") : ?>
                         <div class="manage-posts">
                             <a class="delete-button" data-id="<?php echo $post["id"]; ?>">
                                 <i class="fa-solid fa-trash"></i> Borrar
@@ -79,36 +45,35 @@ $currentUserId = $_SESSION["id"] ?? null;
                         </div>
                     <?php endif; ?>
 
-                    <!-- Título y contenido del post -->
                     <div class="post-content">
-                        <h2 class="post-title"><?php echo htmlspecialchars($post["title"]); ?></h2>
+                        <h2 class="post-title" tabindex="0"><?php echo htmlspecialchars($post["title"]); ?></h2>
                         <p class="formatted-text"><?php echo htmlspecialchars($post["content"]); ?></p>
                     </div>
 
+                    <!-- Likes y comentarios del post -->
                     <div class="post-community">
 
-                        <!-- Número de likes y comentarios del post -->
                         <div class="post-share">
-                            <button class="like-button <?php echo $post['user_liked'] ? 'liked' : ''; ?>" data-type="post" data-id="<?php echo $post['id']; ?>">
-                                <i class="fa fa-thumbs-up" title="Votar"></i> <span><?php echo $post['likes_count']; ?></span>
+                            <button class="like-button <?php echo $post["user_liked"] ? "liked" : ""; ?>" data-type="post" data-id="<?php echo $post["id"]; ?>">
+                                <i class="fa fa-thumbs-up" title="Votar"></i> <span><?php echo $post["likes_count"]; ?></span>
                             </button>
                             <button class="comment-button" data-id="<?php echo $post["id"]; ?>">
                                 <i class="fa fa-comment"></i> <span><?php echo $post["comments_count"]; ?></span>
                             </button>
                         </div>
 
-                        <!-- Se incluye el archivo que actúa de plantilla para los comentarios -->
+                        <!-- Incluir el archivo que actúa de plantilla para los comentarios -->
                         <div class="post-comments">
                             <?php
                             require_once "comment-template.php";
-                            renderCommentsIfAvailable($post["comments"], $postsModel);
+                            renderCommentsIfAvailable($post["comments"]);
                             ?>
                         </div>
 
                         <!-- Formulario para escribir comentarios (Solo funciona con usuarios logados) -->
-                        <div class="comment-form" id="comment-form" data-logged-in="<?php echo isset($currentUserId) ? 'true' : 'false'; ?>">
+                        <div class="comment-form" id="comment-form" data-logged-in="<?php echo isset($_SESSION["id"]) ? "true" : "false"; ?>">
                             <form method="post">
-                                <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+                                <input type="hidden" name="post_id" value="<?php echo $post["id"]; ?>">
                                 <input type="hidden" name="parent_comment_id" id="parent_comment_id" value="">
                                 <textarea id="comment-textarea" name="comment" rows="1" placeholder="Escribe un comentario"></textarea>
                                 <button type="submit" id="confirm-comment" class="confirm-button hidden">Comentar</button>
@@ -124,8 +89,8 @@ $currentUserId = $_SESSION["id"] ?? null;
 
     <?php
     // Configuración de la paginación
-    $page = isset($page) ? $page : 1;
-    $totalPages = isset($totalPages) ? $totalPages : 1;
+    $page = $page ?? 1;
+    $totalPages = $totalPages ?? 1;
     $maxPagesToShow = 3;
 
     // Cálculo del rango de páginas a mostrar
@@ -140,20 +105,17 @@ $currentUserId = $_SESSION["id"] ?? null;
     }
     ?>
 
-    <!-- Paginación de los elementos -->
     <div id="pagination">
 
-        <!-- Botón de página anterior -->
         <span class="page-link prev<?php echo ($page > 1 ? "" : " disabled"); ?>" data-page="<?php echo max($page - 1, 1); ?>">
             <i class="fa-solid fa-angle-left" title="Anterior"></i>
         </span>
 
-        <!-- Enlaces a las páginas -->
-        <?php if ($startPage > 1) echo pageLink(1, $page) . ($startPage > 2 ? "<span class='page-link dots'>...</span>" : ""); ?>
+        <!-- Enlaces a las páginas (Mostrar puntos suspensivos cuando se superen 3 páginas por encima y/o por debajo) -->
+        <?php if ($startPage > 1) echo pageLink(1, $page) . ($startPage > 2 ? "<span class='page-link dots disabled'>...</span>" : ""); ?>
         <?php foreach (range($startPage, $endPage) as $i) echo pageLink($i, $page); ?>
-        <?php if ($endPage < $totalPages) echo ($endPage < $totalPages - 1 ? "<span class='page-link dots'>...</span>" : "") . pageLink($totalPages, $page); ?>
+        <?php if ($endPage < $totalPages) echo ($endPage < $totalPages - 1 ? "<span class='page-link dots disabled'>...</span>" : "") . pageLink($totalPages, $page); ?>
 
-        <!-- Botón de página siguiente -->
         <span class="page-link next<?php echo ($page < $totalPages ? "" : " disabled"); ?>" data-page="<?php echo min($page + 1, $totalPages); ?>">
             <i class="fa-solid fa-angle-right" title="Siguiente"></i>
         </span>
@@ -163,7 +125,6 @@ $currentUserId = $_SESSION["id"] ?? null;
     <!-- Total de elementos encontrados -->
     <div id="element-range"><?php echo "$startElement - $endElement de $totalRows resultados"; ?></div>
 
-    <!-- Si no existen posts, se muestra un error -->
 <?php else : ?>
     <p>No se encontraron posts 😥</p>
 <?php endif; ?>

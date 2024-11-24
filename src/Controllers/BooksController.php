@@ -6,17 +6,36 @@ use Src\Models\Books;
 
 class BooksController extends Controller
 {
-    // Se retorna la vista de la lista de libros con soporte para paginación
     public function books($page = 1)
     {
         return $this->view("books", ["page" => $page]);
     }
 
-    // Se retorna la vista de administración de libros
     public function manageBook()
     {
         return $this->view("manage-books");
     }
+
+    public function viewBookDetails($id, $title)
+    {
+        $book = (new Books())->getBookById($id);
+
+        // Verificar si el libro existe y si el título coincide con el formateado
+        if (!$book || $this->sanitizeTitle($book["title"]) !== $title) {
+            return $this->view("404", [], 404);
+        }
+
+        return $this->view("book-details", ["book" => $book]);
+    }
+
+    private function sanitizeTitle($title)
+    {
+        // Eliminar acentos y caracteres especiales, convertir a minúsculas y reemplazar espacios por guiones
+        $unaccented = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $title);
+        $sanitized = preg_replace("/[^a-z0-9 ]/", "", strtolower($unaccented));
+        return str_replace(" ", "-", trim($sanitized));
+    }
+
 
     // ---------------------------------------------
     // Obtener y filtrar los libros según parámetros
@@ -37,29 +56,29 @@ class BooksController extends Controller
             "pages" => $_POST["pages"] ?? ""
         ];
 
+        // Obtener los libros y la información de paginación
         $booksData = (new Books())->getBooks($params);
         $books = $booksData["books"];
-
-        // Valores de la paginación
         $totalRows = $booksData["total"];
         $totalPages = ceil($totalRows / $params["limit"]);
         $page = max(min($params["page"], $totalPages), 1);
         $startElement = ($page - 1) * $params["limit"] + 1;
         $endElement = min($page * $params["limit"], $totalRows);
 
-        // Se renderiza la vista de los libros
+        // Renderizar la vista de los libros
         ob_start();
         include(__DIR__ . "/../views/components/fetch_books.php");
         $output = ob_get_clean();
 
-        // Respuesta en formato JSON
+        // Respuesta con los datos en formato JSON
+        $book = new Books();
         echo json_encode([
             "html" => $output,
             "filters" => [
-                "authors" => (new Books())->getAuthors(),
-                "genres" => (new Books())->getGenres(),
-                "publishers" => (new Books())->getPublishers(),
-                "languages" => (new Books())->getLanguages(),
+                "authors" => $book->getAuthors(),
+                "genres" => $book->getGenres(),
+                "publishers" => $book->getPublishers(),
+                "languages" => $book->getLanguages(),
                 "pages" => ["50", "100", "200", "500"]
             ],
             "pagination" => [
@@ -74,11 +93,12 @@ class BooksController extends Controller
 
     public function fetchAuthorsGenresAndPublishers()
     {
+        $books = new Books();
         echo json_encode([
             "success" => true,
-            "authors" => (new Books())->getAllAuthors(),
-            "genres" => (new Books())->getAllGenres(),
-            "publishers" => (new Books())->getAllPublishers()
+            "authors" => $books->getAllAuthors(),
+            "genres" => $books->getAllGenres(),
+            "publishers" => $books->getAllPublishers()
         ]);
     }
 
@@ -87,32 +107,25 @@ class BooksController extends Controller
     // ------------------------------
     private function handleCoverUpload($cover, $bookId, $existingCoverName = null)
     {
-        // Si no se sube un nuevo archivo, mantener el nombre de portada existente
         if ($cover["error"] === UPLOAD_ERR_NO_FILE) {
             return $existingCoverName;
         }
 
-        // Verificar si hubo algún error durante la subida
+        // Comprobar errores de subida, tamaño y extensión
         if ($cover["error"] !== UPLOAD_ERR_OK) {
             return ["success" => false, "message" => "Error al subir el archivo. Pruebe de nuevo"];
         }
-
-        // Comprobar que el tamaño del archivo no exceda de 1MB
         if ($cover["size"] > 1048576) {
             return ["success" => false, "message" => "El tamaño máximo de imagen permitido es 1MB"];
         }
-
-        // Verificar que la extensión del archivo sea válida
         $extension = strtolower(pathinfo($cover["name"], PATHINFO_EXTENSION));
         if (!in_array($extension, ["jpg", "jpeg", "png", "webp"])) {
             return ["success" => false, "message" => "Solo se permiten archivos con extensión: jpg, jpeg, png y webp"];
         }
 
-        // Generar el nuevo nombre de archivo y la ruta de destino
+        // Intentar mover el archivo y devolver el resultado
         $coverNewName = "cover_book_" . $bookId . ".webp";
         $destPath = __DIR__ . "/../../public/assets/img/books/" . $coverNewName;
-
-        // Intentar mover el archivo y devolver el resultado
         return move_uploaded_file($cover["tmp_name"], $destPath)
             ? ["success" => true, "coverName" => $coverNewName]
             : ["success" => false, "message" => "Error al mover el archivo"];
@@ -121,12 +134,19 @@ class BooksController extends Controller
     // -------------
     // Agregar datos
     // -------------
-
     public function addBook()
     {
         $formData = $_POST;
 
-        // Insertar el libro sin la portada para obtener el ID
+        // Validar la portada antes de insertar el libro
+        if (!empty($_FILES["cover"]) && $_FILES["cover"]["error"] !== UPLOAD_ERR_NO_FILE) {
+            $uploadResult = $this->handleCoverUpload($_FILES["cover"], null);
+
+            if (empty($uploadResult["success"])) {
+                return $this->view("manage-books", ["error" => $uploadResult["message"] ?? "Error al subir la portada", "formData" => $formData]);
+            }
+        }
+
         $book = (new Books())->addBook(
             $formData["title"],
             $formData["author"],
@@ -134,7 +154,7 @@ class BooksController extends Controller
             $formData["publisher"],
             $formData["pages"],
             $formData["year"],
-            null,
+            isset($uploadResult["coverName"]) ? $uploadResult["coverName"] : null,
             $formData["links"],
             $formData["language"],
             $formData["description"],
@@ -143,23 +163,6 @@ class BooksController extends Controller
 
         if (!$book) {
             return $this->view("manage-books", ["error" => "Error al agregar el libro", "formData" => $formData]);
-        }
-
-        $bookId = $book["id"];
-
-        // Verificar si se ha enviado un archivo de portada
-        if (!empty($_FILES["cover"]) && $_FILES["cover"]["error"] !== UPLOAD_ERR_NO_FILE) {
-            $uploadResult = $this->handleCoverUpload($_FILES["cover"], $bookId);
-
-            if (empty($uploadResult["success"])) {
-                (new Books())->deleteBook($bookId);
-                return $this->view("manage-books", ["error" => $uploadResult["message"] ?? "Error desconocido", "formData" => $formData]);
-            }
-
-            // Actualizar el libro con el nombre de la portada
-            if (!(new Books())->updateBookCover($bookId, $uploadResult["coverName"] ?? null)) {
-                return $this->view("manage-books", ["error" => "Libro agregado, pero hubo un error al actualizar la portada", "formData" => $formData]);
-            }
         }
 
         return $this->view("manage-books", ["success" => "Libro agregado con éxito"]);
@@ -189,31 +192,30 @@ class BooksController extends Controller
     // --------------------------
     public function editBooks($id)
     {
-        $book = (new Books())->getBookById($id);
-
-        // Obtener todos los autores, géneros y editoriales
-        $authors = (new Books())->getAuthors();
-        $genres = (new Books())->getGenres();
-        $publishers = (new Books())->getPublishers();
+        $books = new Books();
+        $book = $books->getBookById($id);
 
         if (!$book) {
             header("Location: /");
             exit();
         }
 
-        return $this->view("edit-books", ["book" => $book, "authors" => $authors, "genres" => $genres, "publishers" => $publishers]);
+        return $this->view("edit-books", [
+            "book" => $book,
+            "authors" => $books->getAuthors(),
+            "genres" => $books->getGenres(),
+            "publishers" => $books->getPublishers()
+        ]);
     }
 
     public function updateBook()
     {
-        // Obtener el ID del libro del cuerpo de la solicitud
         $id = $_POST["id"] ?? null;
         if (!$id) {
             echo json_encode(["success" => false, "message" => "ID del libro no proporcionado"]);
             return;
         }
 
-        // Obtener el libro actual
         $currentBook = (new Books())->getBookById($id);
         if (!$currentBook) {
             echo json_encode(["success" => false, "message" => "Libro no encontrado"]);
@@ -229,9 +231,8 @@ class BooksController extends Controller
             $coverUploadResult = $this->handleCoverUpload($_FILES["cover"], $id, $currentBook["cover"]);
             if ($coverUploadResult["success"]) {
                 $coverName = $coverUploadResult["coverName"] ?? $currentBook["cover"];
-                $updateSuccessful = true; // Marcamos como actualizado si se subió una nueva portada
+                $updateSuccessful = true;
             } else {
-                // Capturar el mensaje si hubo un error al subir la portada
                 $message = $coverUploadResult["message"];
             }
         }
@@ -239,7 +240,6 @@ class BooksController extends Controller
         // Comprobar si hay enlaces y convertir a JSON
         $links = isset($_POST["links"]) && !empty($_POST["links"]) ? json_encode($_POST["links"]) : null;
 
-        // Actualizar el libro
         $bookUpdated = (new Books())->updateBook(
             $id,
             $_POST["title"],
@@ -249,7 +249,7 @@ class BooksController extends Controller
             $_POST["pages"],
             $_POST["year"],
             $coverName,
-            $links,  // Aquí se pasan los enlaces
+            $links,
             $_POST["language"],
             $_POST["description"],
             $_POST["isbn"]
@@ -257,11 +257,7 @@ class BooksController extends Controller
 
         // Determinar si la actualización fue exitosa
         $updateSuccessful = $updateSuccessful || $bookUpdated;
-
-        // Cambiar el mensaje si la actualización fue exitosa
-        if ($updateSuccessful) {
-            $message = "Libro actualizado correctamente";
-        }
+        $message = $updateSuccessful ? "Libro actualizado correctamente" : $message;
 
         // Respuesta JSON
         header("Content-Type: application/json");
@@ -275,25 +271,5 @@ class BooksController extends Controller
     {
         $success = (new Books())->deleteBook($id);
         echo json_encode(["success" => $success]);
-    }
-
-    // --------------------
-    // Detalles de un libro
-    // --------------------
-
-    // Formatear el título para la URL (Llamado en la vista)
-    private function sanitizeTitle($title)
-    {
-        // Convertir caracteres acentuados a equivalentes sin acento
-        $unaccented = iconv("UTF-8", "ASCII//TRANSLIT//IGNORE", $title);
-        // Convertir a minúsculas, quitar caracteres especiales y reemplazar espacios con guiones
-        $sanitized = str_replace(" ", "-", preg_replace("/[^a-z0-9 ]/", "", strtolower($unaccented)));
-        return $sanitized;
-    }
-
-    public function viewBookDetails($id)
-    {
-        $book = (new Books())->getBookById($id);
-        return $this->view("book-details", ["book" => $book]);
     }
 }

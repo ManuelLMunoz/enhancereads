@@ -2,24 +2,18 @@
 <html lang="es">
 
 <head>
-  <!-- Configuración base -->
   <?php require_once("components/head.php"); ?>
-
-  <!-- Configuración concreta -->
   <title>Acceso</title>
   <link rel="stylesheet" href="assets/css/forms.css">
-  <script src="assets/js/account.js" type="module"></script> <!-- Manejar los diferentes formularios -->
-  <script src="assets/js/forms.js" type="module"></script> <!-- Controlar las validaciones de los formularios -->
-
+  <script src="assets/js/account.js" type="module"></script>
+  <script src="assets/js/forms.js" type="module"></script>
 </head>
 
 <body>
 
-  <!-- Sección principal -->
   <section id="main" data-active-form="<?php echo isset($form) ? htmlspecialchars($form) : "login"; ?>">
 
-    <!-- Logo -->
-    <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logo de la marca"></a></h1><br>
+    <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logotipo de la marca"></a></h1><br>
 
     <div class="form">
 
@@ -30,13 +24,11 @@
 
         <h1>Iniciar sesión</h1>
 
-        <!-- Usuario / email -->
         <label for="login-user"> Usuario / Email
           <i class="fas fa-user icon"></i>
           <input id="login-user" type="text" name="user" maxlength="100" required aria-label="Usuario o Email" />
         </label>
 
-        <!-- Contraseña -->
         <label for="login-pass">Contraseña
           <i class="fas fa-lock icon"></i>
           <input id="login-pass" type="password" name="pass" required aria-label="Contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
@@ -44,16 +36,14 @@
           <i class="fas fa-eye icon show-pass"></i>
         </label>
 
-        <!-- Enlaces adicionales -->
         <p><a id="forgot-password-link" href="#">¿Olvidaste la contraseña?</a></p>
 
         <div class="input-container"><button type="submit">Acceder</button></div>
-
         <p>¿Sin registrar? <a id="register-link" href="#">Crea una cuenta</a></p>
         <p>o</p>
         <div class="google-button-container">
           <a href="/google-login" class="google-button">
-            <img src="assets/img/google-logo.svg" alt="Google Logo" class="google-icon"> Inicia sesión con Google
+            <img src="assets/img/google-logo.svg" alt="Google icon" class="google-icon"> Inicia sesión con Google
           </a>
         </div>
 
@@ -66,19 +56,16 @@
 
         <h1>Crear Cuenta</h1>
 
-        <!-- Usuario -->
         <label for="register-user"> Usuario
           <i class="fas fa-user icon"></i>
           <input id="register-user" type="text" name="user" maxlength="50" required aria-label="Usuario" />
         </label>
 
-        <!-- Email -->
         <label for="register-email"> Email
           <i class="fas fa-envelope icon"></i>
           <input id="register-email" type="email" name="email" maxlength="100" required aria-label="Email" autocomplete="email" />
         </label>
 
-        <!-- Contraseña -->
         <label for="register-pass"> Contraseña
           <i class="fas fa-lock icon"></i>
           <input id="register-pass" type="password" name="pass" required aria-label="Contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
@@ -86,7 +73,6 @@
           <i class="fas fa-eye icon show-pass"></i>
         </label>
 
-        <!-- Validar contraseña -->
         <label for="register-verify-pass"> Validar contraseña
           <i class="fas fa-lock icon"></i>
           <input id="register-verify-pass" type="password" name="verify_pass" aria-label="Validar contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
@@ -106,13 +92,11 @@
 
         <h1>Restablecer contraseña</h1>
 
-        <!-- Email -->
         <label for="email"> Email
           <i class="fas fa-envelope icon"></i>
           <input id="email" type="email" name="email" required aria-label="Email" autocomplete="email" />
         </label>
 
-        <!-- Contraseña -->
         <label for="reset-pass"> Contraseña
           <i class="fas fa-lock icon"></i>
           <input id="reset-pass" type="password" name="pass" required aria-label="Contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
@@ -120,7 +104,6 @@
           <i class="fas fa-eye icon show-pass"></i>
         </label>
 
-        <!-- Validar contraseña -->
         <label for="reset-verify-pass"> Validar contraseña
           <i class="fas fa-lock icon"></i>
           <input id="reset-verify-pass" type="password" name="verify_pass" required aria-label="Validar contraseña" pattern="(?=.*\d)(?=.*[a-zA-Z]).{8,}"
@@ -129,7 +112,6 @@
         </label>
 
         <div class="input-container"><button type="submit">Aceptar</button></div>
-
         <p>¿Ya tienes una cuenta? <a id="back-login-from-reset-pass" href="#">Acceder</a></p>
 
       </form>

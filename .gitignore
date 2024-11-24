@@ -1,2 +1,2 @@
-# Se excluye la carpeta "Vendor" que incluye las dependencias
+# Excluir la carpeta "Vendor" que incluye las dependencias de Composer
 /vendor
