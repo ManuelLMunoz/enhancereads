@@ -46,7 +46,6 @@
   border-radius: 10px;
   padding: 20px;
   transition: transform 0.3s;
-  color: black;
 
   .book-cover-container {
     flex: 1; /* Ocupa el espacio disponible */
@@ -101,6 +100,7 @@
     .view-more {
       display: inline-block;
       color: #004b99;
+      font-weight: bold;
       cursor: pointer;
       margin-top: 10px;
     }

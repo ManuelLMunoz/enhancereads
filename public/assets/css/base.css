@@ -20,11 +20,16 @@
   margin: 0;
   padding: 0;
   border: 0;
-  color: black;
   font-size: 1rem;
   font-family: "Nunito", sans-serif;
   box-sizing: border-box;
   scroll-behavior: smooth;
+}
+
+html {
+  a {
+    color: black;
+  }
 }
 
 /* --------- */
