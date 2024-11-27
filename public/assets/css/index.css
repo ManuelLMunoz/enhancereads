@@ -10,7 +10,7 @@ section#main {
 }
 
 /* Sección 2 - Contenido */
-section#content {
+section#options {
   display: flex;
 
   a {
@@ -56,7 +56,7 @@ section#content {
 }
 
 @media only screen and (max-width: 1024px) {
-  section#content {
+  section#options {
     /* Mostar el contenido uno debajo del otro */
     display: block;
 
@@ -149,4 +149,21 @@ section#about-us {
   100% {
     left: 0;
   }
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] section#options .books {
+  background: linear-gradient(rgba(40, 40, 40, 0.7), rgba(20, 20, 20, 0.8)),
+    url("../img/books.webp") no-repeat center / cover;
+}
+
+[data-theme="dark"] section#options .posts {
+  background: linear-gradient(rgba(50, 50, 50, 0.7), rgba(25, 25, 25, 0.8)),
+    url("../img/posts.webp") no-repeat center / cover;
+}
+
+[data-theme="dark"] section#about-us {
+  background: var(--bg-dark);
 }

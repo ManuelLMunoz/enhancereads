@@ -51,8 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
         post.classList.toggle("zoom", zoomIn);
         document.body.classList.toggle("modal-open", zoomIn);
         const displayValue = zoomIn ? "block" : "none";
-        post.querySelector(".close-button")?.style.setProperty('display', displayValue);
-        post.querySelector(".manage-posts")?.style.setProperty('display', zoomIn ? "grid" : "none");
+        post.querySelector(".close-button")?.style.setProperty("display", displayValue);
+        post.querySelector(".manage-posts")?.style.setProperty("display", zoomIn ? "grid" : "none");
         post.querySelectorAll(".post-comments, .comment-form").forEach(comment => {
             comment.style.display = displayValue;
         });

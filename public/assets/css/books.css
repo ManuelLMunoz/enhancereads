@@ -27,7 +27,7 @@
     max-height: 250px;
     max-width: 200px;
     object-fit: cover;
-    border: 1px solid #ccc;
+    border: 0.5px solid #ccc;
 
     &:hover {
       transform: scale(1.1);
@@ -99,10 +99,10 @@
 
     .view-more {
       display: inline-block;
-      color: #004b99;
       font-weight: bold;
       cursor: pointer;
       margin-top: 10px;
+      text-decoration: underline;
     }
   }
 }

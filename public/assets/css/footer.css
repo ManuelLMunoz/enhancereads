@@ -1,3 +1,5 @@
+@import url("base.css");
+
 footer {
   background: linear-gradient(
     rgba(173, 206, 230, 0.2),
@@ -22,6 +24,10 @@ footer {
         font-size: 1.2rem;
         text-transform: uppercase;
         font-weight: bold;
+      }
+
+      a {
+        color: var(--text-light);
       }
 
       ul {
@@ -70,4 +76,19 @@ footer {
       margin: 10px 0;
     }
   }
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] footer {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] footer .social-media {
+  filter: invert(0.2);
+}
+
+[data-theme="dark"] .footer-container .footer-column a {
+  color: var(--text-dark);
 }

@@ -6,10 +6,7 @@ section#main {
   height: 100dvh;
   padding-top: 30px;
   overflow-y: auto;
-  background: linear-gradient(
-      rgba(182, 242, 134, 0.3),
-      rgba(153, 180, 235, 0.5)
-    ),
+  background: linear-gradient(rgba(68, 110, 36, 0.5), rgba(153, 180, 235, 0.5)),
     url("../img/aurora.webp") no-repeat center center / cover;
 }
 
@@ -66,7 +63,6 @@ section#main {
     background: transparent;
   }
 
-  /* Etiquetas de los campos */
   label {
     display: block;
     align-items: center;
@@ -107,7 +103,6 @@ section#main {
     font-size: 18px;
   }
 
-  /* Botones del formulario */
   button,
   .google-button {
     margin: 5px 0;
@@ -173,4 +168,47 @@ section#main {
   &.active {
     border-bottom: 2px solid black;
   }
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] section#main {
+  background: linear-gradient(rgba(49, 50, 51, 0.95), rgba(51, 51, 51, 0.8)),
+    url("../img/aurora.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+[data-theme="dark"] .form {
+  background-color: var(--bg-dark);
+}
+
+[data-theme="dark"] .form input::placeholder {
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .form textarea {
+  border: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] .form input,
+[data-theme="dark"] .form select {
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-dark);
+  background-color: var(--bg-dark);
+}
+
+[data-theme="dark"] button,
+[data-theme="dark"] .google-button {
+  background: var(--border-light);
+}
+
+[data-theme="dark"] .form button:hover,
+[data-theme="dark"] .form .google-button:hover {
+  background: #7e7e7e;
+}
+
+[data-theme="dark"] .form-option.active {
+  border-bottom: 2px solid var(--text-dark);
 }

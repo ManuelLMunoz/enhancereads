@@ -21,7 +21,7 @@
 
   </section>
 
-  <section id="content">
+  <section id="options">
 
     <a href="books/" class="books">
       <h1>Libros</h1>

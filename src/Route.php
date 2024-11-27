@@ -30,8 +30,8 @@ class Route
     public static function dispatch()
     {
         // Obtener la URI y el método de la solicitud
-        $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/");
-        $method = $_SERVER['REQUEST_METHOD'];
+        $uri = trim(parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH), "/");
+        $method = $_SERVER["REQUEST_METHOD"];
 
         // Recorrer las rutas registradas del método actual
         foreach (self::$routes[$method] as $route => $callback) {
@@ -45,7 +45,7 @@ class Route
             // Si la URI coincide con la ruta actual
             if (preg_match("#^$route$#", $uri, $matches)) {
                 // Obtener los parámetros de la URI
-                $params = array_intersect_key($matches, array_flip(array_filter(array_keys($matches), 'is_string')));
+                $params = array_intersect_key($matches, array_flip(array_filter(array_keys($matches), "is_string")));
 
                 // Llamar al callback correspondiente
                 $response = is_callable($callback)

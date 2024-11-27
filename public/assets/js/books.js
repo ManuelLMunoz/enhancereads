@@ -67,8 +67,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const modal = document.querySelector("#delete-modal");
         const id = modal.dataset.id;
 
-        if (!id) return showToast("No se ha seleccionado ningún libro para borrar", "error"), modal.classList.add("hidden");
-
+        if (!id) {
+            showToast("No se ha seleccionado ningún libro para borrar", "error");
+            modal.classList.add("hidden");
+        }
+        
         try {
             const response = await fetch(`/delete-book/${id}`, { method: "POST" });
             const { success } = await response.json();

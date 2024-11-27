@@ -4,7 +4,7 @@
 <head>
     <?php require_once("components/head.php"); ?>
     <title>Política de privacidad</title>
-    <link rel="stylesheet" href="assets/css/legal.css">
+    <link rel="stylesheet" href="assets/css/content.css">
 </head>
 
 <body>
@@ -19,7 +19,7 @@
 
     </section>
 
-    <section id="content">
+    <section id="content" class="legal">
 
         <h1>Política de privacidad</h1>
 

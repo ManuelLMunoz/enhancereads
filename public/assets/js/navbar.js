@@ -86,6 +86,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   modal.addEventListener("click", (event) => {
     if (event.target.matches(".close, #faq-modal")) {
+      event.preventDefault();
       modal.style.display = "none";
       document.body.classList.remove("no-scroll"); // Reactiva el scroll
     }
@@ -106,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Abrir/cerrar modal al hacer clic en la campana
   notifications?.addEventListener("click", event => {
+    event.preventDefault();
     event.stopPropagation();
     toggleNotificationModal();
   });
@@ -153,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>`).join("")
         : `<div class="notification-item"> No tienes nuevas notificaciones. </div>`;
 
-      // Actualizar botón "Marcar todo como leído"
+      // Actualizar botón
       document.getElementById("mark-all-read")?.classList.toggle("disabled", !(data.success && data.notifications.length));
       updateNotificationCount();
 

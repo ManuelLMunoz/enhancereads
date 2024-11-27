@@ -27,7 +27,9 @@ class GoogleController extends Controller
     // -----------------------------------------------------------------
     public function callback()
     {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         try {
             if (isset($_GET["code"])) {
@@ -66,7 +68,9 @@ class GoogleController extends Controller
     // ----------------
     public function logout()
     {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         if (isset($_SESSION["user_token"])) {
             $this->google->revokeToken();

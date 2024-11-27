@@ -27,9 +27,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
     </section>
 
-    <section id="content" style="max-width: 1000px; margin: 0 auto; display: block;">
+    <section id="content">
 
-        <div class="post-container">
+        <div class="post-container" style="width: 100%; max-width: 1000px;">
 
             <div class="post-info details" id="post-<?php echo $post["id"]; ?>">
 

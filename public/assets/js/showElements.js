@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
         filters.append("order", order);
 
         // Construir la URL con paginación y actualizar el historial (La página 1 redirecciona a la URL sin paginación)
-        const url = `/${context}${page > 1 ? `/page=${page}` : ""}`;
+        const url = `/${context}${page > 1 ? "/page=" + page : ""}`;
         history[updateHistory ? "pushState" : "replaceState"]({ page }, "", url);
 
         try {
@@ -53,12 +53,12 @@ document.addEventListener("DOMContentLoaded", () => {
             });
 
             // Actualizar las opciones de los filtros según la respuesta
-            updateFilterOptions("#author-filter", data.filters.authors, "name", filters.getAll("author[]"));
-            updateFilterOptions("#genre-filter", data.filters.genres, "name", filters.getAll("genre[]"));
-            updateFilterOptions("#publisher-filter", data.filters.publishers, "name", filters.getAll("publisher[]"));
-            updateFilterOptions("#language-filter", data.filters.languages, "language", filters.getAll("language[]"));
-            updateFilterOptions("#pages", data.filters.pages, "pages", filters.get("pages"));
-            updateFilterOptions("#words", data.filters.words, "words", filters.get("words"));
+            updateFilterOptions("#author-filter", "name", filters.getAll("author[]"), data.filters.authors);
+            updateFilterOptions("#genre-filter", "name", filters.getAll("genre[]"), data.filters.genres);
+            updateFilterOptions("#publisher-filter", "name", filters.getAll("publisher[]"), data.filters.publishers);
+            updateFilterOptions("#language-filter", "language", filters.getAll("language[]"), data.filters.languages);
+            updateFilterOptions("#pages", "pages", filters.get("pages"), data.filters.pages);
+            updateFilterOptions("#words", "words", filters.get("words"), data.filters.words);
         } catch (error) {
             console.error("Error al cargar los datos:", error);
         }
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // --------------------------------------
     // Actualizar las opciones de los filtros
     // --------------------------------------
-    const updateFilterOptions = (selector, options = [], key, selectedValues) => {
+    const updateFilterOptions = (selector, key, selectedValues, options = []) => {
 
         // Verificar que los valores y elementos sean válidos
         if (![selectedValues, options].every(Array.isArray) || !document.querySelector(selector)) return;

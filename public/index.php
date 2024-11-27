@@ -46,7 +46,7 @@ foreach (["login", "register", "reset-password"] as $route) {
     Route::get($route, fn() => header("Location: /account") && exit());
 }
 
-// Opciones de cuenta 
+// Opciones de cuenta
 Route::post("login", [AccountController::class, "login"]);
 Route::post("register", [AccountController::class, "register"]);
 Route::post("reset-password", [AccountController::class, "resetPassword"]);
@@ -98,7 +98,7 @@ Route::post("delete-book/{id}", [BooksController::class, "deleteBook"]);
 // Rutas de posts
 //---------------
 
-// Página principal 
+// Página principal
 foreach (["posts", "posts.php", "posts/page={page}"] as $route) {
     Route::get($route, [PostController::class, "posts"]);
 }

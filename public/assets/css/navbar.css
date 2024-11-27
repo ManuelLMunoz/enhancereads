@@ -26,7 +26,7 @@
       .dropbtn {
         display: inline-block;
         font-weight: bold;
-        padding: 15px;
+        padding: 15px 10px;
         text-decoration: none;
 
         &:hover,
@@ -55,12 +55,13 @@
     .user-menu-content {
       display: none;
       position: absolute;
-      background-color: white;
+      background-color: rgba(193, 237, 255);
+      z-index: 100;
 
       a {
         display: block;
         text-align: left;
-        width: 158px;
+        width: 148px;
 
         &:hover {
           background-color: rgba(131, 220, 255, 0.5);
@@ -110,7 +111,7 @@
         top: 50px;
         left: 0;
         width: 100%;
-        background-color: rgba(193, 237, 255, 1);
+        background-color: rgba(193, 237, 255);
         z-index: 10;
         font-size: 1.5rem;
         overflow: hidden;
@@ -147,7 +148,7 @@
   .help-modal-content {
     margin: 10% auto;
     padding: 20px;
-    background-color: white;
+    background-color: var(--bg-light);
     width: 80%;
     max-width: 500px;
     border-radius: 5px;
@@ -201,11 +202,11 @@
     position: absolute;
     display: none;
     top: 5px;
-    right: 5px;
+    right: 3px;
     background-color: red;
     color: white;
     border-radius: 50%;
-    padding: 2px 5px;
+    padding: 2px 4px;
     font-size: 12px;
   }
 }
@@ -214,15 +215,16 @@
   position: absolute;
   display: none;
   top: 52px;
-  right: 160px;
+  right: 150px;
   width: 90%;
   max-width: 400px;
   max-height: 320px;
-  background-color: white;
+  background-color: var(--bg-light);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   border-radius: 5px;
   overflow-y: auto;
   text-transform: initial;
+  z-index: 100;
 
   @media screen and (max-width: 768px) {
     left: 50%;
@@ -233,11 +235,11 @@
   .modal-header {
     position: sticky;
     top: 0;
-    background-color: white;
+    background-color: var(--bg-light);
     display: flex;
     justify-content: space-between;
     padding: 15px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #ccc;
   }
 
   .notification-list {
@@ -246,7 +248,7 @@
       cursor: pointer;
       text-align: left;
       padding: 10px;
-      border-bottom: 1px solid #f1f1f1;
+      border-bottom: 1px solid #ccc;
       line-height: 1.2;
 
       .avatar {
@@ -273,4 +275,31 @@
       }
     }
   }
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] .menu,
+[data-theme="dark"] .user-menu .user-menu-content {
+  background-color: var(--bg-dark);
+}
+
+[data-theme="dark"] .show-menu ul.center,
+[data-theme="dark"] .menu li a:hover,
+[data-theme="dark"] .menu li .dropbtn.active,
+[data-theme="dark"] .menu .user-menu-content a:hover {
+  background-color: var(--border-light);
+}
+
+[data-theme="dark"] .notification-modal,
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .help-modal-content {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] .notification-list .notification-item:hover,
+[data-theme="dark"] .accordion-item .accordion-header:hover {
+  background-color: var(--border-light);
 }

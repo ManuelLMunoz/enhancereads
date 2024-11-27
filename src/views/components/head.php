@@ -16,6 +16,7 @@ if (!isset($_SESSION)) {
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.2/css/all.css">
     <script src="assets/js/jquery-3.7.1.min.js"></script>
     <script src="assets/js/toast.js"></script>
+    <script src="assets/js/toggleTheme.js" type="module"></script>
 
     <!-- Metaetiquetas SEO -->
     <meta name="description" content="La web de desarrollo personal ideal para gente que quiera lograr sus objetivos y aprender de forma divertida y en comunidad">

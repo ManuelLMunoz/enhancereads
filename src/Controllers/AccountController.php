@@ -40,7 +40,7 @@ class AccountController extends Controller
         if ($user && password_verify($_POST["pass"], $user["password"])) {
             session_start();
 
-            // Usuario común 
+            // Usuario común
             // -------------
             if ($user["role"] == "user") {
                 $_SESSION["id"] = $user["id"];
@@ -146,7 +146,9 @@ class AccountController extends Controller
     // --------------------------------
     public function processForm($form)
     {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
         $user = $_POST["user"] ?? null;
         $email = $_POST["email"];
@@ -186,7 +188,7 @@ class AccountController extends Controller
             return $this->view("profile", ["error" => "El email ya está registrado"]);
         }
 
-        // Manejo de la subida del avatar 
+        // Manejo de la subida del avatar
         // ------------------------------
         $avatarError = null;
 

@@ -8,7 +8,7 @@ use PDOException;
 class Books extends Connection
 {
     // -------------------------
-    // Obtenención de los libros
+    // Obtención de los libros
     // -------------------------
     public function getBooks($params)
     {
@@ -44,10 +44,10 @@ class Books extends Connection
             // Combinar las cláusulas con "AND" para la consulta final
             $filterQuery = $filterClauses ? "AND " . implode(" AND ", $filterClauses) : "";
 
-            $baseQuery = "FROM books b LEFT JOIN authors a ON b.author = a.id LEFT JOIN genres g ON b.genre = g.id 
+            $baseQuery = "FROM books b LEFT JOIN authors a ON b.author = a.id LEFT JOIN genres g ON b.genre = g.id
             LEFT JOIN publishers p ON b.publisher = p.id  WHERE (b.title LIKE ? OR a.name LIKE ?) $filterQuery";
 
-            $booksQuery = "SELECT b.id, b.title, b.pages, b.year, b.cover, b.link, b.language, a.name as author_name, 
+            $booksQuery = "SELECT b.id, b.title, b.pages, b.year, b.cover, b.link, b.language, a.name as author_name,
             g.name as genre_name, p.name as publisher_name $baseQuery ORDER BY b.title $order LIMIT ? OFFSET ?";
 
             $stmt = $this->connection->prepare($booksQuery);
@@ -162,7 +162,7 @@ class Books extends Connection
     {
         $link = json_encode($links);
 
-        $query = "INSERT INTO books (title, author, genre, publisher, pages, year, cover, link, language, description, isbn) 
+        $query = "INSERT INTO books (title, author, genre, publisher, pages, year, cover, link, language, description, isbn)
                   VALUES (:title, :authorId, :genreId, :publisher, :pages, :year, :cover, :link, :language, :description, :isbn)";
         try {
             $stmt = $this->connection->prepare($query);
@@ -179,7 +179,7 @@ class Books extends Connection
     // -----------------
     public function getBookById($id)
     {
-        $query = "SELECT b.*, a.name AS author_name, g.name AS genre_name, p.name AS publisher_name FROM books b LEFT JOIN authors a ON b.author = a.id 
+        $query = "SELECT b.*, a.name AS author_name, g.name AS genre_name, p.name AS publisher_name FROM books b LEFT JOIN authors a ON b.author = a.id
         LEFT JOIN genres g ON b.genre = g.id LEFT JOIN publishers p ON b.publisher = p.id WHERE b.id = ?";
         $stmt = $this->connection->prepare($query);
         $stmt->execute([$id]);
@@ -189,7 +189,7 @@ class Books extends Connection
     public function updateBook($id, $title, $author, $genre, $publisher, $pages, $year, $cover, $link, $language, $description, $isbn)
     {
         try {
-            $query = "UPDATE books SET title = :title, author = :author, genre = :genre, publisher = :publisher, pages = :pages, year = :year, 
+            $query = "UPDATE books SET title = :title, author = :author, genre = :genre, publisher = :publisher, pages = :pages, year = :year,
             cover = :cover, link = :link, language = :language, description = :description, isbn = :isbn WHERE id = :id";
             $stmt = $this->connection->prepare($query);
             $stmt->execute(compact("title", "author", "genre", "publisher", "pages", "year", "cover", "link", "language", "description", "isbn", "id"));

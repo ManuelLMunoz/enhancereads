@@ -24,8 +24,14 @@
 
         <ul class="right">
 
+            <li title="Cambiar tema" id="theme-toggle">
+                <a href="#" aria-label="Cambiar tema">
+                    <i id="theme-icon" class="fa-solid"></i>
+                </a>
+            </li>
+
             <!-- Modal de FAQ -->
-            <li title="Ayuda"><a href="javascript:void(0);" id="open-modal" aria-label="Preguntas frecuentes"> <i class="fa-regular fa-circle-question"></i></a></li>
+            <li title="Ayuda"><a href="#" id="open-modal" aria-label="Preguntas frecuentes"> <i class="fa-regular fa-circle-question"></i></a></li>
 
             <div id="faq-modal" class="help-modal">
                 <div class="help-modal-content">
@@ -55,7 +61,7 @@
             }
             if (isset($_SESSION["user"])): ?>
                 <li id="notifications" class="notifications">
-                    <a href="javascript:void(0);">
+                    <a href="#">
                         <i title="Notificaciones" class="fa-regular fa-bell"></i>
                         <span id="notification-count" class="notification-count"></span>
                     </a>

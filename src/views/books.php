@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="filter-option">
-                    <label for="pages">Páginas</label>
+                    <label for="pages">Páginas</label><br>
                     <select id="pages">
                         <option value="">Todos</option>
                         <option value="50">+50 páginas</option>
@@ -77,7 +77,7 @@
                 </div>
 
                 <div class="filter-option">
-                    <label for="order">Orden</label>
+                    <label for="order">Orden</label><br>
                     <select id="order" name="order">
                         <option value="asc">Ascendente</option>
                         <option value="desc">Descendente</option>

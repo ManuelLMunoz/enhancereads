@@ -21,7 +21,7 @@ class Posts extends Connection
             $filters = [
                 "genre" => ["field" => "g.id", "values" => $params["genre"] ?? []],
                 "language" => ["field" => "p.language", "values" => $params["language"] ?? []],
-                // Conteo de palabras del post para el filtro 
+                // Conteo de palabras del post para el filtro
                 "words" => ["field" => "LENGTH(p.content) - LENGTH(REPLACE(p.content, \" \", \"\")) + 1", "values" => $params["words"] ?? null],
                 "favorites" => ["field" => "p.id", "values" => $userId && $params["liked"] == "on" ? $userId : null]
             ];
@@ -135,13 +135,17 @@ class Posts extends Connection
     public function getPostById($id)
     {
         try {
-            $query = "SELECT p.id, p.title, p.content, p.user AS user_id, u.user AS user_name, p.language, p.created_at, 
-            g.name AS genre, u.avatar AS user_avatar, p.edited_at FROM posts p LEFT JOIN genres g ON p.genre = g.id 
+            $query = "SELECT p.id, p.title, p.content, p.user AS user_id, u.user AS user_name, p.language, p.created_at,
+            g.name AS genre, u.avatar AS user_avatar, p.edited_at FROM posts p LEFT JOIN genres g ON p.genre = g.id
             LEFT JOIN users u ON p.user = u.id WHERE p.id = ?";
 
             $stmt = $this->connection->prepare($query);
             $stmt->execute([$id]);
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
 
             // Si el post se encuentra, agregar datos adicionales y obtener los likes y comentarios relacionados
             if ($post) {
@@ -189,7 +193,7 @@ class Posts extends Connection
 
             foreach ($tables as $table) {
                 $column = $table === "posts" ? "id" : "post_id";
-                $stmt = $this->connection->prepare("DELETE FROM $table WHERE $column = :id")->execute(compact("id"));
+                $this->connection->prepare("DELETE FROM $table WHERE $column = :id")->execute(compact("id"));
             }
 
             $this->connection->commit();
@@ -260,11 +264,11 @@ class Posts extends Connection
     }
 
     // -------------------------------------
-    // Insertar comentario dentro de un post 
+    // Insertar comentario dentro de un post
     // -------------------------------------
     public function insertComment($postId, $userId, $comment, $parentCommentId = null)
     {
-        $query = "INSERT INTO post_comments (post_id, user_id, comment, created_at, parent_comment_id) 
+        $query = "INSERT INTO post_comments (post_id, user_id, comment, created_at, parent_comment_id)
                   VALUES (:postId, :userId, :comment, NOW(), :parentCommentId)";
 
         try {
@@ -291,7 +295,7 @@ class Posts extends Connection
                     ];
 
                     // Insertar la notificación
-                    $queryNotification = "INSERT INTO notifications (notifier_id, recipient_id, post_id, comment_id, created_at, is_read, type) 
+                    $queryNotification = "INSERT INTO notifications (notifier_id, recipient_id, post_id, comment_id, created_at, is_read, type)
                                            VALUES (:notifierId, :recipientId, :postId, :commentId, NOW(), 0, :type)";
                     $this->connection->prepare($queryNotification)->execute($notificationParams);
                 }
@@ -313,7 +317,7 @@ class Posts extends Connection
             $this->connection->beginTransaction();
 
             // Obtener los comentarios a eliminar (incluyendo anidados)
-            $queryCommentIds = "WITH RECURSIVE comment_tree AS (SELECT id FROM post_comments WHERE id = :id  
+            $queryCommentIds = "WITH RECURSIVE comment_tree AS (SELECT id FROM post_comments WHERE id = :id
             UNION ALL SELECT c.id FROM post_comments c JOIN comment_tree ct ON c.parent_comment_id = ct.id) SELECT id FROM comment_tree";
 
             $stmtCommentIds = $this->connection->prepare($queryCommentIds);
@@ -409,7 +413,7 @@ class Posts extends Connection
                 ];
 
                 // Insertar la notificación
-                $queryNotification = "INSERT INTO notifications (notifier_id, recipient_id, post_id, comment_id, created_at, is_read, type) 
+                $queryNotification = "INSERT INTO notifications (notifier_id, recipient_id, post_id, comment_id, created_at, is_read, type)
                                        VALUES (:notifierId, :recipientId, :postId, :commentId, NOW(), 0, :type)";
                 $this->connection->prepare($queryNotification)->execute($notificationParams);
             }
@@ -518,11 +522,11 @@ class Posts extends Connection
 
     public function getNotifications($userId)
     {
-        $query = "SELECT n.*, u.user AS notifier, u.avatar AS notifier_avatar, 
-              CASE WHEN n.type = 'reply' THEN (SELECT comment FROM post_comments WHERE id = n.comment_id) 
-              WHEN n.post_id IS NOT NULL THEN (SELECT title FROM posts WHERE id = n.post_id) 
-              ELSE (SELECT comment FROM post_comments WHERE id = n.comment_id) 
-              END AS content FROM notifications n JOIN users u ON n.notifier_id = u.id 
+        $query = "SELECT n.*, u.user AS notifier, u.avatar AS notifier_avatar,
+              CASE WHEN n.type = 'reply' THEN (SELECT comment FROM post_comments WHERE id = n.comment_id)
+              WHEN n.post_id IS NOT NULL THEN (SELECT title FROM posts WHERE id = n.post_id)
+              ELSE (SELECT comment FROM post_comments WHERE id = n.comment_id)
+              END AS content FROM notifications n JOIN users u ON n.notifier_id = u.id
               WHERE n.recipient_id = :userId AND n.is_read = 0 ORDER BY n.created_at DESC";
 
         try {
@@ -541,7 +545,7 @@ class Posts extends Connection
             return [];
         }
     }
-    
+
     public function markAllAsRead($userId)
     {
         try {

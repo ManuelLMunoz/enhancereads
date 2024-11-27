@@ -2,10 +2,22 @@
 /* Estilos base de los documentos */
 /* ------------------------------ */
 :root {
-  --color-success: #28a745;
-  --color-info: #17a2b8;
-  --color-warning: #ffc107;
-  --color-error: #dc3545;
+  --success: #28a745;
+  --info: #17a2b8;
+  --warning: #ffc107;
+  --error: #dc3545;
+
+  --bg-dark: #292929;
+  --text-dark: #e0e0e0;
+  --border-dark: rgba(0, 0, 0, 0.15);
+
+  --bg-light: #ffffff;
+  --text-light: #000000;
+  --border-light: #474747;
+}
+
+:root.dark-mode-scroll {
+  scrollbar-color: #444 #121212;
 }
 
 @font-face {
@@ -24,12 +36,7 @@
   font-family: "Nunito", sans-serif;
   box-sizing: border-box;
   scroll-behavior: smooth;
-}
-
-html {
-  a {
-    color: black;
-  }
+  color: var(--text-light);
 }
 
 /* --------- */
@@ -63,6 +70,12 @@ section {
       align-items: center;
       padding: 0 10px;
       user-select: none;
+    }
+
+    #type {
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      font-size: 1.3rem;
     }
 
     #logotype,
@@ -124,16 +137,16 @@ section {
   }
 
   &.success {
-    background-color: var(--color-success);
+    background-color: var(--success);
   }
   &.info {
-    background-color: var(--color-info);
+    background-color: var(--info);
   }
   &.warning {
-    background-color: var(--color-warning);
+    background-color: var(--warning);
   }
   &.error {
-    background-color: var(--color-error);
+    background-color: var(--error);
   }
 }
 
@@ -151,7 +164,7 @@ section {
   z-index: 100;
 
   .content {
-    background-color: white;
+    background-color: var(--bg-light);
     padding: 20px;
     border-radius: 10px;
     width: 90%;
@@ -165,8 +178,7 @@ section {
 
 .disabled {
   pointer-events: none;
-  color: gray;
-  opacity: 0.6;
+  opacity: 0.4;
 }
 
 /* ---------------------------------------- */
@@ -192,14 +204,46 @@ section {
 }
 
 .confirm-button {
-  background-color: var(--color-success);
+  background-color: var(--success);
 }
 
 /* Botón de confirmar el borrado en rojo */
 .delete-content .confirm-button {
-  background-color: var(--color-error);
+  background-color: var(--error);
 }
 
 .cancel-button {
   background-color: gray;
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] * {
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] section#main {
+  background: linear-gradient(rgba(49, 50, 51, 0.95), rgba(51, 51, 51, 0.8)),
+    url("../img/home.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+[data-theme="dark"] #logotype,
+[data-theme="dark"] #slogan,
+[data-theme="dark"] #arrow {
+  filter: invert(1);
+}
+
+[data-theme="dark"] .modal .content {
+  background-color: var(--bg-dark);
+}
+
+/* Campos autocompletados */
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] textarea:-webkit-autofill,
+[data-theme="dark"] select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px var(--bg-dark) inset;
+  -webkit-text-fill-color: var(--text-dark);
 }

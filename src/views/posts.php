@@ -62,7 +62,7 @@
                 </div>
 
                 <div class="filter-option">
-                    <label for="words">Palabras</label>
+                    <label for="words">Palabras</label><br>
                     <select id="words">
                         <option value="">Todos</option>
                         <option value="100">+100 palabras</option>
@@ -73,7 +73,7 @@
                 </div>
 
                 <div class="filter-option">
-                    <label for="order">Orden</label>
+                    <label for="order">Orden</label><br>
                     <select id="order" name="order">
                         <option value="desc">Más recientes</option>
                         <option value="asc">Más antiguos</option>
