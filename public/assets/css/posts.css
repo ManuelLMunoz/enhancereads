@@ -24,6 +24,13 @@
     box-shadow: none;
     cursor: initial;
   }
+
+  .post-content {
+    p {
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+  }
 }
 
 /* Margen derecho para no solapar el contenido con el botón "X" de cierre */
@@ -58,10 +65,13 @@
   }
 
   p {
-    /* Se ajusta al tamaño a 4 líneas */
+    /* Se ajusta el contenido a un máximo de 4 líneas */
     line-height: 1.5em;
-    max-height: 6em;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -216,7 +226,7 @@
     /* El contenido del post se muestra completamente */
     .post-content {
       p {
-        max-height: none;
+        -webkit-line-clamp: unset;
         overflow: visible;
       }
     }
@@ -267,11 +277,11 @@
 /* ----------- */
 [data-theme="dark"] .post-info,
 [data-theme="dark"] .comment,
-[data-theme="dark"] .comment-form textarea {
+[data-theme="dark"] .comment-form textarea,
+[data-theme="dark"] .form-group textarea {
   background-color: var(--bg-dark);
   border: 1px solid var(--border-light);
 }
-
 
 [data-theme="dark"] .post-content input[type="text"],
 [data-theme="dark"] .post-content textarea {

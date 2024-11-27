@@ -275,7 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     const restoreOriginalContent = (post) => {
         // Verificar que el post es un nodo del DOM
-        post = post[0] || post;
+
         if (!(post instanceof Element)) return;
 
         // Recuperar el contenido original del post
@@ -353,6 +353,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("click", (event) => {
         if (event.target.matches(".cancel-button")) {
             const post = event.target.closest(".post-info");
+            if (!post) return;
             restoreOriginalContent(post);
 
             // Restaurar botones, comentarios y estado de edición
@@ -585,21 +586,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             button.classList.add("form-opened");
 
-            // Obtener el ID del comentario padre y el ID del post
+            // Obtener IDs y clonar el formulario
             const parentId = button.dataset.parentId;
             const postId = button.closest(".post-info").id.split("-")[1];
             const form = document.getElementById("comment-form").cloneNode(true);
 
-            // Configurar el formulario con los IDs correspondientes
-            form.querySelector("#parent_comment_id").value = parentId;
-            form.querySelector("input[name='post_id']").value = postId;
+            // Configurar el formulario y mostrarlo
+            form.removeAttribute("id");
+            form.style.display = "block";
+            form.querySelector("[name='parent_comment_id']").value = parentId;
+            form.querySelector("[name='post_id']").value = postId;
 
-            const textarea = form.querySelector("textarea");
-            resetTextarea(textarea);
-            textarea.addEventListener("input", autoExpand);
-
-            // Añadir el formulario clonado al comentario padre
+            // Añadir el formulario al comentario padre
             document.querySelector(`#comment-${parentId}`).append(form);
+            form.querySelector("textarea").focus();
+
+            // Manejar el botón de cancelar
+            form.querySelector(".cancel-button").addEventListener("click", () => {
+                form.remove();
+                button.classList.remove("form-opened");
+            });
         });
     };
 

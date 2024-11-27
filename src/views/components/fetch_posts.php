@@ -3,7 +3,7 @@
     <div class="post-container">
         <?php foreach ($posts as $post) : ?>
 
-            <div class="post-info" id="post-<?php echo $post["id"]; ?>">
+            <div class="post-info" id="post-<?php echo $post["id"]; ?>" title="Ver post">
 
                 <button class="close-button" style="display: none;"><i class="fas fa-times"></i></button>
 
