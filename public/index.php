@@ -7,27 +7,24 @@ use Src\Controllers\{
     GoogleController,
     BooksController,
     AccountController,
-    PostController
+    PostController,
+    LegalController
 };
-
-//---------------------------
-// Función para cargar vistas
-//---------------------------
-function loadView($view)
-{
-    require_once "../src/views/{$view}.php";
-}
 
 //---------------
 // Rutas de index
 //---------------
 foreach (["/", "index", "index.php"] as $route) {
-    Route::get($route, fn() => loadView("index"));
+    Route::get($route, function () {
+        require_once "../src/views/index.php";
+    });
 }
 
-foreach (["terms-of-use", "privacy-policy"] as $route) {
-    Route::get($route, fn() => loadView($route));
-}
+//---------------
+// Rutas de legal
+//---------------
+Route::get("terms-of-use", [LegalController::class, "terms"]);
+Route::get("privacy-policy", [LegalController::class, "privacy"]);
 
 //----------------------------
 // Rutas de las notificaciones
@@ -38,7 +35,6 @@ Route::post("mark-all-notifications-read", [PostController::class, "markAllAsRea
 //-----------------
 // Rutas de account
 //-----------------
-
 foreach (["account", "account.php"] as $route) {
     Route::get($route, [AccountController::class, "account"]);
 }

@@ -1,11 +1,37 @@
-<!-- Mostrar todos los posts encontrados en la BBDD -->
-<?php if (!empty($posts)) : ?>
-    <div class="post-container">
-        <?php foreach ($posts as $post) : ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 
-            <div class="post-info" id="post-<?php echo $post["id"]; ?>" title="Ver post">
+<!DOCTYPE html>
+<html lang="es">
 
-                <button class="close-button" style="display: none;"><i class="fas fa-times"></i></button>
+<head>
+    <?php require_once(__DIR__ . "/../components/head.php"); ?>
+    <title><?php echo $post["title"]; ?></title>
+    <link rel="stylesheet" href="assets/css/content.css">
+    <link rel="stylesheet" href="assets/css/posts.css">
+    <script src="assets/js/posts.js" type="module"></script>
+</head>
+
+<body>
+
+    <section id="main">
+        <?php require_once(__DIR__ . "/../components/navbar.php"); ?>
+
+        <div class="brand">
+            <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logotipo de la marca"></a></h1>
+            <h2 id="type">Detalles del post</h2>
+        </div>
+
+    </section>
+
+    <section id="content">
+
+        <div class="post-container" style="width: 100%; max-width: 1000px;">
+
+            <div class="post-info details" id="post-<?php echo $post["id"]; ?>">
 
                 <div class="post-data">
 
@@ -27,7 +53,7 @@
 
                     <!-- Botones de editar y borrar (Aparecen en aquellos posts creados por el usuario logado) -->
                     <?php if (isset($_SESSION["id"]) && $_SESSION["id"] == $post["user_id"]) : ?>
-                        <div class="manage-posts">
+                        <div class="manage-posts" style="display: grid;">
                             <a class="delete-button" data-id="<?php echo $post["id"]; ?>">
                                 <i class="fa-solid fa-trash"></i> Borrar
                             </a>
@@ -35,10 +61,9 @@
                                 <i class="fa-solid fa-edit"></i> Editar
                             </a>
                         </div>
-
                         <!-- El admin puede borrar todos los posts -->
                     <?php elseif (isset($_SESSION["role"]) && $_SESSION["role"] === "admin") : ?>
-                        <div class="manage-posts">
+                        <div class="manage-posts" style="display: grid;">
                             <a class="delete-button" data-id="<?php echo $post["id"]; ?>">
                                 <i class="fa-solid fa-trash"></i> Borrar
                             </a>
@@ -47,7 +72,7 @@
 
                     <div class="post-content">
                         <h2 class="post-title" tabindex="0"><?php echo htmlspecialchars($post["title"]); ?></h2>
-                        <p class="formatted-text"><?php echo htmlspecialchars($post["content"]); ?></p>
+                        <p class="formatted-text" style="max-height: none;"><?php echo htmlspecialchars($post["content"]); ?></p>
                     </div>
 
                     <!-- Likes y comentarios del post -->
@@ -63,7 +88,7 @@
                         </div>
 
                         <!-- Incluir el archivo que actúa de plantilla para los comentarios -->
-                        <div class="post-comments">
+                        <div class="post-comments" style="display: block;">
                             <?php
                             require_once "comment-template.php";
                             renderCommentsIfAvailable($post["comments"]);
@@ -71,7 +96,7 @@
                         </div>
 
                         <!-- Formulario para escribir comentarios (Solo funciona con usuarios logados) -->
-                        <div class="comment-form" id="comment-form" data-logged-in="<?php echo isset($_SESSION["id"]) ? "true" : "false"; ?>">
+                        <div class="comment-form" style="display: block;" id="comment-form" data-logged-in="<?php echo isset($_SESSION["id"]) ? "true" : "false"; ?>">
                             <form method="post">
                                 <input type="hidden" name="post_id" value="<?php echo $post["id"]; ?>">
                                 <input type="hidden" name="parent_comment_id" id="parent_comment_id" value="">
@@ -84,47 +109,21 @@
 
                 </div>
             </div>
-        <?php endforeach; ?>
+        </div>
+
+    </section>
+
+    <!-- Modal de confirmación de borrado de posts y comentarios -->
+    <div id="delete-modal" class="modal hidden">
+        <div class="delete-content content">
+            <p id="delete-message"></p>
+            <button id="confirm-delete" class="confirm-button">Eliminar</button>
+            <button id="cancel-delete" class="cancel-button">Cancelar</button>
+        </div>
     </div>
 
-    <?php
-    // Configuración de la paginación
-    $page = $page ?? 1;
-    $totalPages = $totalPages ?? 1;
-    $maxPagesToShow = 3;
+    <?php require_once(__DIR__ . "/../components/footer.php"); ?>
 
-    // Cálculo del rango de páginas a mostrar
-    $startPage = max(1, $page - floor($maxPagesToShow / 2));
-    $endPage = min($totalPages, $startPage + $maxPagesToShow - 1);
-    if ($endPage - $startPage + 1 < $maxPagesToShow) $startPage = max(1, $endPage - $maxPagesToShow + 1);
+</body>
 
-    // Función para generar el enlace de cada página
-    function pageLink($p, $currentPage)
-    {
-        return "<span class='page-link" . ($p == $currentPage ? " active" : "") . "' data-page='$p'>" . sprintf("%02d", $p) . "</span>";
-    }
-    ?>
-
-    <div id="pagination">
-
-        <span class="page-link prev<?php echo ($page > 1 ? "" : " disabled"); ?>" data-page="<?php echo max($page - 1, 1); ?>">
-            <i class="fa-solid fa-angle-left" title="Anterior"></i>
-        </span>
-
-        <!-- Enlaces a las páginas (Mostrar puntos suspensivos cuando se superen 3 páginas por encima y/o por debajo) -->
-        <?php if ($startPage > 1) echo pageLink(1, $page) . ($startPage > 2 ? "<span class='page-link dots disabled'>...</span>" : ""); ?>
-        <?php foreach (range($startPage, $endPage) as $i) echo pageLink($i, $page); ?>
-        <?php if ($endPage < $totalPages) echo ($endPage < $totalPages - 1 ? "<span class='page-link dots disabled'>...</span>" : "") . pageLink($totalPages, $page); ?>
-
-        <span class="page-link next<?php echo ($page < $totalPages ? "" : " disabled"); ?>" data-page="<?php echo min($page + 1, $totalPages); ?>">
-            <i class="fa-solid fa-angle-right" title="Siguiente"></i>
-        </span>
-
-    </div>
-
-    <!-- Total de elementos encontrados -->
-    <div id="element-range"><?php echo "$startElement - $endElement de $totalRows resultados"; ?></div>
-
-<?php else : ?>
-    <p>No se encontraron posts 😥</p>
-<?php endif; ?>
+</html>

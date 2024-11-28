@@ -2,7 +2,7 @@
 <html lang="es">
 
 <head>
-    <?php require_once("components/head.php"); ?>
+    <?php require_once(__DIR__ . "/../components/head.php"); ?>
     <title>Verificación OTP</title>
     <link rel="stylesheet" href="assets/css/forms.css">
 </head>

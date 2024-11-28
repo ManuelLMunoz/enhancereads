@@ -11,18 +11,18 @@ class AccountController extends Controller
 {
     public function account()
     {
-        return $this->view("account");
+        return $this->view("account/account");
     }
 
     public function profile()
     {
-        return $this->view("profile");
+        return $this->view("account/profile");
     }
 
     public function admin2FA()
     {
         session_start();
-        return $this->view("2FA-verification");
+        return $this->view("account/2FA-verification");
     }
 
     // ----------------------------
@@ -31,7 +31,7 @@ class AccountController extends Controller
     public function login()
     {
         if (!isset($_POST["user"], $_POST["pass"])) {
-            return $this->view("account", ["error" => "Por favor, ingresa usuario y contraseña", "form" => "login"]);
+            return $this->view("account/account", ["error" => "Por favor, ingresa usuario y contraseña", "form" => "login"]);
         }
 
         $user = (new Users())->findUser($_POST["user"]);
@@ -81,7 +81,7 @@ class AccountController extends Controller
             }
         }
 
-        return $this->view("account", ["error" => "Las credenciales son incorrectas", "form" => "login"]);
+        return $this->view("account/account", ["error" => "Las credenciales son incorrectas", "form" => "login"]);
     }
 
     // -----------------------------------------
@@ -106,7 +106,7 @@ class AccountController extends Controller
             header("Location: /");
             exit();
         } else {
-            return $this->view("2FA-verification", ["error" => "Código OTP incorrecto"]);
+            return $this->view("account/2FA-verification", ["error" => "Código OTP incorrecto"]);
         }
     }
 
@@ -160,7 +160,8 @@ class AccountController extends Controller
 
         // Validación de contraseñas tanto para la vista de acceso como la de actualización de perfil
         if (($form === "reset-password" || !empty($pass)) && ($pass !== $verifyPass || strlen($pass) < 8 || !preg_match("/[A-Za-z]/", $pass) || !preg_match("/[0-9]/", $pass))) {
-            return $this->view($form === "update-profile" ? "profile" : "account", ["error" => "La contraseña es inválida o no coinciden", "form" => $form]);
+            $view = $form === "update-profile" ? $this->profile() : $this->account();
+            return $this->view($view, ["error" => "La contraseña es inválida o no coinciden", "form" => $form]);
         }
 
         $cipheredPass = !empty($pass) ? password_hash($pass, PASSWORD_DEFAULT, ["cost" => 12]) : null;
@@ -185,7 +186,7 @@ class AccountController extends Controller
         $currentUserData = $accountManager->findUserById($id);
 
         if ($registeredEmail && $registeredEmail["id"] !== $id) {
-            return $this->view("profile", ["error" => "El email ya está registrado"]);
+            return $this->view("account/profile", ["error" => "El email ya está registrado"]);
         }
 
         // Manejo de la subida del avatar
@@ -232,10 +233,10 @@ class AccountController extends Controller
             "avatar" => $avatar ?? $currentUserData["avatar"]
         ]);
 
-        if (empty($updates) && !$avatarError) return $this->view("profile");
+        if (empty($updates) && !$avatarError) return $this->view("account/profile");
 
         if ($avatarError) {
-            return $this->view("profile", ["error" => $avatarError, "form" => "update-profile"]);
+            return $this->view("account/profile", ["error" => $avatarError, "form" => "update-profile"]);
         }
 
         // Actualizar los datos del usuario
@@ -248,9 +249,9 @@ class AccountController extends Controller
             $updates["avatar"] ?? $currentUserData["avatar"]
         )) {
             $_SESSION = array_merge($_SESSION, array_filter($updates));
-            return $this->view("profile", ["success" => "Datos actualizados con éxito"]);
+            return $this->view("account/profile", ["success" => "Datos actualizados con éxito"]);
         } else {
-            return $this->view("profile", ["error" => "Error al actualizar los datos"]);
+            return $this->view("account/profile", ["error" => "Error al actualizar los datos"]);
         }
     }
 
@@ -260,13 +261,13 @@ class AccountController extends Controller
     private function registerForm($accountManager, $registeredEmail, $user, $email, $cipheredPass)
     {
         if ($registeredEmail) {
-            return $this->view("account", ["error" => "El email ya está registrado", "form" => "register"]);
+            return $this->view("account/account", ["error" => "El email ya está registrado", "form" => "register"]);
         }
 
         if ($accountManager->insertUser($user, $email, $cipheredPass, "user")) {
-            return $this->view("account", ["success" => "Usuario registrado con éxito", "form" => "login"]);
+            return $this->view("account/account", ["success" => "Usuario registrado con éxito", "form" => "login"]);
         } else {
-            return $this->view("account", ["error" => "Error al registrar el usuario", "form" => "register"]);
+            return $this->view("account/account", ["error" => "Error al registrar el usuario", "form" => "register"]);
         }
     }
 
@@ -276,13 +277,13 @@ class AccountController extends Controller
     private function resetPasswordForm($accountManager, $registeredEmail, $email, $cipheredPass)
     {
         if (!$registeredEmail || $accountManager->getUserRole($email) === "google") {
-            return $this->view("account", ["error" => "El email es inválido", "form" => "reset-password"]);
+            return $this->view("account/account", ["error" => "El email es inválido", "form" => "reset-password"]);
         }
 
         if ($accountManager->updatePassword($email, $cipheredPass)) {
-            return $this->view("account", ["success" => "Contraseña actualizada con éxito", "form" => "login"]);
+            return $this->view("account/account", ["success" => "Contraseña actualizada con éxito", "form" => "login"]);
         } else {
-            return $this->view("account", ["error" => "Error al actualizar la contraseña", "form" => "reset-password"]);
+            return $this->view("account/account", ["error" => "Error al actualizar la contraseña", "form" => "reset-password"]);
         }
     }
 

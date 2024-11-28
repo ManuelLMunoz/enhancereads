@@ -8,12 +8,12 @@ class BooksController extends Controller
 {
     public function books($page = 1)
     {
-        return $this->view("books", ["page" => $page]);
+        return $this->view("books/books", ["page" => $page]);
     }
 
     public function manageBook()
     {
-        return $this->view("manage-books");
+        return $this->view("books/manage-books");
     }
 
     public function viewBookDetails($id, $title)
@@ -25,7 +25,7 @@ class BooksController extends Controller
             return $this->view("404", [], 404);
         }
 
-        return $this->view("book-details", ["book" => $book]);
+        return $this->view("books/book-details", ["book" => $book]);
     }
 
     private function sanitizeTitle($title)
@@ -67,7 +67,7 @@ class BooksController extends Controller
 
         // Renderizar la vista de los libros
         ob_start();
-        include(__DIR__ . "/../views/components/fetch_books.php");
+        include(__DIR__ . "/../views/books/fetch_books.php");
         $output = ob_get_clean();
 
         // Respuesta con los datos en formato JSON
@@ -143,7 +143,7 @@ class BooksController extends Controller
             $uploadResult = $this->handleCoverUpload($_FILES["cover"], null);
 
             if (empty($uploadResult["success"])) {
-                return $this->view("manage-books", ["error" => $uploadResult["message"] ?? "Error al subir la portada", "formData" => $formData]);
+                return $this->view("books/manage-books", ["error" => $uploadResult["message"] ?? "Error al subir la portada", "formData" => $formData]);
             }
         }
 
@@ -162,28 +162,28 @@ class BooksController extends Controller
         );
 
         if (!$book) {
-            return $this->view("manage-books", ["error" => "Error al agregar el libro", "formData" => $formData]);
+            return $this->view("books/manage-books", ["error" => "Error al agregar el libro", "formData" => $formData]);
         }
 
-        return $this->view("manage-books", ["success" => "Libro agregado con éxito"]);
+        return $this->view("books/manage-books", ["success" => "Libro agregado con éxito"]);
     }
 
     public function addAuthor()
     {
         $author = (new Books())->addAuthor($_POST["new_author"]);
-        return $this->view("manage-books", $author ? ["success" => "Autor agregado con éxito"] : ["error" => "El autor ya existe"]);
+        return $this->view("books/manage-books", $author ? ["success" => "Autor agregado con éxito"] : ["error" => "El autor ya existe"]);
     }
 
     public function addGenre()
     {
         $genre = (new Books())->addGenre($_POST["new_genre"]);
-        return $this->view("manage-books",  $genre ? ["success" => "Género agregado con éxito"] : ["error" => "El género ya existe"]);
+        return $this->view("books/manage-books",  $genre ? ["success" => "Género agregado con éxito"] : ["error" => "El género ya existe"]);
     }
 
     public function addPublisher()
     {
         $publisher = (new Books())->addPublisher($_POST["new_publisher"]);
-        return $this->view("manage-books",  $publisher ? ["success" => "Editorial agregada con éxito"] : ["error" => "La editorial ya existe"]);
+        return $this->view("books/manage-books",  $publisher ? ["success" => "Editorial agregada con éxito"] : ["error" => "La editorial ya existe"]);
     }
 
 
@@ -200,7 +200,7 @@ class BooksController extends Controller
             exit();
         }
 
-        return $this->view("edit-books", [
+        return $this->view("books/edit-books", [
             "book" => $book,
             "authors" => $books->getAuthors(),
             "genres" => $books->getGenres(),

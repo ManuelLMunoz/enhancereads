@@ -1,37 +1,11 @@
-<?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-?>
+<!-- Mostrar todos los posts encontrados en la BBDD -->
+<?php if (!empty($posts)) : ?>
+    <div class="post-container">
+        <?php foreach ($posts as $post) : ?>
 
-<!DOCTYPE html>
-<html lang="es">
+            <div class="post-info" id="post-<?php echo $post["id"]; ?>" title="Ver post">
 
-<head>
-    <?php require_once("components/head.php"); ?>
-    <title><?php echo $post["title"]; ?></title>
-    <link rel="stylesheet" href="assets/css/content.css">
-    <link rel="stylesheet" href="assets/css/posts.css">
-    <script src="assets/js/posts.js" type="module"></script>
-</head>
-
-<body>
-
-    <section id="main">
-        <?php require_once("components/navbar.php"); ?>
-
-        <div class="brand">
-            <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logotipo de la marca"></a></h1>
-            <h2 id="type">Detalles del post</h2>
-        </div>
-
-    </section>
-
-    <section id="content">
-
-        <div class="post-container" style="width: 100%; max-width: 1000px;">
-
-            <div class="post-info details" id="post-<?php echo $post["id"]; ?>">
+                <button class="close-button" style="display: none;"><i class="fas fa-times"></i></button>
 
                 <div class="post-data">
 
@@ -53,7 +27,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                     <!-- Botones de editar y borrar (Aparecen en aquellos posts creados por el usuario logado) -->
                     <?php if (isset($_SESSION["id"]) && $_SESSION["id"] == $post["user_id"]) : ?>
-                        <div class="manage-posts" style="display: grid;">
+                        <div class="manage-posts">
                             <a class="delete-button" data-id="<?php echo $post["id"]; ?>">
                                 <i class="fa-solid fa-trash"></i> Borrar
                             </a>
@@ -61,9 +35,10 @@ if (session_status() === PHP_SESSION_NONE) {
                                 <i class="fa-solid fa-edit"></i> Editar
                             </a>
                         </div>
+
                         <!-- El admin puede borrar todos los posts -->
                     <?php elseif (isset($_SESSION["role"]) && $_SESSION["role"] === "admin") : ?>
-                        <div class="manage-posts" style="display: grid;">
+                        <div class="manage-posts">
                             <a class="delete-button" data-id="<?php echo $post["id"]; ?>">
                                 <i class="fa-solid fa-trash"></i> Borrar
                             </a>
@@ -72,7 +47,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
                     <div class="post-content">
                         <h2 class="post-title" tabindex="0"><?php echo htmlspecialchars($post["title"]); ?></h2>
-                        <p class="formatted-text" style="max-height: none;"><?php echo htmlspecialchars($post["content"]); ?></p>
+                        <p class="formatted-text"><?php echo htmlspecialchars($post["content"]); ?></p>
                     </div>
 
                     <!-- Likes y comentarios del post -->
@@ -88,15 +63,15 @@ if (session_status() === PHP_SESSION_NONE) {
                         </div>
 
                         <!-- Incluir el archivo que actúa de plantilla para los comentarios -->
-                        <div class="post-comments" style="display: block;">
+                        <div class="post-comments">
                             <?php
-                            require_once "components/comment-template.php";
+                            require_once "comment-template.php";
                             renderCommentsIfAvailable($post["comments"]);
                             ?>
                         </div>
 
                         <!-- Formulario para escribir comentarios (Solo funciona con usuarios logados) -->
-                        <div class="comment-form" style="display: block;" id="comment-form" data-logged-in="<?php echo isset($_SESSION["id"]) ? "true" : "false"; ?>">
+                        <div class="comment-form" id="comment-form" data-logged-in="<?php echo isset($_SESSION["id"]) ? "true" : "false"; ?>">
                             <form method="post">
                                 <input type="hidden" name="post_id" value="<?php echo $post["id"]; ?>">
                                 <input type="hidden" name="parent_comment_id" id="parent_comment_id" value="">
@@ -109,21 +84,11 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 </div>
             </div>
-        </div>
-
-    </section>
-
-    <!-- Modal de confirmación de borrado de posts y comentarios -->
-    <div id="delete-modal" class="modal hidden">
-        <div class="delete-content content">
-            <p id="delete-message"></p>
-            <button id="confirm-delete" class="confirm-button">Eliminar</button>
-            <button id="cancel-delete" class="cancel-button">Cancelar</button>
-        </div>
+        <?php endforeach; ?>
     </div>
 
-    <?php require_once("components/footer.php"); ?>
+    <?php require_once(__DIR__ . "/../components/pagination.php"); ?>
 
-</body>
-
-</html>
+<?php else : ?>
+    <p>No se encontraron posts 😥</p>
+<?php endif; ?>

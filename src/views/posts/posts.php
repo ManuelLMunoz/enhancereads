@@ -2,7 +2,7 @@
 <html lang="es">
 
 <head>
-    <?php require_once("components/head.php"); ?>
+    <?php require_once(__DIR__ . "/../components/head.php"); ?>
     <title>Posts</title>
     <link rel="stylesheet" href="assets/css/content.css">
     <link rel="stylesheet" href="assets/css/posts.css">
@@ -13,7 +13,7 @@
 <body>
 
     <section id="main">
-        <?php require_once("components/navbar.php"); ?>
+        <?php require_once(__DIR__ . "/../components/navbar.php"); ?>
 
         <div class="brand">
             <h1><a href="."><img id="logotype" src="assets/img/logo.webp" alt="Logotipo de la marca"></a></h1>
@@ -141,7 +141,7 @@
         </div>
     </div>
 
-    <?php require_once("components/footer.php"); ?>
+    <?php require_once(__DIR__ . "/../components/footer.php"); ?>
 
 </body>
 

@@ -21,7 +21,7 @@ if (!in_array($_SESSION["role"], $allowed_roles)) {
 <html lang="es">
 
 <head>
-  <?php require_once("components/head.php"); ?>
+  <?php require_once(__DIR__ . "/../components/head.php"); ?>
   <title>Mi cuenta</title>
   <link rel="stylesheet" href="assets/css/forms.css">
   <script src="assets/js/forms.js" type="module"></script>

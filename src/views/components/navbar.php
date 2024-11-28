@@ -24,6 +24,7 @@
 
         <ul class="right">
 
+            <!-- Alternar el tema -->
             <li title="Cambiar tema" id="theme-toggle">
                 <a href="#" aria-label="Cambiar tema">
                     <i id="theme-icon" class="fa-solid"></i>

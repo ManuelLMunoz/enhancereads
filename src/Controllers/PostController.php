@@ -8,7 +8,7 @@ class PostController extends Controller
 {
     public function posts($page = 1)
     {
-        return $this->view("posts", ["page" => $page]);
+        return $this->view("posts/posts", ["page" => $page]);
     }
 
     public function viewPostDetails($id, $title)
@@ -20,7 +20,7 @@ class PostController extends Controller
             return $this->view("404", [], 404);
         }
 
-        return $this->view("post-details", ["post" => $post]);
+        return $this->view("posts/post-details", ["post" => $post]);
     }
 
     private function sanitizeTitle($title)
@@ -63,7 +63,7 @@ class PostController extends Controller
 
         // Renderizar la vista de los posts
         ob_start();
-        include(__DIR__ . "/../views/components/fetch_posts.php");
+        include(__DIR__ . "/../views/posts/fetch_posts.php");
         $output = ob_get_clean();
 
         // Respuesta con los datos en formato JSON
@@ -155,7 +155,7 @@ class PostController extends Controller
 
         // Incluir el archivo de plantilla para los comentarios
         ob_start();
-        include(__DIR__ . "/../views/components/comment-template.php");
+        include(__DIR__ . "/../views/posts/comment-template.php");
 
         // Renderizar los comentarios principales
         if (!empty($commentsData["commentTree"])) {
