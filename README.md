@@ -63,13 +63,10 @@ La organización del proyecto sigue una estructura clara y modular:
 
 Este proyecto está licenciado bajo la **[Licencia MIT](LICENSE.txt).
 
----
-
 ## 🌟 Contribuciones
 
 ¡Todos los aportes son bienvenidos! Si tienes ideas, mejoras o encuentras algún problema, no dudes en abrir un [issue](https://github.com/ManuelLMunoz/enhancereads/issues) o enviar un pull request.
 
----
 
 ### 👨‍💻 Autor
 
