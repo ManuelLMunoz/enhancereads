@@ -8,7 +8,7 @@ progress_bar() { echo "[$(date '+%T')] $1"; }
 
 # Instalar dependencias
 progress_bar "Instalando dependencias..."
-apt-get update && apt-get install -y apache2 php libapache2-mod-php php-mysql mysql-server curl openssl cifs-utils php-gd
+apt-get update && apt-get install -y apache2 php libapache2-mod-php php-mysql mysql-server curl openssl cifs-utils php-gd php-xml
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Configurar Apache y SSL
