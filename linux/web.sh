@@ -15,12 +15,12 @@ curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin
 progress_bar "Configurando Apache y SSL..."
 a2enmod ssl rewrite
 mkdir -p /etc/apache2/ssl
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/certificado.key -out /etc/apache2/ssl/certificado.crt -subj "/C=ES/ST=Madrid/L=Alcorcon/O=Enhancereads/OU=IT/CN=www.enhancereads.com"
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/certificate.key -out /etc/apache2/ssl/certificate.crt -subj "/C=ES/ST=Madrid/L=Alcorcon/O=Enhancereads/OU=IT/CN=www.enhancereads.com"
 
 # Renovar el certificado SSL cada año con crontab (El 1 de enero a las 02:00 AM)
 cat <<EOF > /usr/local/bin/renew_ssl.sh
 #!/bin/bash
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/certificado.key -out /etc/apache2/ssl/certificado.crt -subj "/C=ES/ST=Madrid/L=Alcorcon/O=Enhancereads/OU=IT/CN=www.enhancereads.com"
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/apache2/ssl/certificate.key -out /etc/apache2/ssl/certificate.crt -subj "/C=ES/ST=Madrid/L=Alcorcon/O=Enhancereads/OU=IT/CN=www.enhancereads.com"
 systemctl restart apache2
 EOF
 chmod +x /usr/local/bin/renew_ssl.sh
@@ -39,8 +39,8 @@ cat <<EOF > /etc/apache2/sites-available/enhancereads.conf
     ServerAlias www.enhancereads.com
 
     SSLEngine on
-    SSLCertificateKeyFile /etc/apache2/ssl/certificado.key
-    SSLCertificateFile /etc/apache2/ssl/certificado.crt
+    SSLCertificateKeyFile /etc/apache2/ssl/certificate.key
+    SSLCertificateFile /etc/apache2/ssl/certificate.crt
 
     <Directory /var/www/enhancereads/public>
         Require all granted

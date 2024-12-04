@@ -47,7 +47,8 @@
         </div>
 
         <div class="footer-bottom">
-            <p>Enhancereads<br>Copyright © All rights reserved <?php echo date("Y"); ?> </p>
+            <p>Enhancereads &copy; <?php echo date("Y"); ?> - Licencia <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a></p>
+            <p>Diseñado por <a href="https://www.linkedin.com/in/manuelluismunozsanchez/" target="_blank" rel="noopener noreferrer">Manuel Luis Muñoz Sánchez</a></p>
         </div>
 
     </footer>

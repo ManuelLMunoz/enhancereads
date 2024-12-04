@@ -40,10 +40,10 @@ cat <<EOF > /etc/bind/zones/db.enhancereads.com
                          604800 )       ; Negative Cache TTL
 
 @       IN      NS      dns.enhancereads.com.
-cliente IN      A       192.168.1.100
+client  IN      A       192.168.1.100
 web     IN      A       192.168.1.15
 dns     IN      A       192.168.1.10
-www     IN      CNAME   web.enhancereads.com
+www     IN      CNAME   web.enhancereads.com.
 
 EOF
 
@@ -60,7 +60,7 @@ cat <<EOF > /etc/bind/zones/db.192.168.1
 @      IN      NS      dns.enhancereads.com.
 10     IN      PTR     dns.enhancereads.com.
 15     IN      PTR     web.enhancereads.com.
-100    IN      PTR     cliente.enhancereads.com.
+100    IN      PTR     client.enhancereads.com.
 EOF
 
 # Verificar configuración

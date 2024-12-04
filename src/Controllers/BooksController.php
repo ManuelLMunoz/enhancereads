@@ -138,15 +138,6 @@ class BooksController extends Controller
     {
         $formData = $_POST;
 
-        // Validar la portada antes de insertar el libro
-        if (!empty($_FILES["cover"]) && $_FILES["cover"]["error"] !== UPLOAD_ERR_NO_FILE) {
-            $uploadResult = $this->handleCoverUpload($_FILES["cover"], null);
-
-            if (empty($uploadResult["success"])) {
-                return $this->view("books/manage-books", ["error" => $uploadResult["message"] ?? "Error al subir la portada", "formData" => $formData]);
-            }
-        }
-
         $book = (new Books())->addBook(
             $formData["title"],
             $formData["author"],
@@ -154,7 +145,7 @@ class BooksController extends Controller
             $formData["publisher"],
             $formData["pages"],
             $formData["year"],
-            isset($uploadResult["coverName"]) ? $uploadResult["coverName"] : null,
+            null, // No tenemos la portada aún
             $formData["links"],
             $formData["language"],
             $formData["description"],
@@ -163,6 +154,20 @@ class BooksController extends Controller
 
         if (!$book) {
             return $this->view("books/manage-books", ["error" => "Error al agregar el libro", "formData" => $formData]);
+        }
+
+        // Comprobar si hay una portada
+        if (!empty($_FILES["cover"]) && $_FILES["cover"]["error"] !== UPLOAD_ERR_NO_FILE) {
+            $uploadResult = $this->handleCoverUpload($_FILES["cover"], $book["id"]);
+
+            if (empty($uploadResult["success"])) {
+                // Si hay un error en la portada, eliminar el libro
+                (new Books())->deleteBook($book["id"]);
+                return $this->view("books/manage-books", ["error" => $uploadResult["message"] ?? "Error al subir la portada", "formData" => $formData]);
+            }
+
+            // Si la portada es válida, actualizar el libro
+            (new Books())->updateBookCover($book["id"], $uploadResult["coverName"]);
         }
 
         return $this->view("books/manage-books", ["success" => "Libro agregado con éxito"]);

@@ -47,9 +47,9 @@ class Posts extends Connection
             // Combinar las cláusulas con "AND" para la consulta final
             $filterQuery = $filterClauses ? "AND " . implode(" AND ", $filterClauses) : "";
 
-            $baseQuery = "FROM posts p LEFT JOIN genres g ON p.genre = g.id LEFT JOIN users u ON p.user = u.id WHERE (p.title LIKE ? OR u.user LIKE ?) $filterQuery";
+            $baseQuery = "FROM posts p LEFT JOIN genres g ON p.genre_id = g.id LEFT JOIN users u ON p.user_id = u.id WHERE (p.title LIKE ? OR u.user LIKE ?) $filterQuery";
 
-            $postsQuery = "SELECT p.id, p.title, p.content, p.user as user_id, u.user as user_name, p.language, p.created_at, g.name as genre, u.avatar as user_avatar, p.edited_at
+            $postsQuery = "SELECT p.id, p.title, p.content, p.user_id as user_id, u.user as user_name, p.language, p.created_at, g.name as genre, u.avatar as user_avatar, p.edited_at
                $baseQuery ORDER BY p.created_at $order LIMIT ? OFFSET ?";
 
             $stmt = $this->connection->prepare($postsQuery);
@@ -119,7 +119,7 @@ class Posts extends Connection
     // ---------
     public function getGenres()
     {
-        return $this->connection->query("SELECT DISTINCT g.id, g.name FROM genres g JOIN posts p ON g.id = p.genre ORDER BY g.name ASC")->fetchAll(PDO::FETCH_ASSOC);
+        return $this->connection->query("SELECT DISTINCT g.id, g.name FROM genres g JOIN posts p ON g.id = p.genre_id ORDER BY g.name ASC")->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getAllGenres()
@@ -135,9 +135,9 @@ class Posts extends Connection
     public function getPostById($id)
     {
         try {
-            $query = "SELECT p.id, p.title, p.content, p.user AS user_id, u.user AS user_name, p.language, p.created_at,
-            g.name AS genre, u.avatar AS user_avatar, p.edited_at FROM posts p LEFT JOIN genres g ON p.genre = g.id
-            LEFT JOIN users u ON p.user = u.id WHERE p.id = ?";
+            $query = "SELECT p.id, p.title, p.content, p.user_id AS user_id, u.user AS user_name, p.language, p.created_at,
+            g.name AS genre, u.avatar AS user_avatar, p.edited_at FROM posts p LEFT JOIN genres g ON p.genre_id = g.id
+            LEFT JOIN users u ON p.user_id = u.id WHERE p.id = ?";
 
             $stmt = $this->connection->prepare($query);
             $stmt->execute([$id]);
@@ -171,11 +171,11 @@ class Posts extends Connection
     // -------------
     // Insertar post
     // -------------
-    public function createPost($userId, $title, $content, $genre, $language)
+    public function createPost($userId, $title, $content, $genreId, $language)
     {
-        $query = "INSERT INTO posts (user, title, content, genre, language, created_at) VALUES (:userId, :title, :content, :genre, :language, NOW())";
+        $query = "INSERT INTO posts (user_id, title, content, genre_id, language, created_at) VALUES (:userId, :title, :content, :genreId, :language, NOW())";
         try {
-            return $this->connection->prepare($query)->execute(compact("userId", "title", "content", "genre", "language"));
+            return $this->connection->prepare($query)->execute(compact("userId", "title", "content", "genreId", "language"));
         } catch (PDOException $e) {
             error_log("Error al insertar post: " . $e->getMessage());
             return false;
@@ -210,7 +210,7 @@ class Posts extends Connection
     // ---------------
     public function updatePost($postId, $title, $content, $genre, $language)
     {
-        $query = "UPDATE posts SET title = :title, content = :content, genre = :genre, language = :language, edited_at = NOW() WHERE id = :postId";
+        $query = "UPDATE posts SET title = :title, content = :content, genre_id = :genre, language = :language, edited_at = NOW() WHERE id = :postId";
         try {
             return $this->connection->prepare($query)->execute(compact("title", "content", "genre", "language", "postId"));
         } catch (PDOException $e) {
@@ -283,7 +283,7 @@ class Posts extends Connection
 
             if ($success) {
                 // Notificar al creador del post o del comentario que ha recibido un nuevo comentario o respuesta
-                $recipientId = $parentCommentId ? $this->getOwnerId("post_comments", "user_id", $parentCommentId) : $this->getOwnerId("posts", "user", $postId);
+                $recipientId = $parentCommentId ? $this->getOwnerId("post_comments", "user_id", $parentCommentId) : $this->getOwnerId("posts", "user_id", $postId);
                 if ($recipientId !== $userId) { // Evitar notificaciones a uno mismo
 
                     $notificationParams = [
@@ -400,7 +400,7 @@ class Posts extends Connection
             $this->connection->prepare($queryLike)->execute($params);
 
             // Obtener el ID del destinatario (propietario del post o comentario)
-            $recipientId = $isPost ? $this->getOwnerId("posts", "user", $itemId) : $this->getOwnerId("post_comments", "user_id", $itemId);
+            $recipientId = $isPost ? $this->getOwnerId("posts", "user_id", $itemId) : $this->getOwnerId("post_comments", "user_id", $itemId);
 
             // Evitar notificaciones a uno mismo
             if ($recipientId !== $userId) {

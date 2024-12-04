@@ -60,21 +60,21 @@ if ($_SESSION["role"] !== "admin") {
 
                 <label for="author"> Autor
                     <i class="fas fa-user icon"></i>
-                    <select id="author" name="author" required aria-label="Autor" data-selected="<?php echo isset($book["author"]) ? $book["author"] : "null"; ?>">
+                    <select id="author" name="author" required aria-label="Autor" data-selected="<?php echo isset($book["author_id"]) ? $book["author_id"] : "null"; ?>">
                         <option value="" disabled selected>Seleccione una opción</option> <!-- Obtenidos de forma dinámica de la BBDD -->
                     </select>
                 </label>
 
                 <label for="genre"> Género
                     <i class="fas fa-list-alt icon"></i>
-                    <select id="genre" name="genre" required aria-label="Género" data-selected="<?php echo isset($book["genre"]) ? $book["genre"] : "null"; ?>">
+                    <select id="genre" name="genre" required aria-label="Género" data-selected="<?php echo isset($book["genre_id"]) ? $book["genre_id"] : "null"; ?>">
                         <option value="" disabled selected>Seleccione una opción</option> <!-- Obtenidos de forma dinámica de la BBDD -->
                     </select>
                 </label>
 
                 <label for="publisher"> Editorial
                     <i class="fas fa-book-open icon"></i>
-                    <select id="publisher" name="publisher" aria-label="Editorial" data-selected="<?php echo isset($book["publisher"]) ? $book["publisher"] : "null"; ?>">
+                    <select id="publisher" name="publisher" aria-label="Editorial" data-selected="<?php echo isset($book["publisher_id"]) ? $book["publisher_id"] : "null"; ?>">
                         <option value="" disabled selected>Seleccione una opción</option> <!-- Obtenidos de forma dinámica de la BBDD -->
                     </select>
                 </label>
