@@ -12,7 +12,6 @@ apt-get update && apt-get install -y bind9
 
 # Configurar servidor DNS
 progress_bar "Configurando servidor DNS..."
-echo "nameserver 127.0.0.1" > /etc/resolv.conf
 
 cat <<EOF > /etc/bind/named.conf.local
 zone "enhancereads.com" {
@@ -69,6 +68,7 @@ named-checkconf
 named-checkzone enhancereads.com /etc/bind/zones/db.enhancereads.com
 named-checkzone 1.168.192.in-addr.arpa /etc/bind/zones/db.192.168.1
 systemctl restart bind9
+systemctl status bind9
 
 # Configurar las interfaces de red de manera persistente
 progress_bar "Configurando las interfaces de red..."
@@ -85,6 +85,13 @@ network:
         addresses: [192.168.1.10] # IP del servidor DNS
 EOF
 netplan apply
+
+# Modificar resolv.conf para que use siempre el servidor DNS local
+echo -e "nameserver 127.0.0.1" > /etc/resolv.conf
+echo -e "[Resolve]\nDNS=127.0.0.1" > /etc/systemd/resolved.conf
+systemctl restart systemd-resolved
+rm -f /etc/resolv.conf
+ln -s /run/systemd/resolve/resolv.conf /etc/resolv.conf
 
 # Fin del script
 progress_bar "Instalación completada."
