@@ -1,0 +1,301 @@
+@import url("base.css");
+
+/* -------------------- */
+/* Estilos de los posts */
+/* -------------------- */
+.post-info {
+  text-align: left;
+  border: 1px solid var(--border-dark);
+  border-radius: 10px;
+  padding: 30px;
+  margin: 20px;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+  word-break: break-word;
+
+  &:hover {
+    box-shadow: 0 0 10px var(--border-dark);
+  }
+}
+
+/* Página de detalles (post-details.php) */
+.post-info.details {
+  &:hover {
+    box-shadow: none;
+    cursor: initial;
+  }
+
+  .post-content {
+    p {
+      -webkit-line-clamp: unset;
+      overflow: visible;
+    }
+  }
+}
+
+/* Margen derecho para no solapar el contenido con el botón "X" de cierre */
+.post-data {
+  margin-right: 35px;
+}
+
+.user-data {
+  display: flex;
+  align-items: center;
+  padding-bottom: 10px;
+
+  /* El nombre y fecha se muestran debajo del avatar del usuario */
+  @media screen and (width <= 768px) {
+    display: block;
+  }
+
+  .user-avatar {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+}
+
+.post-content {
+  padding-bottom: 30px;
+
+  h2 {
+    font-size: 1.3rem;
+    padding: 20px 0;
+  }
+
+  p {
+    /* Contenido ajustado a un máximo de 4 líneas */
+    line-height: 1.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.formatted-text {
+  /* Mantener los espacios y saltos de línea */
+  white-space: pre-wrap;
+}
+
+/* ------------------------- */
+/* Parte social de los posts */
+/* ------------------------- */
+.post-community {
+  .post-share {
+    display: flex;
+    gap: 15px;
+    padding-bottom: 10px;
+
+    button {
+      background: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .like-button {
+      &.liked i {
+        color: gold;
+      }
+    }
+
+    .like-button i,
+    .comment-button i {
+      /* Contorno del icono en negro */
+      text-shadow: 1px 1px 0 black, -1px -1px 0 black, -1px 1px 0 black,
+        1px -1px 0 black;
+      color: white;
+    }
+  }
+}
+
+/* Comentarios del post (Ocultos por defecto) */
+/* ------------------------------------------ */
+.post-comments,
+.comment-form {
+  display: none;
+
+  textarea {
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 100%;
+    padding: 10px;
+    resize: none;
+    overflow: hidden;
+    field-sizing: content;
+  }
+}
+
+/* Contenedor de los comentarios */
+.comment {
+  position: relative;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border-dark);
+
+  .comment-content {
+    padding-bottom: 10px;
+    padding-right: 20px;
+  }
+
+  /* Botones de editar y borrar comentarios */
+  .manage-comments {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    cursor: pointer;
+
+    .edit-comment-button {
+      text-decoration: none;
+
+      i:hover {
+        color: green;
+      }
+    }
+
+    .delete-comment-button {
+      text-decoration: none;
+
+      i:hover {
+        color: red;
+      }
+    }
+  }
+}
+
+/* Formulario para agregar comentarios */
+.comment-form {
+  padding: 10px 0;
+}
+
+/* -------------------- */
+/* Botones de los posts */
+/* -------------------- */
+.manage-posts {
+  display: none;
+  padding: 15px 0 0 0;
+  width: auto;
+  justify-content: start;
+  gap: 5px;
+
+  i {
+    color: white;
+  }
+}
+
+/* ----------------------------- */
+/* Estilos para el post ampliado */
+/* ----------------------------- */
+
+.modal-open {
+  /* Evitar scroll en la página principal */
+  overflow: hidden;
+
+  &:before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10;
+  }
+}
+
+/* Post ampliado */
+.post-info {
+  &.zoom {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    background-color: var(--bg-light);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 1000px;
+    overflow-y: auto;
+    padding: 30px 15px 30px 30px;
+    max-height: 90%;
+    margin: 0;
+    cursor: default;
+
+    /* El contenido del post se muestra completamente */
+    .post-content {
+      p {
+        -webkit-line-clamp: unset;
+        overflow: visible;
+      }
+    }
+  }
+}
+
+.close-button {
+  position: sticky;
+  float: right;
+  top: 0px;
+  cursor: pointer;
+  background: none;
+
+  i {
+    color: red;
+    font-size: 28px;
+  }
+}
+
+/* ---------------------- */
+/* Modal para crear posts */
+/* ---------------------- */
+.create-content {
+  max-width: 1000px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.post-content {
+  input,
+  textarea {
+    border-bottom: 1px solid black;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  textarea {
+    min-height: 200px;
+    resize: none;
+    overflow: hidden;
+    field-sizing: content;
+  }
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] .post-info,
+[data-theme="dark"] .comment,
+[data-theme="dark"] .comment-form textarea,
+[data-theme="dark"] .form-group textarea {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] .post-content input[type="text"],
+[data-theme="dark"] .post-content textarea {
+  background-color: var(--bg-dark);
+  border-bottom: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] .form-group select {
+  background-color: var(--bg-dark);
+}
+
+[data-theme="dark"] .post-share .like-button i,
+[data-theme="dark"] .post-share .comment-button i {
+  text-shadow: 1px 1px 0 rgb(92, 92, 92), -1px -1px 0 rgb(90, 90, 90),
+    -1px 1px 0 rgb(90, 90, 90), 1px -1px 0 rgb(94, 94, 94);
+  color: rgba(0, 0, 0, 0.5);
+}

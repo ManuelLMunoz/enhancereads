@@ -1,0 +1,214 @@
+@import url("base.css");
+
+/* Sección principal */
+section#main {
+  height: 100vh;
+  height: 100dvh;
+  padding-top: 30px;
+  overflow-y: auto;
+  background: linear-gradient(rgba(68, 110, 36, 0.5), rgba(153, 180, 235, 0.5)),
+    url("../img/aurora.webp") no-repeat center center / cover;
+}
+
+/* ----------- */
+/* Formularios */
+/* ----------- */
+.form {
+  max-width: 370px;
+  width: 90%;
+  margin: 0 auto 60px;
+  padding: 1rem;
+  background-color: rgba(193, 237, 255, 0.5);
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+
+  h1 {
+    padding-bottom: 30px;
+    text-transform: uppercase;
+  }
+
+  p,
+  a {
+    padding: 5px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+
+  /* Campos del formulario */
+  input,
+  select,
+  input[type="url"] {
+    width: 100%;
+    background: transparent;
+    font-size: 1.1rem;
+    border-bottom: 2px solid black;
+    flex: 1;
+    /* Espacio a la izquierda para evitar escribir encima del icono */
+    padding: 10px 10px 10px 40px;
+    box-sizing: border-box;
+  }
+
+  input[type="file"] {
+    font-size: 0.9rem;
+  }
+
+  textarea {
+    margin-top: 5px;
+    padding: 10px;
+    height: 200px;
+    width: 100%;
+    resize: none;
+    border: 1px solid black;
+    border-radius: 4px;
+    background: transparent;
+  }
+
+  label {
+    display: block;
+    align-items: center;
+    margin-bottom: 15px;
+    position: relative;
+    text-transform: uppercase;
+    font-weight: bold;
+
+    .icon {
+      position: absolute;
+      left: 10px;
+      /* Ajusta el icono verticalmente */
+      top: 50%;
+      font-size: 18px;
+    }
+
+    .show-pass {
+      left: 90%;
+      cursor: pointer;
+    }
+  }
+
+  .link-input {
+    position: relative;
+    margin-bottom: 5px;
+  }
+
+  input::placeholder {
+    color: black;
+  }
+
+  .remove-link-icon-container {
+    transform: translateY(-50%);
+    cursor: pointer;
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    font-size: 18px;
+  }
+
+  button,
+  .google-button {
+    margin: 5px 0;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    box-sizing: border-box;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.9);
+    }
+  }
+}
+
+.google-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+
+  .google-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+  }
+}
+
+/* -------------------- */
+/* Formulario 2FA (OTP) */
+/* -------------------- */
+.OTP {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* Imagen QR */
+  img {
+    width: 100%;
+    max-width: 220px;
+    height: auto;
+    margin: 20px 0;
+  }
+
+  input {
+    padding: 0;
+    text-align: center;
+    margin-top: 20px;
+    width: 50%;
+  }
+}
+
+/* ---------------------------------------------- */
+/* Estilos para los formularios de "manage-books" */
+/* ---------------------------------------------- */
+.form-option {
+  cursor: pointer;
+
+  &.active {
+    border-bottom: 2px solid black;
+  }
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] section#main {
+  background: linear-gradient(rgba(49, 50, 51, 0.95), rgba(51, 51, 51, 0.8)),
+    url("../img/aurora.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+[data-theme="dark"] .form {
+  background-color: var(--bg-dark);
+}
+
+[data-theme="dark"] .form input,
+[data-theme="dark"] .form select {
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-dark);
+  background-color: var(--bg-dark);
+}
+
+[data-theme="dark"] .form input::placeholder {
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] .form textarea {
+  border: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] button,
+[data-theme="dark"] .google-button {
+  background: var(--border-light);
+}
+
+[data-theme="dark"] .form button:hover,
+[data-theme="dark"] .form .google-button:hover {
+  background: #7e7e7e;
+}
+
+[data-theme="dark"] .form-option.active {
+  border-bottom: 2px solid var(--text-dark);
+}

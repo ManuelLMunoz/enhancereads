@@ -1,0 +1,248 @@
+/* ------------------------------ */
+/* Estilos base de los documentos */
+/* ------------------------------ */
+:root {
+  --success: #28a745;
+  --info: #17a2b8;
+  --warning: #ffc107;
+  --error: #dc3545;
+
+  --bg-dark: #292929;
+  --text-dark: #e0e0e0;
+  --border-dark: rgba(0, 0, 0, 0.15);
+
+  --bg-light: #ffffff;
+  --text-light: #000000;
+  --border-light: #474747;
+}
+
+:root.dark-mode-scroll {
+  scrollbar-color: #444 #121212;
+}
+
+@font-face {
+  font-family: "Nunito";
+  src: url("../fonts/Nunito-Regular.woff2") format("truetype");
+  /* Cargar fuente genérica mientras carga la principal */
+  font-display: swap;
+}
+
+/* Formateo básico de la página */
+* {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: 1rem "Nunito", sans-serif;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  color: var(--text-light);
+}
+
+/* --------- */
+/* Secciones */
+/* --------- */
+section {
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  overflow: hidden;
+
+  h1 {
+    font-size: 1.5rem;
+    padding: 0 10px;
+  }
+
+  /* Sección 1 - Inicio */
+  &#main {
+    background: linear-gradient(
+        rgba(41, 78, 102, 0.7),
+        rgba(255, 255, 255, 0.7)
+      ),
+      url("../img/home.webp");
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0 10px;
+      user-select: none;
+    }
+
+    #type {
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      font-size: 1.3rem;
+    }
+
+    #logotype,
+    #slogan {
+      width: 100%;
+      height: auto;
+      user-select: none;
+    }
+
+    #logotype {
+      max-width: 500px;
+    }
+    #slogan {
+      max-width: 350px;
+    }
+  }
+}
+
+/* --------------------------- */
+/* Flecha para subir al inicio */
+/* --------------------------- */
+#up {
+  position: fixed;
+  bottom: 20px;
+  right: 0px;
+  display: none;
+  cursor: pointer;
+  margin: 10px;
+  background-color: transparent;
+
+  #arrow {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* ----------------------------- */
+/* Mensajes dinámicos tipo toast */
+/* ----------------------------- */
+.toast {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  max-width: 350px;
+  text-align: center;
+
+  i {
+    margin-right: 10px;
+    font-size: 20px;
+    vertical-align: middle;
+    color: white;
+  }
+
+  &.success {
+    background-color: var(--success);
+  }
+  &.info {
+    background-color: var(--info);
+  }
+  &.warning {
+    background-color: var(--warning);
+  }
+  &.error {
+    background-color: var(--error);
+  }
+}
+
+/* ---------------------- */
+/* Estilos de los modales */
+/* ---------------------- */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0; /* Formateo de márgenes */
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+
+  .content {
+    background-color: var(--bg-light);
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    position: relative;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+/* ---------------------------------------- */
+/* Modal para confirmar el borrado de datos */
+/* ---------------------------------------- */
+.delete-content {
+  max-width: 350px;
+  text-align: center;
+}
+
+.confirm-button,
+.cancel-button {
+  padding: 10px;
+  margin: 15px 5px 5px 0;
+  border-radius: 5px;
+  cursor: pointer;
+  color: white;
+  font-size: 1rem;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.confirm-button {
+  background-color: var(--success);
+}
+
+/* Botón de confirmar el borrado en rojo */
+.delete-content .confirm-button {
+  background-color: var(--error);
+}
+
+.cancel-button {
+  background-color: gray;
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] * {
+  color: var(--text-dark);
+}
+
+[data-theme="dark"] section#main {
+  background: linear-gradient(rgba(49, 50, 51, 0.95), rgba(51, 51, 51, 0.8)),
+    url("../img/home.webp");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+[data-theme="dark"] #logotype,
+[data-theme="dark"] #slogan,
+[data-theme="dark"] #arrow {
+  filter: invert(1);
+}
+
+[data-theme="dark"] .modal .content {
+  background-color: var(--bg-dark);
+}
+
+/* Campos autocompletados */
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] textarea:-webkit-autofill,
+[data-theme="dark"] select:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px var(--bg-dark) inset;
+  -webkit-text-fill-color: var(--text-dark);
+}

@@ -1,0 +1,305 @@
+/* ------------------ */
+/* Menú de navegación */
+/* ------------------ */
+.menu {
+  display: flex;
+  text-transform: uppercase;
+  background-color: rgba(193, 237, 255, 0.5);
+  user-select: none;
+
+  ul {
+    display: flex;
+    list-style-type: none;
+
+    /* Balancear el contenido */
+    &.left,
+    &.right {
+      flex: 1; /* Ocupar el espacio disponible */
+    }
+
+    &.right {
+      justify-content: flex-end;
+    }
+
+    li {
+      a,
+      .dropbtn {
+        display: inline-block;
+        font-weight: bold;
+        padding: 15px 10px;
+        text-decoration: none;
+
+        &:hover,
+        &.active {
+          background-color: rgba(193, 237, 255, 0.4);
+        }
+      }
+    }
+  }
+
+  /* ----------------------------------------------------- */
+  /* Menú desplegable con los datos del usurio "Mi cuenta" */
+  /* ----------------------------------------------------- */
+  .user-menu {
+    .account-info {
+      display: flex;
+
+      .profile-pic {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        margin: -5px 0 -5px 10px;
+      }
+    }
+
+    .user-menu-content {
+      display: none;
+      position: absolute;
+      background-color: rgba(193, 237, 255);
+      z-index: 100;
+
+      a {
+        display: block;
+        text-align: left;
+        width: 148px;
+
+        &:hover {
+          background-color: rgba(131, 220, 255, 0.5);
+        }
+
+        /* Hover anulado sobre el nombre del usuario */
+        &:first-child {
+          font-weight: 500;
+
+          &:hover {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ----------------- */
+/* Responsive navbar */
+/* ----------------- */
+
+/* Icono del menú (Tres rayas horizontales) */
+#menu-icon {
+  display: none;
+  font-size: 24px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+@media screen and (width <= 1024px) {
+  .menu {
+    align-items: center;
+
+    ul {
+      &.left,
+      &.center {
+        display: none;
+      }
+    }
+
+    &.show-menu {
+      ul.center {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 50px;
+        left: 0;
+        width: 100%;
+        background-color: rgba(193, 237, 255);
+        z-index: 10;
+        font-size: 1.5rem;
+        overflow: hidden;
+        align-items: flex-start;
+
+        /* Se elimina el hover de los elementos */
+        li a:hover {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+
+  /* Se muestra el icono del menú */
+  #menu-icon {
+    display: block;
+  }
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/* -------------------- */
+/* Modal de ayuda (FAQ) */
+/* -------------------- */
+.help-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 100;
+
+  .help-modal-content {
+    margin: 10% auto;
+    padding: 20px;
+    background-color: var(--bg-light);
+    width: 80%;
+    max-width: 500px;
+    border-radius: 5px;
+
+    h2 {
+      padding: 10px 20px;
+    }
+
+    .close {
+      float: right;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 28px;
+      color: red;
+    }
+  }
+
+  /* Acordeón */
+  /* ---------*/
+  .accordion-item {
+    /* Preguntas */
+    .accordion-header {
+      cursor: pointer;
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin: 5px 0;
+
+      &:hover {
+        background-color: #eee;
+      }
+    }
+
+    /* Respuestas */
+    .accordion-body {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-top: none;
+      text-transform: initial;
+    }
+  }
+}
+
+/* ---------------------- */
+/* Menú de Notificaciones */
+/* ---------------------- */
+.notifications {
+  cursor: pointer;
+  position: relative;
+
+  .notification-count {
+    position: absolute;
+    display: none;
+    top: 5px;
+    right: 3px;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 4px;
+    font-size: 12px;
+  }
+}
+
+.notification-modal {
+  position: absolute;
+  display: none;
+  top: 52px;
+  right: 150px;
+  width: 90%;
+  max-width: 400px;
+  max-height: 320px;
+  background-color: var(--bg-light);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  overflow-y: auto;
+  text-transform: initial;
+  z-index: 100;
+
+  @media screen and (width <= 768px) {
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+  }
+
+  .modal-header {
+    position: sticky;
+    top: 0;
+    background-color: var(--bg-light);
+    display: flex;
+    justify-content: space-between;
+    padding: 15px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .notification-list {
+    .notification-item {
+      display: flex;
+      cursor: pointer;
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      line-height: 1.2;
+
+      .avatar {
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .notification-header {
+        padding-bottom: 4px;
+
+        .notification-date {
+          font-size: 14px;
+        }
+      }
+
+      &:hover {
+        background-color: #f1f1f1;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] .menu,
+[data-theme="dark"] .user-menu .user-menu-content {
+  background-color: var(--bg-dark);
+}
+
+[data-theme="dark"] .show-menu ul.center,
+[data-theme="dark"] .menu li a:hover,
+[data-theme="dark"] .menu li .dropbtn.active,
+[data-theme="dark"] .menu .user-menu-content a:hover {
+  background-color: var(--border-light);
+}
+
+[data-theme="dark"] .notification-modal,
+[data-theme="dark"] .modal-header,
+[data-theme="dark"] .help-modal-content {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] .notification-list .notification-item:hover,
+[data-theme="dark"] .accordion-item .accordion-header:hover {
+  background-color: var(--border-light);
+}

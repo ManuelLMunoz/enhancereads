@@ -1,0 +1,169 @@
+@import url("base.css");
+
+/* Sección 1 - Inicio */
+section#main {
+  /* Tamaño al 95% de la pantalla */
+  .brand {
+    height: 95vh;
+    height: 95dvh;
+  }
+}
+
+/* Sección 2 - Contenido */
+section#options {
+  display: flex;
+
+  a {
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: 2.3rem;
+  }
+
+  .books,
+  .posts {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Cada uno ocupa la mitad de la página */
+    width: 50%;
+    min-height: 100vh;
+    min-height: 100dvh;
+
+    &:hover {
+      transform: scale(1.1);
+      transition: transform 0.3s ease-in-out;
+    }
+  }
+
+  .books {
+    background: linear-gradient(
+        rgba(197, 189, 124, 0.5),
+        rgba(179, 211, 255, 0.4)
+      ),
+      url("../img/books.webp") no-repeat center / cover;
+  }
+
+  .posts {
+    background: linear-gradient(
+        rgba(206, 192, 188, 0.4),
+        rgba(185, 223, 222, 0.8)
+      ),
+      url("../img/posts.webp") no-repeat center / cover;
+  }
+}
+
+@media screen and (width <= 1024px) {
+  section#options {
+    /* Mostar el contenido uno debajo del otro */
+    display: block;
+
+    .posts,
+    .books {
+      width: 100%;
+      min-height: 50vh;
+      min-height: 50dvh;
+    }
+  }
+}
+
+/* Sección 3 - Sobre nosotros */
+section#about-us {
+  height: auto;
+  background: linear-gradient(rgb(255, 230, 223), rgba(173, 206, 230, 0.2));
+
+  .know-us,
+  .testimonials {
+    margin: 50px 25px;
+    max-width: 800px;
+    /* Centra el contenido*/
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .know-us {
+    .text {
+      position: relative;
+      opacity: 0;
+      text-wrap: wrap;
+
+      p {
+        font-size: 1.2rem;
+        padding: 25px 40px 0 40px;
+        text-align: left;
+
+        strong {
+          font-size: inherit;
+        }
+      }
+
+      &.animate {
+        animation: text-slide-in 1s ease-in-out forwards;
+        opacity: 1;
+      }
+    }
+  }
+
+  /* Silder automático para las valoraciones de los usuarios */
+  .testimonial-slider {
+    margin: 20px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+
+    .slides {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+
+      .slide {
+        min-width: 100%;
+        box-sizing: border-box;
+        padding: 20px;
+
+        p {
+          font-size: 1.2rem;
+          text-align: left;
+        }
+
+        .testimonial {
+          text-wrap: wrap;
+          padding-bottom: 15px;
+        }
+
+        .user {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+/* Efecto de la animación */
+@keyframes text-slide-in {
+  0% {
+    left: -200%;
+  }
+
+  100% {
+    left: 0;
+  }
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] section#options .books {
+  background: linear-gradient(rgba(40, 40, 40, 0.7), rgba(20, 20, 20, 0.8)),
+    url("../img/books.webp") no-repeat center / cover;
+}
+
+[data-theme="dark"] section#options .posts {
+  background: linear-gradient(rgba(50, 50, 50, 0.7), rgba(25, 25, 25, 0.8)),
+    url("../img/posts.webp") no-repeat center / cover;
+}
+
+[data-theme="dark"] section#about-us {
+  background: var(--bg-dark);
+}

@@ -1,0 +1,228 @@
+@import url("base.css");
+
+:root {
+  --blue: #0056b3;
+  --edit: rgb(41, 150, 41);
+  --delete: rgb(197, 53, 53);
+}
+
+/* --------- */
+/* Secciones */
+/* --------- */
+
+/* Sección 1 - Inicio */
+section#main {
+  /* Tamaño al 40% de la pantalla */
+  .brand {
+    height: 40vh;
+    height: 40dvh;
+  }
+
+  #search {
+    width: 50vw;
+    max-width: 450px;
+    min-width: 200px;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid black;
+    background-color: var(--bg-light);
+  }
+}
+
+/* Sección 2 - Contenido */
+section#content {
+  padding: 20px 0;
+  display: flex;
+  align-items: flex-start;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+
+  .content-container {
+    /* Ocupa el 60% del ancho total */
+    width: 60%;
+    padding: 20px 0;
+    margin-left: 50px;
+  }
+}
+
+section#content.legal {
+  padding-bottom: 50px;
+  display: block;
+
+  h1 {
+    font-size: 1.5rem;
+    padding: 20px 30px;
+  }
+
+  .terms-content {
+    max-width: 1000px;
+    text-align: left;
+    margin: 0 auto;
+    padding: 0 30px;
+
+    h2 {
+      font-size: 1.2rem;
+      padding: 10px 0;
+    }
+
+    ul {
+      padding-left: 40px;
+      margin: 10px 0;
+    }
+  }
+}
+
+@media screen and (width <= 1024px) {
+  /* Mostrar contenido en una sola columna */
+  section#content {
+    flex-direction: column;
+    align-items: center;
+
+    .filters-container,
+    .content-container {
+      width: 100%;
+      margin-left: 0px;
+    }
+  }
+}
+
+/* ------------------- */
+/* Filtros de búsqueda */
+/* ------------------- */
+.filters-container {
+  text-align: left;
+  padding-top: 20px;
+
+  p {
+    font-size: 1.4rem;
+    font-weight: bold;
+    padding: 15px 0;
+  }
+
+  select {
+    border-radius: 5px;
+    margin-top: 5px;
+    padding: 2px;
+    background-color: #e6e6e6;
+  }
+
+  #filter-icon {
+    cursor: pointer;
+  }
+
+  .filter-option {
+    padding-bottom: 10px;
+
+    label {
+      font-weight: bold;
+    }
+  }
+
+  #clear-filters,
+  .btn-filter {
+    padding: 5px;
+    cursor: pointer;
+    margin: 5px 0;
+    border-radius: 5px;
+    background-color: #e6e6e6;
+  }
+}
+
+@media screen and (width <= 1024px) {
+  /* Filtros centrados en responsive */
+  .filter-option,
+  .filters-container p {
+    text-align: center;
+  }
+}
+
+/* ---------------------------- */
+/* Paginación de los resultados */
+/* ---------------------------- */
+#pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+
+  .page-link {
+    padding: 6px;
+    margin: 0 3px;
+    background-color: black;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+
+    i {
+      color: white;
+    }
+
+    &:hover,
+    &.active {
+      background-color: var(--blue);
+    }
+  }
+}
+
+#element-range {
+  font-size: 1.1rem;
+  padding: 30px 0;
+}
+
+/* ------------------------------------------- */
+/* Botones de edición (Crear, editar y borrar) */
+/* ------------------------------------------- */
+.manage-buttons {
+  margin: 15px 0 25px 0;
+}
+
+.manage-buttons,
+.manage-posts {
+  i {
+    color: white;
+  }
+
+  .create-button,
+  .edit-button,
+  .delete-button {
+    padding: 6px;
+    margin: 0 5px 0 0;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .create-button {
+    background-color: var(--blue);
+  }
+
+  .edit-button {
+    background-color: var(--edit);
+  }
+
+  .delete-button {
+    background-color: var(--delete);
+  }
+}
+
+/* ----------- */
+/* Modo oscuro */
+/* ----------- */
+[data-theme="dark"] section#content {
+  background-color: var(--bg-dark);
+}
+
+[data-theme="dark"] section#main #search {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-light);
+}
+
+[data-theme="dark"] .filters-container select,
+[data-theme="dark"] .filters-container #clear-filters,
+[data-theme="dark"] .filters-container .btn-filter {
+  background-color: var(--border-light);
+}
